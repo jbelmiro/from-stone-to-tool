@@ -1,5 +1,5 @@
 ---
-title: "Title Goes Here"
+title: "Placeholder for article 3"
 author:
   - Jane Doe:
       correspondence: "yes"

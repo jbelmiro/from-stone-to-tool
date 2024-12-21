@@ -32,7 +32,7 @@ format:
   docx:
     reference-doc: "../templates/template.docx" # Insert path for the DOCX file
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
   comment: "#>"
@@ -75,25 +75,242 @@ Here is a citation [@Marwick2017]
 <!-- Here's some example analysis code: -->
 
 ```{r}
+#| label: library
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+```
+
+
+```{r}
 #| label: get-data
 #| eval: false
-# Note the path that we need to use to access our data files when rendering this document
-my_data <- read.csv(here::here('analysis/data/raw_data/my_csv_file.csv'))
+
+# Technological data
+gravettian_tech <- read.csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
+proto_tech <- read.csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
+solutrean_JC <- read.csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
+solutrean_points <- read.csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
+
+# RM data
+shelter_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_SHELTER.csv')) # Shelter RM analysis
+terrace_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_TERRACE.csv')) # Terrace RM analysis
+
+# Context data
+context <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_context.csv')) # Terrace Field DB - lithic artefact info
+xyz <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_xyz.csv')) # Terrace Field DB - just coordinates
+
 ```
 
 ```{r}
-#| label: fig-demo-plot
-#| fig-cap: "A plot of random numbers"
-plot(rnorm(10))
+#| label: terrace-databases-setup
+
+cols_to_concat_terrace <- c("UNIT", "ID")
+context$ID <- str_squish(context$ID) # Remove empty spaces from ID field
+xyz$ID <- str_squish(xyz$ID) # Remove empty spaces from UNIT field
+
+proto_tech_WIP <- proto_tech %>%
+  tidyr::unite(col='ID', all_of(cols_to_concat_terrace), sep="-", remove=TRUE) %>% 
+  rename(CLASS = Class, COREPREPPROD = CorePreparProd, PIECECOMPLETENESS = PieceCompleteness, CORTEX = Cortex, CORTEXLOCATION = CortexLocation, PLATFORMTYPE = PlatformType, PLATFORMCORTEX = PlatformCortex, SCARCOUNT = ScarCount, THICKNESS = Thickness,
+        MAXWIDTH = MaxWidth, LENGTH = Length, COREPLATFORM = CorePlatform, MAINFACECORTEX = MainFaceCortex, 
+        MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYOPOLOGY = RetouchedPieceTypology) %>% 
+  mutate(RETOUCHEDPIECETYOPOLOGY = case_when(
+    RETOUCHEDPIECETYOPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
+    RETOUCHEDPIECETYOPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYOPOLOGY == "Backed bladelet parcial" ~ "Backed bladelet",
+    RETOUCHEDPIECETYOPOLOGY == "Dentilhado" ~ "Denticulate",
+    RETOUCHEDPIECETYOPOLOGY == "Burin on truncation" ~ "Burin",
+    TRUE ~ RETOUCHEDPIECETYOPOLOGY)) %>% 
+  dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
+                SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON,
+                RETOUCHEDPIECETYOPOLOGY)
+gravettian_tech <- gravettian_tech %>% 
+  mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
+    RETOUCHEDPIECETYPOLOGY == "Retouched flake siret fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake frag" ~ "Retouched flake fragment",
+    RETOUCHEDPIECETYPOLOGY == "Retouched bladelet frag" ~ "Retouched bladelet fragment",
+    RETOUCHEDPIECETYPOLOGY == "Multiple burin" | RETOUCHEDPIECETYPOLOGY == "Burin splintered piece" | RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
+    RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" ~ "Backed bladelet",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+
+terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech)
+
+terrace_RM_WIP <- terrace_RM %>%
+  mutate(RMTYPE = case_when(
+    RMTYPE == "Type 2" ~ "TYPE 2",
+    RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
+    RMTYPE == "TYPE 15" ~ "TYPE 3",
+    RMTYPE == "TYPE 7" ~ "TYPE 4",
+    RMTYPE == "TYPE 12" ~ "TYPE 5",
+    RMTYPE == "TYPE 11" ~ "TYPE 6",
+    RMTYPE == "TYPE 13" ~ "TYPE 7",
+    RMTYPE == "TYPE 11F" ~ "TYPE 8",
+    RMTYPE == "TYPE 13B" ~ "TYPE 9",
+    RMTYPE == "Oolitic" ~ "TYPE 10",
+    RMTYPE == "TYPE GB" ~ "TYPE 11",
+    .default = RMTYPE)) %>% 
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%
+  distinct(ID, .keep_all = TRUE)
+
+context <- context %>%
+  dplyr::rename("UNIT" = "Unit") %>% # Renaming first column from Unit to UNIT to use cols_to_concat
+  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) %>% # Unite UNIT with ID using cols_to_concat
+  select(ID, Level, Spit, Code) %>% # Selecting important variables: ID refers to artifact ID; Level refers to archaeologycal layer; Spit refers to artificial levels within an archaeological layer; Code refers to type of artifact (e.g., LITHIC or BONE)
+  distinct(ID, .keep_all = TRUE)
+
+xyz <- xyz %>%
+  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) %>% # Unite UNIT with ID using cols_to_concat
+  filter(Suffix == 0) %>% # To avoid several entries related to several points of the same artefact
+  select(ID, X, Y, Z) %>% # Selecting important variables
+  distinct(ID, .keep_all = TRUE)
+
+field_data <- full_join(xyz, context, by = "ID") # Join field tables
+
+terrace_tech_WIP <- left_join(terrace_tech, field_data, by = "ID") # Join field and RM type tables
+terrace_dataset <- full_join(terrace_tech_WIP, terrace_RM_WIP, by = "ID") # Base 12690
+terrace_dataset <- terrace_dataset %>%
+  filter(!Level %in% c("3", "4", "4C", "4D")) %>%  # Dropping NAs on the technological class drops dataset to 1651
+  drop_na(RMTYPE) %>%  # Dropping NAs on the RM database drops dataset to 3635
+  drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 1647
+  
+# Mutate level 5 to add phases: top of 5 (4E/5) and bottom of 5 (5), following Belmiro et al. (2020).
+phase_dataset <- terrace_dataset %>% 
+  mutate(Level = case_when(
+    Level == 5 & Z > 24.1 ~ "4E/5",
+    Level == 5 & Z < 24.1 ~ "5",
+    Level == "7C" | Level == 8 ~ "7", # Collapsing samples from Level 7C and Level 8 into 7 to homogenise dataset
+    TRUE ~ Level)) %>% # Adding technocomplex name based on the levels
+  mutate(Technocomplex = case_when(
+    Level == "4E" | Level == "4E/5" | Level == 5 ~ "Proto-Solutrean",
+    Level == 6 | Level == 7 ~ "Gravettian"))
+
 ```
 
-@fig-demo-plot shows how we can have a caption and cross-reference for a plot. Note that figure label and cross-references must both be prefixed with `fig-`
 
 ```{r}
-#| label: demo-inline-code
-#| echo: false
-x <- round(pi, 2)
+#| label: shelter-solutrean-setup
+
+cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
+
+solutrean_WIP <- solutrean_JC %>% 
+  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
+  filter(Raw.material %in% c("Chert", "Chalcedony")) %>% # Filtering raw materials
+  filter(Screen != "Crivo") %>%  # Filtering out all bucket lithics since they were not included in the RM analysis
+  mutate_at("Date", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
+  dplyr::rename("YEAR" = "Date") %>% 
+  tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
+
+
+# In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
+solutrean_WIP <- solutrean_WIP %>% 
+  mutate(Class = case_when( # This alteration is being done on the original class column
+    Retouched == "Yes" ~ "Retouched piece", # Whenever retouch is present, class is now Retouched piece
+    TRUE ~ Class)) %>% 
+  mutate(CLASS = case_when( # Creating a column for clustered classes, to match the other DBs
+    Class == "Blade" | Class == "Bladelet" ~ "ElongBlank", # Cluster blades with bladelets. The distinction can come later through a mutate and the measurements
+    Class == "Core front" | Class == "Core tablet" | Class == "Core trimming elem." | Class == "Crested piece" ~ "CorePrepProd", # Cluster all preparation products
+    Class == "Fragment" ~ "Shatter",
+    Class == "Flake distal frag." | Class == "Flake mesial frag." | Class == "Flake prox. frag." ~ "FlakeFrag", # Cluster flake frags into a single category
+    Class == "Blade distal frag." | Class == "Blade mesial frag." | Class == "Blade prox. frag." 
+    | Class == "Bladelet distal frag." | Class == "Bladelet mesial frag." | Class == "Bladelet prox. frag." ~ "ElongBlankFrag", # Cluster elong frags into a single category
+    TRUE ~ Class)) %>% 
+  mutate(COREPREPPROD = case_when( # Creating a column for the types of core preparation and maintenance products (COREPREPPROD)
+    Class == "Core front" ~ "Core front",
+    Class == "Core tablet" ~ "Core tablet",
+    Class == "Core trimming elem." ~ "Core trim",
+    Class == "Crested piece" ~ "Crested piece")) %>% 
+  mutate(PIECECOMPLETENESS = case_when( # Creating a column for the portions present in flake or elongblank fragments to match other DBs
+    Class == "Flake distal frag." | Class == "Blade distal frag." | Class == "Bladelet distal frag." ~ "Distal",
+    Class == "Flake mesial frag." | Class == "Blade mesial frag." | Class == "Bladelet mesial frag." ~ "Mesial",
+    Class == "Flake prox. frag." | Class == "Blade prox. frag." | Class == "Bladelet prox. frag." ~ "Proximal")) %>% 
+  rename(PLATFORMTYPE = Platform_type) %>% # Renaming column
+  mutate(PLATFORMTYPE = case_when( # Renaming variables to match correspondent variables in the other DBs
+    PLATFORMTYPE == "Multifacetted" ~ "Faceted",
+    PLATFORMTYPE == "Unfacetted" ~ "Plain",
+    TRUE ~ PLATFORMTYPE)) %>%
+  mutate(Type = case_when( # Translating retouched types from Zilhão 1997 to simplified typologies
+    Type == "92b" ~ "Retouched piece fragment",
+    Type == "92a" ~ "Retouched blank",
+    Type == "76" ~ "Splintered piece",
+    Type == "75" ~ "Denticulate",
+    Type == "74" ~ "Notch",
+    Type == "66" ~ "Retouched blade",
+    Type == "61" ~ "Truncation",
+    Type == "28" ~ "Burin",
+    Type == "7" | Type == "5b" | Type == "4"  ~ "Endscrapper",
+    TRUE ~ Type)) %>%
+  rename(LEVEL = Layer, UNIT = Unit, CORTEX = Percent_of_cortex, CORTEXLOCATION = Loc_of_cortex, THICKNESS = Thickness,
+         MAXWIDTH = Width, LENGTH = Length, COREPLATFORM = Core_platfform, SCARCOUNT = N_of_Scars, COREABANDON = Core_abandon,
+         RETOUCHEDPIECETYPOLOGY = Type)  # Renaming column
+  
+solutrean_tech <- solutrean_WIP %>%
+  dplyr::select(ID, CLASS, LEVEL, UNIT, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE,
+                SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, COREABANDON, RETOUCHEDPIECETYPOLOGY)
+
+solutrean_points <- solutrean_points %>% # Creating ID from 
+  mutate_at("YEAR", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
+  tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=TRUE)
+  
+solutrean_tech <- bind_rows(solutrean_tech, solutrean_points) # Uniting technology dataset with points (2167 to 2228)
+
+solutrean_tech <- solutrean_tech %>% # Originally 2228
+  distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets (down to 1993)
+
+shelter_RM_WIP <- shelter_RM %>%
+  mutate_at("ID", str_replace, "VB", "") %>% # Remove "VB" from ID
+  mutate(RMTYPE = case_when(
+    RMTYPE == "Type 2" ~ "TYPE 2",
+    RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
+    RMTYPE == "TYPE 15" ~ "TYPE 3",
+    RMTYPE == "TYPE 7" ~ "TYPE 4",
+    RMTYPE == "TYPE 12" ~ "TYPE 5",
+    RMTYPE == "TYPE 11" ~ "TYPE 6",
+    RMTYPE == "TYPE 13" ~ "TYPE 7",
+    RMTYPE == "TYPE 11F" ~ "TYPE 8",
+    RMTYPE == "TYPE 13B" ~ "TYPE 9",
+    RMTYPE == "Oolitic" ~ "TYPE 10",
+    RMTYPE == "TYPE GB" ~ "TYPE 11",
+    RMTYPE == "ND_A" ~ "INDET",
+    .default = RMTYPE)) %>%
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%  # Select variables
+  distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets
+
+solutrean_dataset <- full_join(solutrean_tech, shelter_RM_WIP, by = "ID") # The complete dataset has 2818 (44 points) entries
+solutrean_dataset <- solutrean_dataset %>%
+  drop_na(RMTYPE) %>%   # Dropping NAs on the RM database drops dataset to 1514
+  drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 914
+  
 ```
+
+```{r}
+
+library(ggplot2)
+library(scales)
+
+solutrean_dataset %>%
+  filter(RMTYPE != "INDET") %>% 
+  dplyr::group_by(LEVEL, RMTYPE) %>% 
+  dplyr::summarise(n = n()) %>%
+  mutate(percent = n/sum(n)) %>% 
+  ggplot(aes(x = LEVEL, y = percent, fill = RMTYPE)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  #theme_minimal() + #type of theme
+  labs(y = "Count %") +# change labels
+  guides(fill=guide_legend(title=NULL)) + # remove legend title
+  geom_text(aes(label=ifelse(percent >= 0.05, paste0(sprintf("%.1f", percent*100),"%"),"")),
+                position=position_stack(vjust=0.5), colour="white", size=3) +
+  theme(axis.title.x = element_blank()) + 
+  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
+                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#996666", "#BDD2B6", "#798777", "#BDC7C9"))
+
+
+```
+
+
 
 Here is an example of inline code `r x` in the middle of a sentence.
 

@@ -127,16 +127,15 @@ proto_tech_WIP <- proto_tech %>%
   tidyr::unite(col='ID', all_of(cols_to_concat_terrace), sep="-", remove=TRUE) %>% 
   rename(CLASS = Class, COREPREPPROD = CorePreparProd, PIECECOMPLETENESS = PieceCompleteness, CORTEX = Cortex, CORTEXLOCATION = CortexLocation, PLATFORMTYPE = PlatformType, PLATFORMCORTEX = PlatformCortex, SCARCOUNT = ScarCount, THICKNESS = Thickness,
         MAXWIDTH = MaxWidth, LENGTH = Length, COREPLATFORM = CorePlatform, MAINFACECORTEX = MainFaceCortex, 
-        MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYOPOLOGY = RetouchedPieceTypology) %>% 
-  mutate(RETOUCHEDPIECETYOPOLOGY = case_when(
-    RETOUCHEDPIECETYOPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
-    RETOUCHEDPIECETYOPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYOPOLOGY == "Backed bladelet parcial" ~ "Backed bladelet",
-    RETOUCHEDPIECETYOPOLOGY == "Dentilhado" ~ "Denticulate",
-    RETOUCHEDPIECETYOPOLOGY == "Burin on truncation" ~ "Burin",
-    TRUE ~ RETOUCHEDPIECETYOPOLOGY)) %>% 
+        MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYPOLOGY = RetouchedPieceTypology) %>% 
+  mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
+    RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed bladelet",
+    RETOUCHEDPIECETYPOLOGY == "Dentilhado" ~ "Denticulate",
+    RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) %>% 
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
-                SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON,
-                RETOUCHEDPIECETYOPOLOGY)
+                SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
 gravettian_tech <- gravettian_tech %>% 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
@@ -467,6 +466,20 @@ solu_ratiotd <- solutrean_dataset %>%
   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
   filter(!sum <= 5) %>% 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+```
+
+```{r}
+#| label: tool-diversity
+
+proto_retouch <- phase_dataset %>% 
+  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>%
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
+  dplyr::group_by(RMTYPE)
+
+proto_retouch_tab <- table(proto_retouch$RETOUCHEDPIECETYPOLOGY, proto_retouch$RMTYPE)
+proto_retouch_tab <- as.data.frame.matrix(proto_retouch_tab)
 
 ```
 

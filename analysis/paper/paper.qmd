@@ -68,6 +68,17 @@ Here is a citation [@Marwick2017]
 
 # Background
 
+## Aims
+
+Our goal is to understand the provisioning, use and management strategies of chert lithic resources of the hunter-gatherer groups of Vale Boi during the Upper Paleolithic. We focus on the technological characteristics of the two broader groups of cherts identified at the site: local and non-local, based on the notion that local raw materials will show technological patterns different from those which are non-local. Expanding upon our previous works on chert types present throughout the UP sequence in the Terrace and Shelter area of Vale Boi, and their possible interpretations, and following the previously mentioned studies and models about raw material management and lithic technology organisation focusing mainly on the different management of local and non-local raw materials, associated with mobility and occupation length, we derive two main expectations (fig. 1):
+
+1.	Local raw materials are expected to present a) low use-lives, with knapping strategies characterised by manufacture, use and discard; b) a decreased reduction intensity and low tools to debitage ratio; c) larger cores and lower blank-to-core ratio; d) less extensive reduction and reworking of tools; e) higher tool typology diversity. This may be related to the abundance of local raw materials which leads to less intensive life-use extension, but also to the residential characteristics of the site and low mobility, which increases the reliance on local raw materials.
+
+2.	Non-local raw materials are expected to present a) a majority of formal tools, in the case of individual provisioning or higher use-lives, with knapping strategies characterised by the manufacture, use and maintenance; b) an increased reduction intensity and high tools to debitage ratio; c) smaller cores and higher blank-to-core ratio; d) more extensive reduction and high presence of retouch and/or tool maintenance; e) lower tool diversity, characterised by less specialised tools, such as the presence of retouched blanks as multipurpose tools. This may be related to scarcer or poorer quality of raw materials which leads to the prepared transportation of lithic resources to a site, but also related to more mobile settlement patterns as well as short-term site occupations.
+
+Despite these expectations, it is important to notice that, especially in occupations with a high percentage of non-local cherts at the site (e.g., Gravettian occupations of level 7 and 6 of the Terrace at Vale Boi), these technological may not reflect a preoccupation with intensive management of a scarce and limited non-local resource, and be more a reflection of the type of provisioning applied following the suggested model by Kuhn (2004). In this sense, distance from source may have had little intrinsic meaning in the past, especially regarding non-local raw materials. There are several ways in which raw materials may be transported to a site, and the relationship between distance and cost may vary depending on how this takes place (Kuhn, 2004). When non-local raw materials are as abundant as local ones, the difference in the technological organization between these materials may be less obvious (Andrefsky, 2004).
+
+
 # Methods
 
 # Results
@@ -126,6 +137,7 @@ proto_tech_WIP <- proto_tech %>%
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON,
                 RETOUCHEDPIECETYOPOLOGY)
+
 gravettian_tech <- gravettian_tech %>% 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
     RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
@@ -133,7 +145,11 @@ gravettian_tech <- gravettian_tech %>%
     RETOUCHEDPIECETYPOLOGY == "Retouched bladelet frag" ~ "Retouched bladelet fragment",
     RETOUCHEDPIECETYPOLOGY == "Multiple burin" | RETOUCHEDPIECETYPOLOGY == "Burin splintered piece" | RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
     RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" ~ "Backed bladelet",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    TRUE ~ CLASS))
 
 terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech)
 
@@ -307,6 +323,60 @@ solutrean_dataset %>%
                               "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
                               "#996666", "#BDD2B6", "#798777", "#BDC7C9"))
 
+
+```
+
+
+```{r}
+#| label: ratios
+
+proto_ratio <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+grav_ratio <- phase_dataset %>% 
+  filter(Level %in% c(6, 7)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+solu_ratio <- solutrean_dataset %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    TRUE ~ CLASS)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
 
 ```
 

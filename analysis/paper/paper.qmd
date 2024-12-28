@@ -328,9 +328,9 @@ solutrean_dataset %>%
 
 
 ```{r}
-#| label: ratios
+#| label: ratio-blankcore
 
-proto_ratio <- phase_dataset %>% 
+proto_ratiobc <- phase_dataset %>% 
   filter(Level %in% c("4E", "4E/5")) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
@@ -345,7 +345,22 @@ proto_ratio <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
-grav_ratio <- phase_dataset %>% 
+proto5_ratiobc <- phase_dataset %>% 
+  filter(Level == 5) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+grav_ratiobc <- phase_dataset %>% 
   filter(Level %in% c(6, 7)) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
@@ -360,7 +375,7 @@ grav_ratio <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
-solu_ratio <- solutrean_dataset %>% 
+solu_ratiobc <- solutrean_dataset %>% 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
@@ -377,6 +392,81 @@ solu_ratio <- solutrean_dataset %>%
   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
+
+```
+
+
+```{r}
+#| label: ratios-retouchdebitage
+
+proto_ratiotd <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+proto5_ratiotd <- phase_dataset %>% 
+  filter(Level == 5) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+grav_ratiotd <- phase_dataset %>% 
+  filter(Level %in% c(6, 7)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+solu_ratiotd <- solutrean_dataset %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    CLASS == "Retouched piece" ~ "RetouchedPiece",
+    CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
+    TRUE ~ CLASS)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
 
 ```
 

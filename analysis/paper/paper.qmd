@@ -92,6 +92,7 @@ library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
+library(ggplot2)
 
 ```
 
@@ -115,6 +116,7 @@ context <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_context.csv'))
 xyz <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_xyz.csv')) # Terrace Field DB - just coordinates
 
 ```
+
 
 ```{r}
 #| label: terrace-databases-setup
@@ -300,6 +302,45 @@ solutrean_dataset <- solutrean_dataset %>%
 ```
 
 ```{r}
+#| label: general-tables
+
+library(janitor)
+
+proto_general <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5"))
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) %>%
+  tabyl(RMTYPE, CLASS) %>%
+  adorn_totals(c("row", "col")) %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting(2) %>%
+  adorn_ns("front")
+
+proto_graph <- proto_general %>% 
+  dplyr::group_by(RMTYPE, CLASS) %>%
+  dplyr::summarise(n = n())
+  #mutate(percent = n/sum(n))
+  
+proto_graph <- ggplot(proto_graph, aes(x=RMTYPE,y=n, fill = CLASS)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  #scale_y_continuous(labels = scales::percent_format()) +
+  #theme_minimal() + #type of theme
+  labs(y = "Count %") +# change labels
+  guides(fill=guide_legend(title=NULL)) + # remove legend title
+  geom_text() +
+  #geom_text(aes(label=ifelse(percent >= 0.05, paste0(sprintf("%.1f", percent*100),"%"),"")),
+  #          position=position_stack(vjust=0.5), colour="white", size=3) +
+  theme(axis.title.x = element_blank()) +
+  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
+                               "#FACE7F", "#845460", "#EAD3CB", "#BDC7C9",
+                               "#2B4F60", "#BDD2B6", "#798777", "#FCF0C8"))
+  
+
+```
+
+
+```{r}
 
 library(ggplot2)
 library(scales)
@@ -324,6 +365,34 @@ solutrean_dataset %>%
 
 
 ```
+
+```{r}
+#| label: stats
+
+proto_stats_blanks <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core", "BlankFragProx", "RetouchedPiece")) %>%
+  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
+  group_by(RMTYPE, CLASS) %>% 
+  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+
+proto_stats_blanks <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core", "BlankFragProx", "RetouchedPiece")) %>%
+  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
+  group_by(RMTYPE, CLASS) %>% 
+  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+
+```
+
 
 
 ```{r}
@@ -482,6 +551,8 @@ proto_retouch_tab <- table(proto_retouch$RETOUCHEDPIECETYPOLOGY, proto_retouch$R
 proto_retouch_tab <- as.data.frame.matrix(proto_retouch_tab)
 
 ```
+
+
 
 
 

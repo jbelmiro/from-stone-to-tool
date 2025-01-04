@@ -541,14 +541,51 @@ solu_ratiotd <- solutrean_dataset %>%
 ```{r}
 #| label: tool-diversity
 
+# Solutrean table
+solu_retouch <- solutrean_dataset %>%
+    mutate(CLASS = case_when(
+    CLASS == "Retouched piece" ~ "RetouchedPiece",
+    CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>% 
+  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
+  group_by(RMTYPE)
+
+solu_retouch_tab <- solu_retouch %>% 
+  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>% 
+  adorn_totals(c("row", "col")) %>% 
+  adorn_percentages("col") %>% 
+  adorn_pct_formatting(2) %>% 
+  adorn_ns("front")
+
+# Proto-solutrean table
 proto_retouch <- phase_dataset %>% 
   filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>%
   filter(Level %in% c("4E", "4E/5")) %>% 
   select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
   dplyr::group_by(RMTYPE)
 
-proto_retouch_tab <- table(proto_retouch$RETOUCHEDPIECETYPOLOGY, proto_retouch$RMTYPE)
-proto_retouch_tab <- as.data.frame.matrix(proto_retouch_tab)
+proto_retouch_tab <- proto_retouch %>%
+  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>%
+  adorn_totals(c("row", "col")) %>% 
+  adorn_percentages("col") %>% 
+  adorn_pct_formatting(2) %>% 
+  adorn_ns("front")
+
+# Gravettian table
+grav_retouch <- phase_dataset %>% 
+  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>%
+  filter(Level %in% c(6, 7)) %>% 
+  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
+  dplyr::group_by(RMTYPE)
+
+grav_retouched_tab <- grav_retouch %>% 
+  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>%
+  adorn_totals(c("row", "col")) %>% 
+  adorn_percentages("col") %>% 
+  adorn_pct_formatting(2) %>% 
+  adorn_ns("front")
+
 
 ```
 

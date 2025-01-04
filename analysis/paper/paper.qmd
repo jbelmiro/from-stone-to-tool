@@ -83,6 +83,11 @@ Despite these expectations, it is important to notice that, especially in occupa
 
 # Results
 
+Local raw materials are expected to present a) low use-lives, with knapping strategies characterised by manufacture, use and discard; b) a decreased reduction intensity and low tools to debitage ratio; c) larger cores and lower blank-to-core ratio; d) less extensive reduction and reworking of tools; e) higher tool typology diversity. This may be related to the abundance of local raw materials which leads to less intensive life-use extension, but also to the residential characteristics of the site and low mobility, which increases the reliance on local raw materials.
+
+
+
+
 <!-- Here's some example analysis code: -->
 
 ```{r}
@@ -93,6 +98,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(ggplot2)
+library(janitor)
 
 ```
 
@@ -304,8 +310,6 @@ solutrean_dataset <- solutrean_dataset %>%
 ```{r}
 #| label: general-tables
 
-library(janitor)
-
 proto_general <- phase_dataset %>% 
   filter(Level %in% c("4E", "4E/5"))
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
@@ -369,23 +373,46 @@ solutrean_dataset %>%
 ```{r}
 #| label: stats
 
-proto_stats_blanks <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
+# Solutrean statistics
+solu_stats <- solutrean_dataset %>% 
+  filter(RMTYPE != "INDET") %>%
+   mutate(CLASS = case_when(
+    CLASS == "Thinning flake" ~ "ThinningFlake",
+    CLASS == "ElongBlank" ~ "ElongatedProd",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    TRUE ~ CLASS)) %>% 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core", "BlankFragProx", "RetouchedPiece")) %>%
+    TRUE ~ CLASS)) %>%
+  filter(CLASS %in% c("Flake", "ElongatedProd", "ThinningFlake", "Core", "BlankFragProx", "RetouchedPiece")) %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 
+# Proto-solutrean statistics
 proto_stats_blanks <- phase_dataset %>% 
   filter(Level %in% c("4E", "4E/5")) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>%
+  mutate(elong = MAXWIDTH*2-LENGTH) %>%
+  mutate(CLASS = case_when(
+    CLASS == "Blank" & elong > 0 ~ "Flake",
+    CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
     TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "BlankFragProx", "RetouchedPiece")) %>%
+  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
+  group_by(RMTYPE, CLASS) %>% 
+  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+
+# Gravettian statistics
+grav_stats_blanks <- phase_dataset %>%
+  filter(Level %in% c(6, 7)) %>%
+  filter(RMTYPE != "INDET") %>%
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>%
   filter(CLASS %in% c("Blank", "Core", "BlankFragProx", "RetouchedPiece")) %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
@@ -538,6 +565,12 @@ solu_ratiotd <- solutrean_dataset %>%
 
 ```
 
+## Tool typology diversity
+
+Solutrean has a total of 43 retouched tools (complete and fragments), with a high variety of retouched tools (11), ranging from 5 (11.6%) to 4 (9.3%) per tool type. The typologies which are most frequently present in the studied sample are bifacial blanks and bifacial fragments, amounting to a total of 23.2% of products related to bifacial tool/point production. Two types of points were identified: shouldered points (2 complete and 1 fragment, amounting to a total of 6.9%) and tanged and 4 winged points (9.3%). Other frequent retouched typologies are end scrappers (9.3%), notches (11.6%), retouched blanks (~14%) and splintered pieces (11.6%). Regarding chert type, a substantial portion of retouched tools are of unidentified chert types (n=13), mostly due to alterations (fire and post depositional). Most retouched tools with identified chert are local (n=13, accounting to `r 13*100/43`%), followed by Type 6 cherts, previously suggested to be from Central Portugal (n=7, accounting to `r 7*100/43`%). Local types show a higher variability retouched typologies (9 types), although this may be related to the higher amount of tools. In comparison, Type 6 shows only 5 different typologies.
+
+For the Proto-Solutrean, 65 chert retouched tools were identified, with `r 15*100/65`% (n=15) having an unidentified chert type. A total of `r 1+10+2+8+5` retouched tools correspond to local cherts, while `r 10+9+3+1` correspond to non-local cherts. Regarding the typology, 14 different types of retouched tools were identified. Endscrappers (26.2%), splintered pieces (17%), burins (12.3%) and retouched flakes (7.7%) were the most prevalent. In comparison to the high frequency of point-related technology observed during the Solutrean, Vale Comprido points are barely present in chalcedony and chert (n=1), as they are mostly present in dolerite and chert was mainly used for other tools as seen in previous studies (**).
+
 ```{r}
 #| label: tool-diversity
 
@@ -548,7 +581,8 @@ solu_retouch <- solutrean_dataset %>%
     CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
     TRUE ~ CLASS)) %>% 
   filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>% 
-  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
+  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>%
+  filter(RETOUCHEDPIECETYPOLOGY != "") %>% 
   group_by(RMTYPE)
 
 solu_retouch_tab <- solu_retouch %>% 

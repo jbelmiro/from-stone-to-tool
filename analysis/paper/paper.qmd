@@ -310,36 +310,39 @@ solutrean_dataset <- solutrean_dataset %>%
 ```{r}
 #| label: general-tables
 
-proto_general <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5"))
+solutrean_general <- solutrean_dataset %>%
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) %>%
-  tabyl(RMTYPE, CLASS) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) %>% 
+  tabyl(CLASS, RMTYPE) %>%
   adorn_totals(c("row", "col")) %>%
   adorn_percentages("col") %>%
   adorn_pct_formatting(2) %>%
   adorn_ns("front")
 
-proto_graph <- proto_general %>% 
-  dplyr::group_by(RMTYPE, CLASS) %>%
-  dplyr::summarise(n = n())
-  #mutate(percent = n/sum(n))
-  
-proto_graph <- ggplot(proto_graph, aes(x=RMTYPE,y=n, fill = CLASS)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  #scale_y_continuous(labels = scales::percent_format()) +
-  #theme_minimal() + #type of theme
-  labs(y = "Count %") +# change labels
-  guides(fill=guide_legend(title=NULL)) + # remove legend title
-  geom_text() +
-  #geom_text(aes(label=ifelse(percent >= 0.05, paste0(sprintf("%.1f", percent*100),"%"),"")),
-  #          position=position_stack(vjust=0.5), colour="white", size=3) +
-  theme(axis.title.x = element_blank()) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                               "#FACE7F", "#845460", "#EAD3CB", "#BDC7C9",
-                               "#2B4F60", "#BDD2B6", "#798777", "#FCF0C8"))
-  
+proto_general <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(CLASS != "Chip") %>% 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) %>% 
+  tabyl(CLASS, RMTYPE) %>%
+  adorn_totals(c("row", "col")) %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting(2) %>%
+  adorn_ns("front")
+
+gravettian_general <- phase_dataset %>% 
+  filter(Level %in% c(6, 7)) %>%
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) %>% 
+  tabyl(CLASS, RMTYPE) %>%
+  adorn_totals(c("row", "col")) %>%
+  adorn_percentages("col") %>%
+  adorn_pct_formatting(2) %>%
+  adorn_ns("front")
+
 
 ```
 
@@ -369,6 +372,19 @@ solutrean_dataset %>%
 
 
 ```
+
+## Assemblage description
+
+For the Gravettian assemblage, local cherts show similar patterns, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies. For T2, cores represent 13.6% of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation  and maintenance product are present. Retouched tools seem to be especially relevant in T2 (~18%), being the most frequent class after blanks. The presence of burin spalls (8.1%) in T2 also hints at the production of burins. In comparison, T5 shows similar percentages of retouched tools and shatter (~12% and ~14%, respectively). T1 (chalcedony) shows similar patterns, although with higher percentages of shatter (34.3%).
+
+In comparison, non-local chert types (especially T6 with n=169 and T7 with n=86) show similar percentages of blanks (~40-50%) but higher percentages of retouched tools (~30%). Cores, core fragments and core preparation and maintenance products are also present even if in small percentages (<4%), as well as shatter (~12%). In both types burin spalls are also present (7.1% for T6 and 4.6% for T7). The TL cherts show, as expected, blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4). The presence of core maintenance products in TL is possibly related to the limited knapping of TL01 (jasper).
+
+TL - blank and retouched, plus a shatter. The latter is unexpected since TL should be expected to be a finished product. Means it is either a byproduct of knapping or not TL?
+T1 (chalcedony) is composed mostly of blanks and a retouched tool (Vale Comprido point). The absence of cores but presence of shatter may hint at the knapping of this raw material at the site, but the absence of formal cores perhaps due to the quality of nodules/lenses, which are characterised by fractures and natural flaws.
+The local types show high frequency of blanks (>50%, including blank fragments), followed by shatter (~11-27%), cores (~9-12%) and retouched tools (~5-15% ). A single burin spall was identified in T4. There is also the absence of core preparation and maintenance products across all local cherts.
+For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (`r 38.3+10`%, `r 40.4+12.7`% and `r 46.1+23.1`%, respectively). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site. Similarly, T7 shows the presence of cores and core fragments  (`r 4.2+4.2`%), shatter (17.0%) and a single core preparation and maintenance product. In comparison, T8, despite more limited in number (n=13), shows only one core, with the rest of the artefacts being blanks (as previously noted) or retouched tools (23.1% and n=3). Aside from the TL artefacts, all non-local cores show at least 1 core and frequently the presence of shatter.
+
+The Solutrean assemblages show similar patterns to those observed in previous assemblages. For local cherts, especially T2 (n=506) which accounts for the majority of local chert present in the studied samples, the majority of the debitage is composed of flakes and elongated blanks (`r 42+13.4+17.8+10.7`%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (~3%). The non-local cherts most present in the Solutrean of the Shelter area are T6 (n=86) and T8 (n=30). These show similar patterns to the local cherts, with high percentages of blanks (>50%). Cores and core preparation and maintenance are also present in small percentages (<10%), as well as retouched tools (<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study. It is important to notice, however, that alike previous results from the Solutrean assemblages of the Terrace area, a large portion of the studied sample was altered and did not allow for a chert type attribution (`r 201*100/914`%).
 
 ## Measurement and weight descriptive statistics
 

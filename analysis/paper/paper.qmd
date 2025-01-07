@@ -83,13 +83,6 @@ Despite these expectations, it is important to notice that, especially in occupa
 
 # Results
 
-Local raw materials are expected to present a) low use-lives, with knapping strategies characterised by manufacture, use and discard; b) a decreased reduction intensity and low tools to debitage ratio; c) larger cores and lower blank-to-core ratio; d) less extensive reduction and reworking of tools; e) higher tool typology diversity. This may be related to the abundance of local raw materials which leads to less intensive life-use extension, but also to the residential characteristics of the site and low mobility, which increases the reliance on local raw materials.
-
-
-
-
-<!-- Here's some example analysis code: -->
-
 ```{r}
 #| label: library
 
@@ -375,20 +368,15 @@ solutrean_dataset %>%
 
 ## Assemblage description
 
-For the Gravettian assemblage, local cherts show similar patterns, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies. For T2, cores represent 13.6% of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation  and maintenance product are present. Retouched tools seem to be especially relevant in T2 (~18%), being the most frequent class after blanks. The presence of burin spalls (8.1%) in T2 also hints at the production of burins. In comparison, T5 shows similar percentages of retouched tools and shatter (~12% and ~14%, respectively). T1 (chalcedony) shows similar patterns, although with higher percentages of shatter (34.3%).
+For the Gravettian assemblage, local cherts show similar patterns, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies. For T2, cores represent 13.6% of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation  and maintenance product are present. Retouched tools seem to be especially relevant in T2 (~18%), being the most frequent class after blanks. The presence of burin spalls (8.1%) in T2 also hints at the production of burins. In comparison, T5 shows similar percentages of retouched tools and shatter (~12% and ~14%, respectively). T1 (chalcedony) shows similar patterns, although with higher percentages of shatter (34.3%). In comparison, non-local chert types (especially T6 with n=169 and T7 with n=86) show similar percentages of blanks (~40-50%) but higher percentages of retouched tools (~30%). Cores, core fragments and core preparation and maintenance products are also present even if in small percentages (<4%), as well as shatter (~12%). In both types burin spalls are also present (7.1% for T6 and 4.6% for T7). The TL cherts show, as expected, blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4). The presence of core maintenance products in TL is possibly related to the limited knapping of TL01 (jasper).
 
-In comparison, non-local chert types (especially T6 with n=169 and T7 with n=86) show similar percentages of blanks (~40-50%) but higher percentages of retouched tools (~30%). Cores, core fragments and core preparation and maintenance products are also present even if in small percentages (<4%), as well as shatter (~12%). In both types burin spalls are also present (7.1% for T6 and 4.6% for T7). The TL cherts show, as expected, blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4). The presence of core maintenance products in TL is possibly related to the limited knapping of TL01 (jasper).
-
-TL - blank and retouched, plus a shatter. The latter is unexpected since TL should be expected to be a finished product. Means it is either a byproduct of knapping or not TL?
-T1 (chalcedony) is composed mostly of blanks and a retouched tool (Vale Comprido point). The absence of cores but presence of shatter may hint at the knapping of this raw material at the site, but the absence of formal cores perhaps due to the quality of nodules/lenses, which are characterised by fractures and natural flaws.
-The local types show high frequency of blanks (>50%, including blank fragments), followed by shatter (~11-27%), cores (~9-12%) and retouched tools (~5-15% ). A single burin spall was identified in T4. There is also the absence of core preparation and maintenance products across all local cherts.
-For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (`r 38.3+10`%, `r 40.4+12.7`% and `r 46.1+23.1`%, respectively). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site. Similarly, T7 shows the presence of cores and core fragments  (`r 4.2+4.2`%), shatter (17.0%) and a single core preparation and maintenance product. In comparison, T8, despite more limited in number (n=13), shows only one core, with the rest of the artefacts being blanks (as previously noted) or retouched tools (23.1% and n=3). Aside from the TL artefacts, all non-local cores show at least 1 core and frequently the presence of shatter.
+Regarding the Proto-Solutrean assemblage, the local types show high frequency of blanks (>50%, including blank fragments), followed by shatter (~11-27%), cores (~9-12%) and retouched tools (~5-15% ). A single burin spall was identified in T4. There is also the absence of core preparation and maintenance products across all local cherts. T1 (chalcedony) is composed mostly of blanks and a retouched tool (Vale Comprido point). The absence of cores but presence of shatter may hint at the knapping of this raw material at the site, but the absence of formal cores perhaps due to the quality of nodules/lenses, which are characterised by fractures. For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (`r 38.3+10`%, `r 40.4+12.7`% and `r 46.1+23.1`%, respectively). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site. Similarly, T7 shows the presence of cores and core fragments  (`r 4.2+4.2`%), shatter (17.0%) and a single core preparation and maintenance product. In comparison, T8, despite more limited in number (n=13), shows only one core, with the rest of the artefacts being blanks (as previously noted) or retouched tools (23.1% and n=3). Aside from the TL artefacts, all non-local cores show at least 1 core and frequently the presence of shatter. As expected, the TL artifacts include a blank and a retouched. However, a shatter was also identified.
 
 The Solutrean assemblages show similar patterns to those observed in previous assemblages. For local cherts, especially T2 (n=506) which accounts for the majority of local chert present in the studied samples, the majority of the debitage is composed of flakes and elongated blanks (`r 42+13.4+17.8+10.7`%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (~3%). The non-local cherts most present in the Solutrean of the Shelter area are T6 (n=86) and T8 (n=30). These show similar patterns to the local cherts, with high percentages of blanks (>50%). Cores and core preparation and maintenance are also present in small percentages (<10%), as well as retouched tools (<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study. It is important to notice, however, that alike previous results from the Solutrean assemblages of the Terrace area, a large portion of the studied sample was altered and did not allow for a chert type attribution (`r 201*100/914`%).
 
 ## Measurement and weight descriptive statistics
 
-In the Gravettian assemblages, blanks and retouched tools show little differences in the measurements of artefacts of local and non-local chert types. The only exception are T6 and T7 blanks, which show slightly lower weight means and lower maximum  length (~35 mm) than the other types. For cores, T2 shows smaller (lighter) values than T6 (means of 21.3 and 12.6, and maximum weight of 37.2 gr and 22.5 gr, respectively), even if they seem to vary in morphology, with little patterns regarding thickness, width and length.
+In the Gravettian assemblages, blanks and retouched tools show little differences in the measurements of artefacts of local and non-local chert types. The only exception are T6 and T7 blanks, which show slightly lower weight means and lower maximum length (~35 mm) than the other types. For cores, T2 shows bigger (heavier) values than T6 (means of 21.3 and 12.6, and maximum weight of 37.2 gr and 22.5 gr, respectively), even if they seem to vary in morphology, with little patterns regarding thickness, width and length.
 
 In the Proto-Solutrean assemblage, blanks show lower values for length and weight in non-local cherts (T6-T8), varying between a mean of ~19-20 mm and maximum of <30 mm for length, and mean of <3 gr and maximum of <7 gr for weight. In retouched tools, weight also shows smaller means for non-local cherts (~3-2 gr), although with higher standard deviation (~1.6). Regarding cores, the sample size for non-local cherts is small and only T7 statistics could be obtained. Despite this, when compared to local cherts (T2-T5), T7 cores show smaller mean and maximum values (7.3 gr and 8 gr, respectively).
 
@@ -496,6 +484,44 @@ grav_stats_retouch <- grav_stats %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+
+grav_stats %>%
+  filter(CLASS %in% c("Blank", "Core", "RetouchedPiece")) %>% 
+  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core", "RetouchedPiece"))) %>%
+  ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
+  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
+  facet_wrap(~CLASS) +
+  stat_summary(fun.y=mean, geom="point", shape=23) +
+  labs(y="Weight (gr)") +
+  coord_cartesian(ylim =  c(0, 60)) +
+  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
+                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+
+grav_stats %>%
+  filter(CLASS %in% c("Blank", "Core", "RetouchedPiece")) %>% 
+  filter(LENGTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core", "RetouchedPiece"))) %>%
+  ggplot(aes(RMTYPE, LENGTH, fill = RMTYPE)) +
+  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
+  facet_wrap(~CLASS) +
+  stat_summary(fun.y=mean, geom="point", shape=23) +
+  labs(y="Length (mm)") +
+  #coord_cartesian(ylim =  c(0, 60)) +
+  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
+                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(), axis.title.x = element_blank())
 
 ```
 
@@ -713,11 +739,23 @@ grav_retouched_tab <- grav_retouch %>%
 
 
 
-
-
-Here is an example of inline code `r x` in the middle of a sentence.
-
 # Discussion
+
+Hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization.
+
+To test these hypotheses, the following parameters were evaluated for each assemblage and compared between chert types: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios ; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. The results may be summarised as follows:
+
+Retouched tools are present in higher percentages in the Gravettian assemblages. Within the assemblage, retouched tools (P1) are present in higher frequencies in the non-local cherts, as well as in core preparation and maintenance products (P2). Debitage sizes (P3) show no differences between local and non-local cherts. Tools-to-debitage ratios (P4) are significantly higher in non-local cherts. Core sizes (P5) are slightly smaller in T6, a non-local chert, and the blank-to-core ratios (P6) are higher in non-local cherts. Alike blanks, retouched sizes (P7) show no relevant differences between local and non-local cherts; however, tool diversity (P8) is higher in non-local cherts, although with high frequency of less specialised tools such as notches and retouched tools, alongside hunting implements such as backed bladelets (P9). The high frequency of burins seen in this assemblage may be related to their use as cores, representing a knapping strategy more than the presence of retouch.
+
+The Proto-Solutrean assemblages show a smaller presence of retouched tools than the Gravettian, and within the assemblage, retouched tools (P1) are slightly more frequent in non-local cherts. Core preparation and maintenance products (P2) are only present in non-local cherts, albeit in very small numbers (n=2). Debitage sizes (P3), core sizes (P5), and retouched tool sizes (P7) are slightly smaller in non-local cherts. Regarding the ratios, tool-to-debitage ratios (P4) are higher in non-local cherts, albeit smaller than those seen in the Gravettian assemblage, and blank-to-core ratios (P6) are also higher in non-local cherts. Little differences were observed in tool diversity (P8) and specialisation (P9) between local and non-local cherts.
+
+Finally, the Solutrean shows no relevant differences in the frequencies of retouched tools (P1) and core preparation and maintenance products (P2) between local and non-local cherts. In general, the retouch frequency is lower than that observed in the previous assemblages. Debitage (P3), core (P5), and retouched tool (P7) sizes show no differences between local and non-local cherts. Similarly to the Proto-Solutrean, tools-to-debitage ratios (P4) and blank-to-core ratios (P6) are slightly higher in non-local cherts. Both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
+
+How the results fit or do not fit within the hypothesis, and possible reasons why.
+
+Focus on the high presence of retouch and burins during the Gravettian.
+
+Fitting the technological data with the suggested interpretations from article 2.
 
 # Conclusion
 

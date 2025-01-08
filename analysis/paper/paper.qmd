@@ -694,6 +694,7 @@ gravettian_stats_retouch <- gravettian_stats %>%
 
 ```{r}
 #| label: fig-solutrean-boxplots
+#| fig-cap: Boxplots Gravettian.
 
 ggpubr::ggarrange(solutrean_stats_width, solutrean_stats_length, solutrean_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
 
@@ -701,6 +702,7 @@ ggpubr::ggarrange(solutrean_stats_width, solutrean_stats_length, solutrean_stats
 
 ```{r}
 #| label:  fig-proto-boxplots
+#| fig-cap: Boxplots Proto-Solutrean
 
 ggpubr::ggarrange(proto_stats_width, proto_stats_length, proto_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
 
@@ -708,6 +710,7 @@ ggpubr::ggarrange(proto_stats_width, proto_stats_length, proto_stats_weight, lab
 
 ```{r}
 #| label: fig-gravettian-boxplots
+#| fig-cap: Boxplots Solutrean
 
 ggpubr::ggarrange(gravettian_stats_width, gravettian_stats_length, gravettian_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
 
@@ -1047,9 +1050,3 @@ This report was generated on `r Sys.time()` using the following computational en
 if ("devtools" %in% installed.packages()) devtools::session_info()
 ```
 
-The current Git commit details are:
-
-```{r}
-# what commit is this file at? 
-if ("git2r" %in% installed.packages() & git2r::in_repository(path = ".")) git2r::repository(here::here())  
-```

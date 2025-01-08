@@ -93,13 +93,13 @@ library(stringr)
 library(ggplot2)
 library(janitor)
 library(ggpubr)
+library(knitr)
 
 ```
 
 
 ```{r}
 #| label: get-data
-#| eval: false
 
 # Technological data
 gravettian_tech <- read.csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
@@ -340,8 +340,34 @@ gravettian_general <- phase_dataset %>%
 
 ```
 
+```{r}
+#| label: tbl-general-gravettian
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Gravettian assemblage (levels 6 and 7) of the Terrace area of Vale Boi.
+
+kable(gravettian_general)
+
+```
 
 ```{r}
+#| label: tbl-general-proto
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area of Vale Boi.
+
+kable(proto_general)
+
+```
+
+```{r}
+#| label: tbl-general-solutrean
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Solutrean assemblage (levels A to C) of the Shelter area of Vale Boi.
+
+kable(solutrean_general)
+
+```
+
+
+```{r}
+#| label: raw-material-graph
+#| include: false
 
 library(ggplot2)
 library(scales)
@@ -363,7 +389,6 @@ solutrean_dataset %>%
   scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
                               "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
                               "#996666", "#BDD2B6", "#798777", "#BDC7C9"))
-
 
 ```
 
@@ -726,7 +751,7 @@ proto5_ratiobc <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
-grav_ratiobc <- phase_dataset %>% 
+gravettian_ratiobc <- phase_dataset %>% 
   filter(Level %in% c(6, 7)) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
@@ -741,7 +766,7 @@ grav_ratiobc <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
-solu_ratiobc <- solutrean_dataset %>% 
+solutrean_ratiobc <- solutrean_dataset %>% 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
@@ -758,6 +783,30 @@ solu_ratiobc <- solutrean_dataset %>%
   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
+
+```
+
+```{r}
+#| label: tbl-bcratio-gravettian
+#| tbl-cap: Blank to core ratio by raw material type of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
+
+kable(gravettian_ratiobc)
+
+```
+
+```{r}
+#| label: tbl-bcratio-proto
+#| tbl-cap: Blank to core ratio by raw material type of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
+
+kable(proto_ratiobc)
+
+```
+
+```{r}
+#| label: tbl-bcratio-solutrean
+#| tbl-cap: Blank to core ratio by raw material type of the Solutrean assemblage (levels A to C) of the Shelter area.
+
+kable(solutrean_ratiobc)
 
 ```
 
@@ -801,7 +850,7 @@ proto5_ratiotd <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
 
-grav_ratiotd <- phase_dataset %>% 
+gravettian_ratiotd <- phase_dataset %>% 
   filter(Level %in% c(6, 7)) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
@@ -817,7 +866,7 @@ grav_ratiotd <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
 
-solu_ratiotd <- solutrean_dataset %>% 
+solutrean_ratiotd <- solutrean_dataset %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
@@ -840,6 +889,31 @@ solu_ratiotd <- solutrean_dataset %>%
 
 ```
 
+```{r}
+#| label: tbl-tdratio-gravettian
+#| tbl-cap: Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
+
+kable(gravettian_ratiotd)
+
+```
+
+```{r}
+#| label: tbl-tdratio-proto
+#| tbl-cap: Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
+
+kable(proto_ratiotd)
+
+```
+
+```{r}
+#| label: tbl-tdratio-solutrean
+#| tbl-cap: Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area.
+
+kable(solutrean_ratiotd)
+
+```
+
+
 ## Tool typology diversity
 
 Solutrean has a total of 43 retouched tools (complete and fragments), with a high variety of retouched tools (11), ranging from 5 (11.6%) to 4 (9.3%) per tool type. The typologies which are most frequently present in the studied sample are bifacial blanks and bifacial fragments, amounting to a total of 23.2% of products related to bifacial tool/point production. Two types of points were identified: shouldered points (2 complete and 1 fragment, amounting to a total of 6.9%) and tanged and 4 winged points (9.3%). Other frequent retouched typologies are end scrappers (9.3%), notches (11.6%), retouched blanks (~14%) and splintered pieces (11.6%). Regarding chert type, a substantial portion of retouched tools are of unidentified chert types (n=13), mostly due to alterations (fire and post depositional). Most retouched tools with identified chert are local (n=13, accounting to `r 13*100/43`%), followed by Type 6 cherts, previously suggested to be from Central Portugal (n=7, accounting to `r 7*100/43`%). Local types show a higher variability retouched typologies (9 types), although this may be related to the higher amount of tools. In comparison, Type 6 shows only 5 different typologies.
@@ -853,7 +927,7 @@ In the Gravettian assemblage, 170 retouched tools were identified, with 22.9% (n
 #| label: tool-diversity
 
 # Solutrean table
-solu_retouch <- solutrean_dataset %>%
+solutrean_retouch <- solutrean_dataset %>%
     mutate(CLASS = case_when(
     CLASS == "Retouched piece" ~ "RetouchedPiece",
     CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
@@ -863,7 +937,7 @@ solu_retouch <- solutrean_dataset %>%
   filter(RETOUCHEDPIECETYPOLOGY != "") %>% 
   group_by(RMTYPE)
 
-solu_retouch_tab <- solu_retouch %>% 
+solutrean_retouch_tab <- solutrean_retouch %>% 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>% 
   adorn_totals(c("row", "col")) %>% 
   adorn_percentages("col") %>% 
@@ -885,13 +959,13 @@ proto_retouch_tab <- proto_retouch %>%
   adorn_ns("front")
 
 # Gravettian table
-grav_retouch <- phase_dataset %>% 
+gravettian_retouch <- phase_dataset %>% 
   filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>%
   filter(Level %in% c(6, 7)) %>% 
   select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
   dplyr::group_by(RMTYPE)
 
-grav_retouched_tab <- grav_retouch %>% 
+gravettian_retouched_tab <- gravettian_retouch %>% 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>%
   adorn_totals(c("row", "col")) %>% 
   adorn_percentages("row") %>% 
@@ -901,6 +975,29 @@ grav_retouched_tab <- grav_retouch %>%
 
 ```
 
+```{r}
+#| label: tbl-retouch-gravettian
+#| tbl-cap: Number and percentage of retouched tools by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
+
+kable(gravettian_retouched_tab)
+  
+```
+
+```{r}
+#| label: tbl-retouch-proto
+#| tbl-cap: Number and percentage of retouched tools by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
+
+kable(proto_retouch_tab)
+
+```
+
+```{r}
+#| label: tbl-retouch-solutrean
+#| tbl-cap: Number and percentage of retouched tools by raw material of the Solutrean assemblage (level A to C) of the Shelter area.
+
+kable(solutrean_retouch_tab)
+
+```
 
 
 # Discussion

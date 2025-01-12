@@ -134,6 +134,9 @@ proto_tech_WIP <- proto_tech %>%
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
+proto_original_chert <- proto_tech %>% 
+  filter(RawMaterial %in% c("Chert", "Chalcedony"))
+
 gravettian_tech <- gravettian_tech %>% 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
     RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
@@ -213,6 +216,10 @@ solutrean_WIP <- solutrean_JC %>%
   dplyr::rename("YEAR" = "Date") %>% 
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
+# Dataset filtering for chert/chalcedony and levels (A-C), 3298 + 61 solutrean points, n=3359
+solutrean_original_chert <- solutrean_JC %>% 
+  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
+  filter(Raw.material %in% c("Chert", "Chalcedony"))
 
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
 solutrean_WIP <- solutrean_WIP %>% 
@@ -579,6 +586,12 @@ proto_stats_flakes <- proto_stats %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+# For elongated blanks (complete)
+proto_stats_elong <- proto_stats %>% 
+  filter(CLASS == "ElongatedProd") %>% 
+  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
+  group_by(RMTYPE, CLASS) %>% 
+  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 # For cores
 proto_stats_cores <- proto_stats %>% 
   filter(CLASS == "Core") %>%
@@ -668,7 +681,13 @@ gravettian_stats_weight <- gravettian_stats %>%
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
 gravettian_stats_flakes <- gravettian_stats %>% 
-  filter(CLASS == "Blank") %>%
+  filter(CLASS == "Flake") %>%
+  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
+  group_by(RMTYPE, CLASS) %>% 
+  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+# For elongated blanks (complete)
+gravettian_stats_elong <- gravettian_stats %>% 
+  filter(CLASS == "ElongatedProd") %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))

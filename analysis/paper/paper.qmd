@@ -749,7 +749,7 @@ proto_ratiobc <- phase_dataset %>%
   summarise(n=sum(n)) %>% 
   spread(CLASS, n, fill=0) %>% 
   mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+  filter(!sum <= 5) %>%
   mutate("Blank/Core" = Blank / Core)
 
 proto5_ratiobc <- phase_dataset %>% 
@@ -800,6 +800,45 @@ solutrean_ratiobc <- solutrean_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
+```
+
+```{r}
+#| label: fig-ratiobc
+#| fig-cap: Plotted ratios of blanks-to-core by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
+
+gravettian_ratiobc_b <-gravettian_ratiobc %>%
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+proto_ratiobc_b <- proto_ratiobc %>% 
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+solutrean_ratiobc_b <- solutrean_ratiobc %>% 
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+ratio_blankcore <- bind_rows(gravettian_ratiobc_b, proto_ratiobc_b,solutrean_ratiobc_b)
+
+
+# Scatterplot with local vs non-local RM Types
+ratio_blankcore |>
+  dplyr::mutate(Source = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |>
+  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |>
+  ggplot(aes(x=Assemblage, y=`Blank/Core`, colour = Source)) +
+  geom_point(size=3) +
+  coord_cartesian(clip = "off") +
+  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
 ```
 
 ```{r}
@@ -906,7 +945,7 @@ solutrean_ratiotd <- solutrean_dataset %>%
 
 ```{r}
 #| label: fig-ratiotd
-#| fig-cap: Plotted ratios of tools-to-debitage by chert types (x axis) and assemblage (colour). Distance to source groups (local and non-local) are marked by different shapes.
+#| fig-cap: Plotted ratios of tools-to-debitage by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
 
 gravettian_ratiotd_b <-gravettian_ratiotd %>% 
   dplyr::mutate("Assemblage" = "Gravettian") %>% 

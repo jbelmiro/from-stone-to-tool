@@ -926,8 +926,9 @@ ratio_tooldebitage %>%
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
                                         "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  ggplot(aes(x=RMTYPE, y=`Tool/Blank`, shape = Source, colour = Assemblage)) +
+  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
   geom_point(size=2)
+  #geom_text(aes(label = RMTYPE),nudge_x = 0.2, check_overlap = TRUE)
 
 ```
 

@@ -919,16 +919,33 @@ solutrean_ratiotd_b <- solutrean_ratiotd %>%
   select(Assemblage, RMTYPE, `Tool/Blank`)
 ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
 
-ratio_tooldebitage %>%
+# Scatterplot only with local vs non-local
+#ratio_tooldebitage |>
+#  dplyr::mutate(Source = case_when(
+#    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+#    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" | RMTYPE == "TYPE 10" | RMTYPE == "TYPE 11" | RMTYPE == "TL" ~ "Non-local")) |>
+#  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+#                                        "TYPE 5", "TYPE 6","TYPE 7", 
+#                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) |>
+#  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
+#  geom_point(size=2)
+
+# Scatterplot with local vs non-local RM Types
+ratio_tooldebitage |>
   dplyr::mutate(Source = case_when(
     RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
-    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" | RMTYPE == "TYPE 10" | RMTYPE == "TYPE 11" | RMTYPE == "TL" ~ "Non-local")) %>% 
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |>
+  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |>
   ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
-  geom_point(size=2)
-  #geom_text(aes(label = RMTYPE),nudge_x = 0.2, check_overlap = TRUE)
+  geom_point(size=3) +
+  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
 
 ```
 

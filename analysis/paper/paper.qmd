@@ -905,6 +905,33 @@ solutrean_ratiotd <- solutrean_dataset %>%
 ```
 
 ```{r}
+#| label: fig-ratiotd
+#| fig-cap: Plotted ratios of tools-to-debitage by chert types (x axis) and assemblage (colour). Distance to source groups (local and non-local) are marked by different shapes.
+
+gravettian_ratiotd_b <-gravettian_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+proto_ratiotd_b <- proto_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+solutrean_ratiotd_b <- solutrean_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
+
+ratio_tooldebitage %>%
+  dplyr::mutate(Source = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" | RMTYPE == "TYPE 10" | RMTYPE == "TYPE 11" | RMTYPE == "TL" ~ "Non-local")) %>% 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
+                                        "TYPE 5", "TYPE 6","TYPE 7", 
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
+  ggplot(aes(x=RMTYPE, y=`Tool/Blank`, shape = Source, colour = Assemblage)) +
+  geom_point(size=2)
+
+```
+
+```{r}
 #| label: tbl-tdratio-gravettian
 #| tbl-cap: Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
 

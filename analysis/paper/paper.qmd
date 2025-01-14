@@ -427,6 +427,34 @@ solutrean_stats <- solutrean_dataset %>%
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
     TRUE ~ CLASS))
 
+# Scatterplot for width and length
+solutrean_scatter <- solutrean_stats |>
+  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(MAXWIDTH !="0" & LENGTH != "0" & !RMTYPE %in% c("INDET","GB","TL")) |>
+  dplyr::mutate(RMTYPE = case_when(
+    RMTYPE == "TYPE 1" ~ "T1",
+    RMTYPE == "TYPE 2" ~ "T2",
+    RMTYPE == "TYPE 3" ~ "T3",
+    RMTYPE == "TYPE 4" ~ "T4",
+    RMTYPE == "TYPE 5" ~ "T5",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |>
+   mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2", "T3", "T4", "T5", "T6","T7", 
+                                        "T8", "T9", "T10", "T11"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  ggplot(aes(x = LENGTH, y = MAXWIDTH, colour = RMTYPE)) +
+  geom_point(alpha = 0.9, size = 3) +
+  facet_wrap(~CLASS) +
+  labs(x="Length (mm)", y="Max. Width (mm") +
+  scale_colour_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6", "#BDC7C9"))
+
 # Boxplot for individual measurements
 # Length
 solutrean_stats_length <- solutrean_stats %>%
@@ -459,13 +487,13 @@ solutrean_stats_weight <- solutrean_stats %>%
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
   stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x="Raw material types" ,y="Weight (gr)") +
   coord_cartesian(ylim =  c(0, 50)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  scale_fill_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6", "#BDC7C9")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 # Width
 solutrean_stats_width <- solutrean_stats %>%
   filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) %>% 
@@ -540,6 +568,35 @@ proto_stats_width <- proto_stats %>%
                               "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank(), axis.title.x = element_blank())
+
+# Scatterplots for width and length
+proto_scatter <- proto_stats |>
+  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(MAXWIDTH !="0" & LENGTH != "0" & !RMTYPE %in% c("INDET","GB","TL")) |>
+  dplyr::mutate(RMTYPE = case_when(
+    RMTYPE == "TYPE 1" ~ "T1",
+    RMTYPE == "TYPE 2" ~ "T2",
+    RMTYPE == "TYPE 3" ~ "T3",
+    RMTYPE == "TYPE 4" ~ "T4",
+    RMTYPE == "TYPE 5" ~ "T5",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    TRUE ~ RMTYPE)) |>
+   mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2", "T3", "T4", "T5", "T6","T7", 
+                                        "T8", "T9", "T10"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  ggplot(aes(x = LENGTH, y = MAXWIDTH, colour = RMTYPE)) +
+  geom_point(alpha = 0.9, size = 3) +
+  facet_wrap(~CLASS) +
+  labs(x="Length (mm)", y="Max. Width (mm") +
+  scale_colour_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6"))
+
+
 # Length
 proto_stats_length <- proto_stats %>%
   filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
@@ -554,9 +611,9 @@ proto_stats_length <- proto_stats %>%
   stat_summary(fun.y=mean, geom="point", shape=23) +
   labs(y="Length (mm)") +
   coord_cartesian(ylim =  c(0, 60)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  scale_fill_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6")) +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank(), axis.title.x = element_blank())
 # Weight
@@ -565,19 +622,19 @@ proto_stats_weight <- proto_stats %>%
   filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10"))) %>%
   mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
   stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x="Raw material types", y="Weight (gr)") +
   coord_cartesian(ylim =  c(0, 50)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  scale_fill_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
@@ -618,6 +675,34 @@ gravettian_stats <- phase_dataset %>%
     CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
     CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
     TRUE ~ CLASS))
+
+# Scatterplots width and length
+# Scatterplots for width and length
+gravettian_scatter <- gravettian_stats |>
+  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(MAXWIDTH !="0" & LENGTH != "0" & !RMTYPE %in% c("INDET","GB","TL")) |>
+  dplyr::mutate(RMTYPE = case_when(
+    RMTYPE == "TYPE 1" ~ "T1",
+    RMTYPE == "TYPE 2" ~ "T2",
+    RMTYPE == "TYPE 3" ~ "T3",
+    RMTYPE == "TYPE 4" ~ "T4",
+    RMTYPE == "TYPE 5" ~ "T5",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    TRUE ~ RMTYPE)) |>
+   mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2", "T3", "T4", "T5", "T6","T7", 
+                                        "T8", "T9", "T10"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  ggplot(aes(x = LENGTH, y = MAXWIDTH, colour = RMTYPE)) +
+  geom_point(alpha = 0.9, size = 3) +
+  facet_wrap(~CLASS) +
+  labs(x="Length (mm)", y="Max. Width (mm") +
+  scale_colour_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6"))
 
 # Boxplots
 # Width
@@ -670,13 +755,13 @@ gravettian_stats_weight <- gravettian_stats %>%
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
   stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x= "Raw material types", y="Weight (gr)") +
   coord_cartesian(ylim =  c(0, 60)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
+  scale_fill_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
+                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
+                            "#9FB6CD", "#BDD2B6")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
@@ -710,7 +795,7 @@ gravettian_stats_retouch <- gravettian_stats %>%
 #| label: fig-solutrean-boxplots
 #| fig-cap: Boxplots Gravettian.
 
-ggpubr::ggarrange(solutrean_stats_width, solutrean_stats_length, solutrean_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -718,7 +803,7 @@ ggpubr::ggarrange(solutrean_stats_width, solutrean_stats_length, solutrean_stats
 #| label:  fig-proto-boxplots
 #| fig-cap: Boxplots Proto-Solutrean
 
-ggpubr::ggarrange(proto_stats_width, proto_stats_length, proto_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -726,7 +811,7 @@ ggpubr::ggarrange(proto_stats_width, proto_stats_length, proto_stats_weight, lab
 #| label: fig-gravettian-boxplots
 #| fig-cap: Boxplots Solutrean
 
-ggpubr::ggarrange(gravettian_stats_width, gravettian_stats_length, gravettian_stats_weight, labels = c("a", "b", "c"), heights = c(5, 5, 5), ncol = 1, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 

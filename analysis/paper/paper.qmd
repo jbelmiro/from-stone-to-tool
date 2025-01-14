@@ -456,25 +456,6 @@ solutrean_scatter <- solutrean_stats |>
                             "#9FB6CD", "#BDD2B6", "#BDC7C9"))
 
 # Boxplot for individual measurements
-# Length
-solutrean_stats_length <- solutrean_stats %>%
-  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(LENGTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, LENGTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Length (mm)") +
-  #coord_cartesian(ylim =  c(0, 60)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
 # Weight
 solutrean_stats_weight <- solutrean_stats %>%
   filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) %>% 
@@ -494,45 +475,6 @@ solutrean_stats_weight <- solutrean_stats %>%
                             "#9FB6CD", "#BDD2B6", "#BDC7C9")) +
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
-# Width
-solutrean_stats_width <- solutrean_stats %>%
-  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(MAXWIDTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, MAXWIDTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Width (mm)") +
-  #coord_cartesian(ylim =  c(0, 60)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
-
-# Tables with individual class. For supplementary information if necessary
-# For flakes (complete)
-solutrean_stats_blanks <- solutrean_stats %>% 
-  filter(CLASS %in% c("Flake", "ElongatedProd")) %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For cores
-solutrean_stats_cores <- solutrean_stats %>% 
-  filter(CLASS == "Core") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For retouched
-solutrean_stats_retouched <- solutrean_stats %>% 
-  filter(CLASS == "RetouchedPiece") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 
 # Proto-Solutrean statistics
 # DS prep
@@ -547,27 +489,6 @@ proto_stats <- phase_dataset %>%
     CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
     CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
     TRUE ~ CLASS))
-
-# Boxplots
-# Width
-proto_stats_width <- proto_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(MAXWIDTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, MAXWIDTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Width (mm)") +
-  coord_cartesian(ylim =  c(0, 50)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
 
 # Scatterplots for width and length
 proto_scatter <- proto_stats |>
@@ -596,27 +517,7 @@ proto_scatter <- proto_stats |>
                               "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
                             "#9FB6CD", "#BDD2B6"))
 
-
-# Length
-proto_stats_length <- proto_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(LENGTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, LENGTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Length (mm)") +
-  coord_cartesian(ylim =  c(0, 60)) +
-  scale_fill_manual(values = c("#8B7B8B", "#FFE1FF", "#EED2EE", "#D8BFD8",
-                              "#CDB5CD", "#2B4F60" , "#4A708B", "#798777",
-                            "#9FB6CD", "#BDD2B6")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
-# Weight
+# Boxplots weight
 proto_stats_weight <- proto_stats %>%
   filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
   filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
@@ -636,31 +537,6 @@ proto_stats_weight <- proto_stats %>%
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
 
-# Tables with individual class. For supplementary information if necessary
-# For flakes (complete)
-proto_stats_flakes <- proto_stats %>% 
-  filter(CLASS == "Flake") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For elongated blanks (complete)
-proto_stats_elong <- proto_stats %>% 
-  filter(CLASS == "ElongatedProd") %>% 
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For cores
-proto_stats_cores <- proto_stats %>% 
-  filter(CLASS == "Core") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For retouched
-proto_stats_retouched <- proto_stats %>% 
-  filter(CLASS == "RetouchedPiece") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 
 # Gravettian statistics
 # DS prep
@@ -676,7 +552,6 @@ gravettian_stats <- phase_dataset %>%
     CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
     TRUE ~ CLASS))
 
-# Scatterplots width and length
 # Scatterplots for width and length
 gravettian_scatter <- gravettian_stats |>
   filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
@@ -705,44 +580,6 @@ gravettian_scatter <- gravettian_stats |>
                             "#9FB6CD", "#BDD2B6"))
 
 # Boxplots
-# Width
-gravettian_stats_width <- gravettian_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(MAXWIDTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, MAXWIDTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Width (mm)") +
-  coord_cartesian(ylim =  c(0, 50)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
-# Length
-gravettian_stats_length <- gravettian_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(LENGTH !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake","ElongatedProd", "Core", "RetouchedPiece"))) %>%
-  ggplot(aes(RMTYPE, LENGTH, fill = RMTYPE)) +
-  geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS) +
-  stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Length (mm)") +
-  coord_cartesian(ylim =  c(10, 60)) +
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9")) +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
 # Weight
 gravettian_stats_weight <- gravettian_stats %>%
   filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
@@ -763,39 +600,13 @@ gravettian_stats_weight <- gravettian_stats %>%
   theme(axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
 
-# Tables with individual class. For supplementary information if necessary
-# For flakes (complete)
-gravettian_stats_flakes <- gravettian_stats %>% 
-  filter(CLASS == "Flake") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For elongated blanks (complete)
-gravettian_stats_elong <- gravettian_stats %>% 
-  filter(CLASS == "ElongatedProd") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For cores
-gravettian_stats_cores <- gravettian_stats %>% 
-  filter(CLASS == "Core") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-# For retouched
-gravettian_stats_retouch <- gravettian_stats %>% 
-  filter(CLASS == "RetouchedPiece") %>%
-  select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
-  group_by(RMTYPE, CLASS) %>% 
-  summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-
 ```
 
 ```{r}
 #| label: fig-solutrean-boxplots
 #| fig-cap: Boxplots Gravettian.
 
-ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
+solutrean_graphs <- ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a1", "a2"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -803,7 +614,7 @@ ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"
 #| label:  fig-proto-boxplots
 #| fig-cap: Boxplots Proto-Solutrean
 
-ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
+proto_graphs <- ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -811,7 +622,7 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol 
 #| label: fig-gravettian-boxplots
 #| fig-cap: Boxplots Solutrean
 
-ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
+gravettian_graphs <- ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("c1", "c2"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -822,6 +633,26 @@ The analysis shows different patterns in the blank to core ratios not only betwe
 ```{r}
 #| label: ratio-blankcore
 
+# Solutrean ratio
+solutrean_ratiobc <- solutrean_dataset %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    TRUE ~ CLASS)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+# Proto-Solutrean ratio
 proto_ratiobc <- phase_dataset %>% 
   filter(Level %in% c("4E", "4E/5")) %>% 
   filter(RMTYPE != "INDET") %>% 
@@ -852,30 +683,13 @@ proto5_ratiobc <- phase_dataset %>%
   filter(!sum <= 5) %>% 
   mutate("Blank/Core" = Blank / Core)
 
+# Gravettian ratio
 gravettian_ratiobc <- phase_dataset %>% 
   filter(Level %in% c(6, 7)) %>% 
   filter(RMTYPE != "INDET") %>% 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
     TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Blank/Core" = Blank / Core)
-
-solutrean_ratiobc <- solutrean_dataset %>% 
-  mutate(CLASS = case_when(
-    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
-    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    TRUE ~ CLASS)) %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(RMTYPE != "INDET") %>% 
   filter(CLASS %in% c("Blank", "Core")) %>% 
   count(RMTYPE, CLASS, sort = TRUE) %>% 
   group_by(RMTYPE, CLASS) %>%
@@ -905,7 +719,6 @@ solutrean_ratiobc_b <- solutrean_ratiobc %>%
   select(Assemblage, RMTYPE, `Blank/Core`)
 ratio_blankcore <- bind_rows(gravettian_ratiobc_b, proto_ratiobc_b,solutrean_ratiobc_b)
 
-
 # Scatterplot with local vs non-local RM Types
 ratio_blankcore |>
   dplyr::mutate(Source = case_when(
@@ -924,29 +737,6 @@ ratio_blankcore |>
   coord_cartesian(clip = "off") +
   scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
-```
-
-```{r}
-#| label: tbl-bcratio-gravettian
-#| tbl-cap: Blank to core ratio by raw material type of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
-
-kable(gravettian_ratiobc)
-
-```
-
-```{r}
-#| label: tbl-bcratio-proto
-#| tbl-cap: Blank to core ratio by raw material type of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
-
-kable(proto_ratiobc)
-
-```
-
-```{r}
-#| label: tbl-bcratio-solutrean
-#| tbl-cap: Blank to core ratio by raw material type of the Solutrean assemblage (levels A to C) of the Shelter area.
-
-kable(solutrean_ratiobc)
 
 ```
 
@@ -1043,17 +833,6 @@ solutrean_ratiotd_b <- solutrean_ratiotd %>%
   select(Assemblage, RMTYPE, `Tool/Blank`)
 ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
 
-# Scatterplot only with local vs non-local
-#ratio_tooldebitage |>
-#  dplyr::mutate(Source = case_when(
-#    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
-#    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" | RMTYPE == "TYPE 10" | RMTYPE == "TYPE 11" | RMTYPE == "TL" ~ "Non-local")) |>
-#  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-#                                        "TYPE 5", "TYPE 6","TYPE 7", 
-#                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) |>
-#  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
-#  geom_point(size=2)
-
 # Scatterplot with local vs non-local RM Types
 ratio_tooldebitage |>
   dplyr::mutate(Source = case_when(
@@ -1070,30 +849,6 @@ ratio_tooldebitage |>
   geom_point(size=3) +
   scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
-
-```
-
-```{r}
-#| label: tbl-tdratio-gravettian
-#| tbl-cap: Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
-
-kable(gravettian_ratiotd)
-
-```
-
-```{r}
-#| label: tbl-tdratio-proto
-#| tbl-cap: Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
-
-kable(proto_ratiotd)
-
-```
-
-```{r}
-#| label: tbl-tdratio-solutrean
-#| tbl-cap: Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area.
-
-kable(solutrean_ratiotd)
 
 ```
 
@@ -1139,31 +894,15 @@ solutrean_retouch_tab <- solutrean_retouch |>
   adorn_pct_formatting(2) |> 
   adorn_ns("front")
 ## Cleaning final table
-solutrean_retouch_tab <- solutrean_retouch_tab |>
-    dplyr::mutate(T1 = case_when( # Replace 0% values with -
-    T1 == "0   (0.00%)" ~ "-",
-    TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(
-    T2 == "0   (0.00%)" ~ "-",
-    TRUE ~ T2)) |>
-  dplyr::mutate(T5 = case_when(
-    T5 == "0   (0.00%)" ~ "-",
-    TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(
-    T6 == "0   (0.00%)" ~ "-",
-    TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(
-    T7 == "0   (0.00%)" ~ "-",
-    TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(
-    T8 == "0   (0.00%)" ~ "-",
-    TRUE ~ T8)) |>
-  dplyr::mutate(T11 = case_when(
-    T11 == "0   (0.00%)" ~ "-",
-    TRUE ~ T11)) |>
-  dplyr::mutate(INDET = case_when(
-    INDET == "0   (0.00%)" ~ "-",
-    TRUE ~ INDET)) |>
+solutrean_retouch_tab <- solutrean_retouch_tab |> # Replace 0% values with -
+  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
+  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
+  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
+  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
+  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
+  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
+  dplyr::mutate(T11 = case_when(T11 == "0   (0.00%)" ~ "-", TRUE ~ T11)) |>
+  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET)) |>
   select(RETOUCHEDPIECETYPOLOGY, T1, T2, T5, T6, T7, T8, T11, INDET, Total) # Ordering values
 
 # Proto-solutrean table
@@ -1193,40 +932,18 @@ proto_retouch_tab <- proto_retouch %>%
   adorn_pct_formatting(2) %>% 
   adorn_ns("front")
 ## Cleaning final table
-proto_retouch_tab <- proto_retouch_tab |>
-  dplyr::mutate(T1 = case_when( # Replace 0% values with -
-    T1 == "0   (0.00%)" ~ "-",
-    TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(
-    T2 == "0   (0.00%)" ~ "-",
-    TRUE ~ T2)) |>
-  dplyr::mutate(T3 = case_when(
-    T3 == "0   (0.00%)" ~ "-",
-    TRUE ~ T3)) |>
-  dplyr::mutate(T4 = case_when(
-    T4 == "0   (0.00%)" ~ "-",
-    TRUE ~ T4)) |>
-  dplyr::mutate(T5 = case_when(
-    T5 == "0   (0.00%)" ~ "-",
-    TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(
-    T6 == "0   (0.00%)" ~ "-",
-    TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(
-    T7 == "0   (0.00%)" ~ "-",
-    TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(
-    T8 == "0   (0.00%)" ~ "-",
-    TRUE ~ T8)) |>
-  dplyr::mutate(T9 = case_when(
-    T9 == "0   (0.00%)" ~ "-",
-    TRUE ~ T9)) |>
-  dplyr::mutate(TL = case_when(
-    TL == "0   (0.00%)" ~ "-",
-    TRUE ~ TL)) |>
-  dplyr::mutate(INDET = case_when(
-    INDET == "0   (0.00%)" ~ "-",
-    TRUE ~ INDET))
+proto_retouch_tab <- proto_retouch_tab |> # Replace 0% values with -
+  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
+  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
+  dplyr::mutate(T3 = case_when(T3 == "0   (0.00%)" ~ "-", TRUE ~ T3)) |>
+  dplyr::mutate(T4 = case_when(T4 == "0   (0.00%)" ~ "-", TRUE ~ T4)) |>
+  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
+  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
+  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
+  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
+  dplyr::mutate(T9 = case_when(T9 == "0   (0.00%)" ~ "-", TRUE ~ T9)) |>
+  dplyr::mutate(TL = case_when(TL == "0   (0.00%)" ~ "-", TRUE ~ TL)) |>
+  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET))
 
 # Gravettian table
 ## Table preparation
@@ -1255,43 +972,19 @@ gravettian_retouched_tab <- gravettian_retouch %>%
   adorn_pct_formatting(2) %>% 
   adorn_ns("front")
 ## Cleaning final table
-gravettian_retouched_tab <- gravettian_retouched_tab |>
-  dplyr::mutate(T1 = case_when( # Replace 0% values with -
-    T1 == "0   (0.00%)" ~ "-",
-    TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(
-    T2 == "0   (0.00%)" ~ "-",
-    TRUE ~ T2)) |>
-  dplyr::mutate(T3 = case_when(
-    T3 == "0   (0.00%)" ~ "-",
-    TRUE ~ T3)) |>
-  dplyr::mutate(T4 = case_when(
-    T4 == "0   (0.00%)" ~ "-",
-    TRUE ~ T4)) |>
-  dplyr::mutate(T5 = case_when(
-    T5 == "0   (0.00%)" ~ "-",
-    TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(
-    T6 == "0   (0.00%)" ~ "-",
-    TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(
-    T7 == "0   (0.00%)" ~ "-",
-    TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(
-    T8 == "0   (0.00%)" ~ "-",
-    TRUE ~ T8)) |>
-  dplyr::mutate(T9 = case_when(
-    T9 == "0   (0.00%)" ~ "-",
-    TRUE ~ T9)) |>
-  dplyr::mutate(T10 = case_when(
-    T10 == "0   (0.00%)" ~ "-",
-    TRUE ~ T10)) |>
-  dplyr::mutate(TL = case_when(
-    TL == "0   (0.00%)" ~ "-",
-    TRUE ~ TL)) |>
-  dplyr::mutate(INDET = case_when(
-    INDET == "0   (0.00%)" ~ "-",
-    TRUE ~ INDET)) |>
+gravettian_retouched_tab <- gravettian_retouched_tab |> # Replace 0% values with -
+  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
+  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
+  dplyr::mutate(T3 = case_when(T3 == "0   (0.00%)" ~ "-", TRUE ~ T3)) |>
+  dplyr::mutate(T4 = case_when(T4 == "0   (0.00%)" ~ "-", TRUE ~ T4)) |>
+  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
+  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
+  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
+  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
+  dplyr::mutate(T9 = case_when(T9 == "0   (0.00%)" ~ "-", TRUE ~ T9)) |>
+  dplyr::mutate(T10 = case_when(T10 == "0   (0.00%)" ~ "-", TRUE ~ T10)) |>
+  dplyr::mutate(TL = case_when(TL == "0   (0.00%)" ~ "-", TRUE ~ TL)) |>
+  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET)) |>
   select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TL, INDET, Total) # Ordering values
 
 ```

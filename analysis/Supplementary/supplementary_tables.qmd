@@ -42,9 +42,21 @@ filters:
   - ../templates/scholarly-metadata.lua
   - ../templates/author-info-blocks.lua
   - ../templates/pagebreak.lua
-bibliography: references.bib
+bibliography: ../paper/references.bib
 csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
 ---
+
+```{r}
+#| label: library
+
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(knitr)
+
+```
+
 
 ```{r}
 #| label: get-data
@@ -107,17 +119,17 @@ terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech)
 
 terrace_RM_WIP <- terrace_RM %>%
   mutate(RMTYPE = case_when(
-    RMTYPE == "Type 2" ~ "TYPE 2",
-    RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
-    RMTYPE == "TYPE 15" ~ "TYPE 3",
-    RMTYPE == "TYPE 7" ~ "TYPE 4",
-    RMTYPE == "TYPE 12" ~ "TYPE 5",
-    RMTYPE == "TYPE 11" ~ "TYPE 6",
-    RMTYPE == "TYPE 13" ~ "TYPE 7",
-    RMTYPE == "TYPE 11F" ~ "TYPE 8",
-    RMTYPE == "TYPE 13B" ~ "TYPE 9",
-    RMTYPE == "Oolitic" ~ "TYPE 10",
-    RMTYPE == "TYPE GB" ~ "TYPE 11",
+    RMTYPE == "Type 2" ~ "T2",
+    RMTYPE == "Chalcedony" ~ "T1", # Altering first group names to final group names. Subtypes are maintained as before.
+    RMTYPE == "TYPE 15" ~ "T3",
+    RMTYPE == "TYPE 7" ~ "T4",
+    RMTYPE == "TYPE 12" ~ "T5",
+    RMTYPE == "TYPE 11" ~ "T6",
+    RMTYPE == "TYPE 13" ~ "T7",
+    RMTYPE == "TYPE 11F" ~ "T8",
+    RMTYPE == "TYPE 13B" ~ "T9",
+    RMTYPE == "Oolitic" ~ "T10",
+    RMTYPE == "TYPE GB" ~ "T11",
     .default = RMTYPE)) %>% 
   select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%
   distinct(ID, .keep_all = TRUE)
@@ -144,12 +156,12 @@ terrace_dataset <- terrace_dataset %>%
   drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 1647
   
 # Mutate level 5 to add phases: top of 5 (4E/5) and bottom of 5 (5), following Belmiro et al. (2020).
-phase_dataset <- terrace_dataset %>% 
+phase_dataset <- terrace_dataset |>
   mutate(Level = case_when(
     Level == 5 & Z > 24.1 ~ "4E/5",
     Level == 5 & Z < 24.1 ~ "5",
     Level == "7C" | Level == 8 ~ "7", # Collapsing samples from Level 7C and Level 8 into 7 to homogenise dataset
-    TRUE ~ Level)) %>% # Adding technocomplex name based on the levels
+    TRUE ~ Level)) |> # Adding technocomplex name based on the levels
   mutate(Technocomplex = case_when(
     Level == "4E" | Level == "4E/5" | Level == 5 ~ "Proto-Solutrean",
     Level == 6 | Level == 7 ~ "Gravettian"))
@@ -228,17 +240,17 @@ solutrean_tech <- solutrean_tech %>% # Originally 2228
 shelter_RM_WIP <- shelter_RM %>%
   mutate_at("ID", str_replace, "VB", "") %>% # Remove "VB" from ID
   mutate(RMTYPE = case_when(
-    RMTYPE == "Type 2" ~ "TYPE 2",
-    RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
-    RMTYPE == "TYPE 15" ~ "TYPE 3",
-    RMTYPE == "TYPE 7" ~ "TYPE 4",
-    RMTYPE == "TYPE 12" ~ "TYPE 5",
-    RMTYPE == "TYPE 11" ~ "TYPE 6",
-    RMTYPE == "TYPE 13" ~ "TYPE 7",
-    RMTYPE == "TYPE 11F" ~ "TYPE 8",
-    RMTYPE == "TYPE 13B" ~ "TYPE 9",
-    RMTYPE == "Oolitic" ~ "TYPE 10",
-    RMTYPE == "TYPE GB" ~ "TYPE 11",
+    RMTYPE == "Type 2" ~ "T2",
+    RMTYPE == "Chalcedony" ~ "T1", # Altering first group names to final group names. Subtypes are maintained as before.
+    RMTYPE == "TYPE 15" ~ "T3",
+    RMTYPE == "TYPE 7" ~ "T4",
+    RMTYPE == "TYPE 12" ~ "T5",
+    RMTYPE == "TYPE 11" ~ "T6",
+    RMTYPE == "TYPE 13" ~ "T7",
+    RMTYPE == "TYPE 11F" ~ "T8",
+    RMTYPE == "TYPE 13B" ~ "T9",
+    RMTYPE == "Oolitic" ~ "T10",
+    RMTYPE == "TYPE GB" ~ "T11",
     RMTYPE == "ND_A" ~ "INDET",
     .default = RMTYPE)) %>%
   select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%  # Select variables
@@ -311,26 +323,17 @@ gravettian_ratiobc <- phase_dataset %>%
 ```
 
 ```{r}
-#| label: tbl-bcratio-solutrean
-#| tbl-cap: Blank to core ratio by raw material type of the Solutrean assemblage (levels A to C) of the Shelter area.
+#| label: tbl-bcratio
+#| tbl-cap: Blank to core ratio by raw material of the Solutrean (a), Proto-Solutrean (b) and Gravettian (c) assemblages.
+#| tbl-subcap: 
+#|  - "Blank to core ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
+#|  - "Blank to core ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
+#|  - "Blank to core ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area."
+#| layout-nrow: 4
 
-kable(solutrean_ratiobc)
-
-```
-
-```{r}
-#| label: tbl-bcratio-proto
-#| tbl-cap: Blank to core ratio by raw material type of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
-
-kable(proto_ratiobc)
-
-```
-
-```{r}
-#| label: tbl-bcratio-gravettian
-#| tbl-cap: Blank to core ratio by raw material type of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
-
-kable(gravettian_ratiobc)
+kable(head(solutrean_ratiobc))
+kable(head(proto_ratiobc))
+kable(head(gravettian_ratiobc))
 
 ```
 
@@ -415,25 +418,16 @@ gravettian_ratiotd <- phase_dataset %>%
 
 ```{r}
 #| label: tbl-tdratio-solutrean
-#| tbl-cap: Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area.
+#| tbl-cap: Tools to debitage ratio by raw material of the Solutrean (a), Proto-Solutrean (b) and Gravettian (c) assemblages.
+#| tbl-subcap: 
+#|  - "Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
+#|  - "Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
+#|  - "Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area."
+#| layout-nrow: 4
 
-kable(solutrean_ratiotd)
-
-```
-
-```{r}
-#| label: tbl-tdratio-proto
-#| tbl-cap: Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
-
-kable(proto_ratiotd)
-
-```
-
-```{r}
-#| label: tbl-tdratio-gravettian
-#| tbl-cap: Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
-
-kable(gravettian_ratiotd)
+kable(head(solutrean_ratiotd))
+kable(head(proto_ratiotd))
+kable(head(gravettian_ratiotd))
 
 ```
 
@@ -476,7 +470,7 @@ solutrean_stats_cores <- solutrean_stats %>%
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 # For retouched
-solutrean_stats_retouched <- solutrean_stats %>% 
+solutrean_stats_retouch<- solutrean_stats %>% 
   filter(CLASS == "RetouchedPiece") %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
@@ -516,7 +510,7 @@ proto_stats_cores <- proto_stats %>%
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
 # For retouched
-proto_stats_retouched <- proto_stats %>% 
+proto_stats_retouch <- proto_stats %>% 
   filter(CLASS == "RetouchedPiece") %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
@@ -561,5 +555,56 @@ gravettian_stats_retouch <- gravettian_stats %>%
   select(RMTYPE, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT) %>% 
   group_by(RMTYPE, CLASS) %>% 
   summarise(across(c(THICKNESS, MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+
+```
+
+```{r}
+#| label: tbl-solutrean
+#| tbl-cap: "Stats for Solutrean occupation."
+#| tbl-subcap: 
+#|  - "Stats for flakes"
+#|  - "Stats for elongated blanks"
+#|  - "Stats for cores"
+#|  - "Stats for retouched"
+#| layout-nrow: 4
+
+kable(head(solutrean_stats_flakes))
+kable(head(solutrean_stats_elong))
+kable(head(solutrean_stats_cores))
+kable(head(solutrean_stats_retouch))
+
+```
+
+```{r}
+#| label: tbl-proto
+#| tbl-cap: "Stats for Proto-Solutrean occupation."
+#| tbl-subcap: 
+#|  - "Stats for flakes"
+#|  - "Stats for elongated blanks"
+#|  - "Stats for cores"
+#|  - "Stats for retouched"
+#| layout-nrow: 4
+
+kable(head(proto_stats_flakes))
+kable(head(proto_stats_elong))
+kable(head(proto_stats_cores))
+kable(head(proto_stats_retouch))
+
+```
+
+```{r}
+#| label: tbl-gravettian
+#| tbl-cap: "Stats for Gravettian occupation."
+#| tbl-subcap: 
+#|  - "Stats for flakes"
+#|  - "Stats for elongated blanks"
+#|  - "Stats for cores"
+#|  - "Stats for retouched"
+#| layout-nrow: 4
+
+kable(head(gravettian_stats_flakes))
+kable(head(gravettian_stats_elong))
+kable(head(gravettian_stats_cores))
+kable(head(gravettian_stats_retouch))
 
 ```

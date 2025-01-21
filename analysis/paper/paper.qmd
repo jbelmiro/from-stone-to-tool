@@ -643,20 +643,9 @@ solutrean_retouch <- solutrean_dataset |>
 solutrean_retouch_tab <- solutrean_retouch |>
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
   adorn_totals(c("row", "col")) |>
-  adorn_percentages("col") |>
-  adorn_pct_formatting(2) |> 
-  adorn_ns("front")
-## Cleaning final table
-solutrean_retouch_tab <- solutrean_retouch_tab |> # Replace 0% values with -
-  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
-  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
-  dplyr::mutate(T11 = case_when(T11 == "0   (0.00%)" ~ "-", TRUE ~ T11)) |>
-  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET)) |>
-  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T5, T6, T7, T8, T11, INDET, Total) # Ordering values
+  mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
+  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T5, T6, T7, T8, T11, INDET, Total) |> # Ordering values
+  rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 # Proto-solutrean table
 ## Table preparation
@@ -681,22 +670,9 @@ proto_retouch <- phase_dataset |>
 proto_retouch_tab <- proto_retouch |>
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
   adorn_totals(c("row", "col")) |> 
-  adorn_percentages("col") |> 
-  adorn_pct_formatting(2) |> 
-  adorn_ns("front")
-## Cleaning final table
-proto_retouch_tab <- proto_retouch_tab |> # Replace 0% values with -
-  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
-  dplyr::mutate(T3 = case_when(T3 == "0   (0.00%)" ~ "-", TRUE ~ T3)) |>
-  dplyr::mutate(T4 = case_when(T4 == "0   (0.00%)" ~ "-", TRUE ~ T4)) |>
-  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
-  dplyr::mutate(T9 = case_when(T9 == "0   (0.00%)" ~ "-", TRUE ~ T9)) |>
-  dplyr::mutate(TL = case_when(TL == "0   (0.00%)" ~ "-", TRUE ~ TL)) |>
-  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET))
+  mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
+  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, TL, INDET, Total) |> # Ordering values
+  rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 # Gravettian table
 ## Table preparation
@@ -720,25 +696,10 @@ gravettian_retouch <- phase_dataset |>
 ## Janitor tabyl for final table with n and %
 gravettian_retouched_tab <- gravettian_retouch |> 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
-  adorn_totals(c("row", "col")) |> 
-  adorn_percentages("col") |> 
-  adorn_pct_formatting(2) |> 
-  adorn_ns("front")
-## Cleaning final table
-gravettian_retouched_tab <- gravettian_retouched_tab |> # Replace 0% values with -
-  dplyr::mutate(T1 = case_when(T1 == "0   (0.00%)" ~ "-", TRUE ~ T1)) |>
-  dplyr::mutate(T2 = case_when(T2 == "0   (0.00%)" ~ "-", TRUE ~ T2)) |>
-  dplyr::mutate(T3 = case_when(T3 == "0   (0.00%)" ~ "-", TRUE ~ T3)) |>
-  dplyr::mutate(T4 = case_when(T4 == "0   (0.00%)" ~ "-", TRUE ~ T4)) |>
-  dplyr::mutate(T5 = case_when(T5 == "0   (0.00%)" ~ "-", TRUE ~ T5)) |>
-  dplyr::mutate(T6 = case_when(T6 == "0   (0.00%)" ~ "-", TRUE ~ T6)) |>
-  dplyr::mutate(T7 = case_when(T7 == "0   (0.00%)" ~ "-", TRUE ~ T7)) |>
-  dplyr::mutate(T8 = case_when(T8 == "0   (0.00%)" ~ "-", TRUE ~ T8)) |>
-  dplyr::mutate(T9 = case_when(T9 == "0   (0.00%)" ~ "-", TRUE ~ T9)) |>
-  dplyr::mutate(T10 = case_when(T10 == "0   (0.00%)" ~ "-", TRUE ~ T10)) |>
-  dplyr::mutate(TL = case_when(TL == "0   (0.00%)" ~ "-", TRUE ~ TL)) |>
-  dplyr::mutate(INDET = case_when(INDET == "0   (0.00%)" ~ "-", TRUE ~ INDET)) |>
-  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TL, INDET, Total) # Ordering values
+  adorn_totals(c("row", "col")) |>
+  mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
+  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TL, INDET, Total) |> # Ordering values
+  rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 ```
 

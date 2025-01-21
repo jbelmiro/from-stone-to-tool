@@ -950,7 +950,7 @@ Regarding the debitage, cores and tool sizes, flakes show slightly higher means 
 #| label:  fig-proto-boxplots
 #| fig-cap: Boxplots Proto-Solutrean
 
-ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 

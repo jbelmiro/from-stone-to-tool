@@ -180,28 +180,28 @@ context$ID <- str_squish(context$ID) # Remove empty spaces from ID field
 xyz$ID <- str_squish(xyz$ID) # Remove empty spaces from UNIT field
 
 # Cleaning up DS and uniformising variable names
-proto_tech_WIP <- proto_tech %>%
-  tidyr::unite(col='ID', all_of(cols_to_concat_terrace), sep="-", remove=TRUE) %>% 
+proto_tech_WIP <- proto_tech |>
+  tidyr::unite(col='ID', all_of(cols_to_concat_terrace), sep="-", remove=TRUE) |> 
   rename(CLASS = Class, COREPREPPROD = CorePreparProd, PIECECOMPLETENESS = PieceCompleteness, CORTEX = Cortex, CORTEXLOCATION = CortexLocation, PLATFORMTYPE = PlatformType, PLATFORMCORTEX = PlatformCortex, SCARCOUNT = ScarCount, THICKNESS = Thickness,
         MAXWIDTH = MaxWidth, LENGTH = Length, COREPLATFORM = CorePlatform, MAINFACECORTEX = MainFaceCortex, 
-        MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYPOLOGY = RetouchedPieceTypology) %>% 
+        MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYPOLOGY = RetouchedPieceTypology) |> 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
     RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
     RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed bladelet",
     RETOUCHEDPIECETYPOLOGY == "Dentilhado" ~ "Denticulate",
     RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY)) %>% 
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |> 
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
-gravettian_tech <- gravettian_tech %>% 
+gravettian_tech <- gravettian_tech |> 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
     RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
     RETOUCHEDPIECETYPOLOGY == "Retouched flake siret fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake frag" ~ "Retouched flake fragment",
     RETOUCHEDPIECETYPOLOGY == "Retouched bladelet frag" ~ "Retouched bladelet fragment",
     RETOUCHEDPIECETYPOLOGY == "Multiple burin" | RETOUCHEDPIECETYPOLOGY == "Burin splintered piece" | RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
     RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" ~ "Backed bladelet",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY)) %>% 
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |> 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
@@ -209,7 +209,7 @@ gravettian_tech <- gravettian_tech %>%
 
 terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech) # Creating single DS with Proto and Gravettian
 
-terrace_RM_WIP <- terrace_RM %>%
+terrace_RM_WIP <- terrace_RM |>
   mutate(RMTYPE = case_when(
     RMTYPE == "Type 2" ~ "TYPE 2",
     RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
@@ -222,38 +222,38 @@ terrace_RM_WIP <- terrace_RM %>%
     RMTYPE == "TYPE 13B" ~ "TYPE 9",
     RMTYPE == "Oolitic" ~ "TYPE 10",
     RMTYPE == "TYPE GB" ~ "TYPE 11",
-    .default = RMTYPE)) %>% 
-  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%
+    .default = RMTYPE)) |> 
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) |>
   distinct(ID, .keep_all = TRUE)
 
-context <- context %>%
-  dplyr::rename("UNIT" = "Unit") %>% # Renaming first column from Unit to UNIT to use cols_to_concat
-  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) %>% # Unite UNIT with ID using cols_to_concat
-  select(ID, Level, Spit, Code) %>% # Selecting important variables: ID refers to artifact ID; Level refers to archaeologycal layer; Spit refers to artificial levels within an archaeological layer; Code refers to type of artifact (e.g., LITHIC or BONE)
+context <- context |>
+  dplyr::rename("UNIT" = "Unit") |> # Renaming first column from Unit to UNIT to use cols_to_concat
+  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) |> # Unite UNIT with ID using cols_to_concat
+  select(ID, Level, Spit, Code) |> # Selecting important variables: ID refers to artifact ID; Level refers to archaeologycal layer; Spit refers to artificial levels within an archaeological layer; Code refers to type of artifact (e.g., LITHIC or BONE)
   distinct(ID, .keep_all = TRUE)
 
-xyz <- xyz %>%
-  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) %>% # Unite UNIT with ID using cols_to_concat
-  filter(Suffix == 0) %>% # To avoid several entries related to several points of the same artefact
-  select(ID, X, Y, Z) %>% # Selecting important variables
+xyz <- xyz |>
+  unite(col='ID', cols_to_concat_terrace, sep="-", remove=FALSE) |> # Unite UNIT with ID using cols_to_concat
+  filter(Suffix == 0) |> # To avoid several entries related to several points of the same artefact
+  select(ID, X, Y, Z) |> # Selecting important variables
   distinct(ID, .keep_all = TRUE)
 
 field_data <- full_join(xyz, context, by = "ID") # Join field tables
 
 terrace_tech_WIP <- left_join(terrace_tech, field_data, by = "ID") # Join field and RM type tables
 terrace_dataset <- full_join(terrace_tech_WIP, terrace_RM_WIP, by = "ID") # Base 12690
-terrace_dataset <- terrace_dataset %>%
-  filter(!Level %in% c("3", "4", "4C", "4D")) %>%  # Dropping NAs on the technological class drops dataset to 1651
-  drop_na(RMTYPE) %>%  # Dropping NAs on the RM database drops dataset to 3635
+terrace_dataset <- terrace_dataset |>
+  filter(!Level %in% c("3", "4", "4C", "4D")) |>  # Dropping NAs on the technological class drops dataset to 1651
+  drop_na(RMTYPE) |>  # Dropping NAs on the RM database drops dataset to 3635
   drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 1647
   
 # Mutate level 5 to add phases: top of 5 (4E/5) and bottom of 5 (5), following Belmiro et al. (2020).
-phase_dataset <- terrace_dataset %>% 
+phase_dataset <- terrace_dataset |> 
   mutate(Level = case_when(
     Level == 5 & Z > 24.1 ~ "4E/5",
     Level == 5 & Z < 24.1 ~ "5",
     Level == "7C" | Level == 8 ~ "7", # Collapsing samples from Level 7C and Level 8 into 7 to homogenise dataset
-    TRUE ~ Level)) %>% # Adding technocomplex name based on the levels
+    TRUE ~ Level)) |> # Adding technocomplex name based on the levels
   mutate(Technocomplex = case_when(
     Level == "4E" | Level == "4E/5" | Level == 5 ~ "Proto-Solutrean",
     Level == 6 | Level == 7 ~ "Gravettian"))
@@ -266,24 +266,24 @@ phase_dataset <- terrace_dataset %>%
 # Setting up the Terrace dataset
 cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
-solutrean_WIP <- solutrean_JC %>% 
-  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
-  filter(Raw.material %in% c("Chert", "Chalcedony")) %>% # Filtering raw materials
-  filter(Screen != "Crivo") %>%  # Filtering out all bucket lithics since they were not included in the RM analysis
-  mutate_at("Date", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
-  dplyr::rename("YEAR" = "Date") %>% 
+solutrean_WIP <- solutrean_JC |> 
+  filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
+  filter(Raw.material %in% c("Chert", "Chalcedony")) |> # Filtering raw materials
+  filter(Screen != "Crivo") |>  # Filtering out all bucket lithics since they were not included in the RM analysis
+  mutate_at("Date", str_replace, "20", "") |> # Removing initial part of the year to match IDs
+  dplyr::rename("YEAR" = "Date") |> 
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
 # Dataset filtering for chert/chalcedony and levels (A-C), 3298 + 61 solutrean points, n=3359
-solutrean_original_chert <- solutrean_JC %>% 
-  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
+solutrean_original_chert <- solutrean_JC |> 
+  filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
   filter(Raw.material %in% c("Chert", "Chalcedony"))
 
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
-solutrean_WIP <- solutrean_WIP %>% 
+solutrean_WIP <- solutrean_WIP |> 
   mutate(Class = case_when( # This alteration is being done on the original class column
     Retouched == "Yes" ~ "Retouched piece", # Whenever retouch is present, class is now Retouched piece
-    TRUE ~ Class)) %>% 
+    TRUE ~ Class)) |> 
   mutate(CLASS = case_when( # Creating a column for clustered classes, to match the other DBs
     Class == "Blade" | Class == "Bladelet" ~ "ElongBlank", # Cluster blades with bladelets. The distinction can come later through a mutate and the measurements
     Class == "Core front" | Class == "Core tablet" | Class == "Core trimming elem." | Class == "Crested piece" ~ "CorePrepProd", # Cluster all preparation products
@@ -291,21 +291,21 @@ solutrean_WIP <- solutrean_WIP %>%
     Class == "Flake distal frag." | Class == "Flake mesial frag." | Class == "Flake prox. frag." ~ "FlakeFrag", # Cluster flake frags into a single category
     Class == "Blade distal frag." | Class == "Blade mesial frag." | Class == "Blade prox. frag." 
     | Class == "Bladelet distal frag." | Class == "Bladelet mesial frag." | Class == "Bladelet prox. frag." ~ "ElongBlankFrag", # Cluster elong frags into a single category
-    TRUE ~ Class)) %>% 
+    TRUE ~ Class)) |> 
   mutate(COREPREPPROD = case_when( # Creating a column for the types of core preparation and maintenance products (COREPREPPROD)
     Class == "Core front" ~ "Core front",
     Class == "Core tablet" ~ "Core tablet",
     Class == "Core trimming elem." ~ "Core trim",
-    Class == "Crested piece" ~ "Crested piece")) %>% 
+    Class == "Crested piece" ~ "Crested piece")) |> 
   mutate(PIECECOMPLETENESS = case_when( # Creating a column for the portions present in flake or elongblank fragments to match other DBs
     Class == "Flake distal frag." | Class == "Blade distal frag." | Class == "Bladelet distal frag." ~ "Distal",
     Class == "Flake mesial frag." | Class == "Blade mesial frag." | Class == "Bladelet mesial frag." ~ "Mesial",
-    Class == "Flake prox. frag." | Class == "Blade prox. frag." | Class == "Bladelet prox. frag." ~ "Proximal")) %>% 
-  rename(PLATFORMTYPE = Platform_type) %>% # Renaming column
+    Class == "Flake prox. frag." | Class == "Blade prox. frag." | Class == "Bladelet prox. frag." ~ "Proximal")) |> 
+  rename(PLATFORMTYPE = Platform_type) |> # Renaming column
   mutate(PLATFORMTYPE = case_when( # Renaming variables to match correspondent variables in the other DBs
     PLATFORMTYPE == "Multifacetted" ~ "Faceted",
     PLATFORMTYPE == "Unfacetted" ~ "Plain",
-    TRUE ~ PLATFORMTYPE)) %>%
+    TRUE ~ PLATFORMTYPE)) |>
   mutate(Type = case_when( # Translating retouched types from Zilhão 1997 to simplified typologies
     Type == "92b" ~ "Retouched piece fragment",
     Type == "92a" ~ "Retouched blank",
@@ -316,26 +316,26 @@ solutrean_WIP <- solutrean_WIP %>%
     Type == "61" ~ "Truncation",
     Type == "28" ~ "Burin",
     Type == "7" | Type == "5b" | Type == "4"  ~ "Endscrapper",
-    TRUE ~ Type)) %>%
+    TRUE ~ Type)) |>
   rename(LEVEL = Layer, UNIT = Unit, CORTEX = Percent_of_cortex, CORTEXLOCATION = Loc_of_cortex, THICKNESS = Thickness,
          MAXWIDTH = Width, LENGTH = Length, COREPLATFORM = Core_platfform, SCARCOUNT = N_of_Scars, COREABANDON = Core_abandon,
          RETOUCHEDPIECETYPOLOGY = Type)  # Renaming column
   
-solutrean_tech <- solutrean_WIP %>%
+solutrean_tech <- solutrean_WIP |>
   dplyr::select(ID, CLASS, LEVEL, UNIT, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
-solutrean_points <- solutrean_points %>% 
-  mutate_at("YEAR", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
+solutrean_points <- solutrean_points |> 
+  mutate_at("YEAR", str_replace, "20", "") |> # Removing initial part of the year to match IDs
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=TRUE)
   
 solutrean_tech <- bind_rows(solutrean_tech, solutrean_points) # Uniting technology dataset with points (2167 to 2228)
 
-solutrean_tech <- solutrean_tech %>% # Originally 2228
+solutrean_tech <- solutrean_tech |> # Originally 2228
   distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets (down to 1993)
 
-shelter_RM_WIP <- shelter_RM %>%
-  mutate_at("ID", str_replace, "VB", "") %>% # Remove "VB" from ID
+shelter_RM_WIP <- shelter_RM |>
+  mutate_at("ID", str_replace, "VB", "") |> # Remove "VB" from ID
   mutate(RMTYPE = case_when(
     RMTYPE == "Type 2" ~ "TYPE 2",
     RMTYPE == "Chalcedony" ~ "TYPE 1", # Altering first group names to final group names. Subtypes are maintained as before.
@@ -349,13 +349,13 @@ shelter_RM_WIP <- shelter_RM %>%
     RMTYPE == "Oolitic" ~ "TYPE 10",
     RMTYPE == "TYPE GB" ~ "TYPE 11",
     RMTYPE == "ND_A" ~ "INDET",
-    .default = RMTYPE)) %>%
-  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%  # Select variables
+    .default = RMTYPE)) |>
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) |>  # Select variables
   distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets
 
 solutrean_dataset <- full_join(solutrean_tech, shelter_RM_WIP, by = "ID") # The complete dataset has 2818 (44 points) entries
-solutrean_dataset <- solutrean_dataset %>%
-  drop_na(RMTYPE) %>%   # Dropping NAs on the RM database drops dataset to 1514
+solutrean_dataset <- solutrean_dataset |>
+  drop_na(RMTYPE) |>   # Dropping NAs on the RM database drops dataset to 1514
   drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 914
   
 ```
@@ -409,14 +409,14 @@ solutrean_general <- solutrean_dataset |>
 
 # Solutrean statistics
 # DS preparation
-solutrean_stats <- solutrean_dataset %>% 
-  filter(RMTYPE != "INDET") %>%
+solutrean_stats <- solutrean_dataset |> 
+  filter(RMTYPE != "INDET") |>
    mutate(CLASS = case_when(
     CLASS == "Thinning flake" ~ "ThinningFlake",
     CLASS == "ElongBlank" ~ "ElongatedProd",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
     CLASS == "Retouched piece" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
+    TRUE ~ CLASS)) |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
     TRUE ~ CLASS))
@@ -451,13 +451,13 @@ solutrean_scatter <- solutrean_stats |>
 
 # Boxplot for individual measurements
 # Weight
-solutrean_stats_weight <- solutrean_stats %>%
-  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
+solutrean_stats_weight <- solutrean_stats |>
+  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
@@ -472,13 +472,13 @@ solutrean_stats_weight <- solutrean_stats %>%
 
 # Proto-Solutrean statistics
 # DS prep
-proto_stats <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
+proto_stats <- phase_dataset |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>%
-  mutate(elong = MAXWIDTH*2-LENGTH) %>%
+    TRUE ~ CLASS)) |>
+  mutate(elong = MAXWIDTH*2-LENGTH) |>
   mutate(CLASS = case_when(
     CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
     CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
@@ -512,13 +512,13 @@ proto_scatter <- proto_stats |>
                             "#9FB6CD", "#BDD2B6"))
 
 # Boxplots weight
-proto_stats_weight <- proto_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
+proto_stats_weight <- proto_stats |>
+  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
@@ -534,13 +534,13 @@ proto_stats_weight <- proto_stats %>%
 
 # Gravettian statistics
 # DS prep
-gravettian_stats <- phase_dataset %>%
-  filter(Level %in% c(6, 7)) %>%
-  filter(RMTYPE != "INDET") %>%
+gravettian_stats <- phase_dataset |>
+  filter(Level %in% c(6, 7)) |>
+  filter(RMTYPE != "INDET") |>
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  mutate(elong = MAXWIDTH*2-LENGTH) %>%
+    TRUE ~ CLASS)) |> 
+  mutate(elong = MAXWIDTH*2-LENGTH) |>
   mutate(CLASS = case_when(
     CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
     CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
@@ -575,13 +575,13 @@ gravettian_scatter <- gravettian_stats |>
 
 # Boxplots
 # Weight
-gravettian_stats_weight <- gravettian_stats %>%
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) %>% 
-  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) %>%
+gravettian_stats_weight <- gravettian_stats |>
+  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(WEIGHT !="0" & !RMTYPE %in% c("INDET","GB","TL")) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) %>%
-  mutate(CLASS = factor(CLASS, levels = c("Flake","ElongatedProd", "Core", "RetouchedPiece"))) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake","ElongatedProd", "Core", "RetouchedPiece"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS) +
@@ -662,11 +662,11 @@ proto_retouch <- phase_dataset |>
     RMTYPE == "TYPE 11" ~ "T11",
     TRUE ~ RMTYPE))
 ## Janitor tabyl for final table with n and %
-proto_retouch_tab <- proto_retouch %>%
-  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>%
-  adorn_totals(c("row", "col")) %>% 
-  adorn_percentages("col") %>% 
-  adorn_pct_formatting(2) %>% 
+proto_retouch_tab <- proto_retouch |>
+  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages("col") |> 
+  adorn_pct_formatting(2) |> 
   adorn_ns("front")
 ## Cleaning final table
 proto_retouch_tab <- proto_retouch_tab |> # Replace 0% values with -
@@ -684,10 +684,10 @@ proto_retouch_tab <- proto_retouch_tab |> # Replace 0% values with -
 
 # Gravettian table
 ## Table preparation
-gravettian_retouch <- phase_dataset %>% 
-  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) %>%
-  filter(Level %in% c(6, 7)) %>% 
-  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) %>% 
+gravettian_retouch <- phase_dataset |> 
+  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) |>
+  filter(Level %in% c(6, 7)) |> 
+  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) |> 
   dplyr::group_by(RMTYPE) |>
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "TYPE 1" ~ "T1",
@@ -702,11 +702,11 @@ gravettian_retouch <- phase_dataset %>%
     RMTYPE == "TYPE 10" ~ "T10",
     TRUE ~ RMTYPE))
 ## Janitor tabyl for final table with n and %
-gravettian_retouched_tab <- gravettian_retouch %>% 
-  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) %>%
-  adorn_totals(c("row", "col")) %>% 
-  adorn_percentages("col") %>% 
-  adorn_pct_formatting(2) %>% 
+gravettian_retouched_tab <- gravettian_retouch |> 
+  tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages("col") |> 
+  adorn_pct_formatting(2) |> 
   adorn_ns("front")
 ## Cleaning final table
 gravettian_retouched_tab <- gravettian_retouched_tab |> # Replace 0% values with -
@@ -766,68 +766,68 @@ As mentioned in the methodology, two different ratios were calculated: blank-to-
 
 # DS preparation and tool-to-debitage ratio tables
 ## For Gravettian
-gravettian_ratiobc <- phase_dataset %>% 
-  filter(Level %in% c(6, 7)) %>% 
-  filter(RMTYPE != "INDET") %>% 
+gravettian_ratiobc <- phase_dataset |> 
+  filter(Level %in% c(6, 7)) |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+    TRUE ~ CLASS)) |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |> 
   mutate("Blank/Core" = Blank / Core)
 
 # For Proto-Solutrean
-proto_ratiobc <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
+proto_ratiobc <- phase_dataset |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>%
+    TRUE ~ CLASS)) |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |>
   mutate("Blank/Core" = Blank / Core)
 
 # For Solutrean
-solutrean_ratiobc <- solutrean_dataset %>% 
+solutrean_ratiobc <- solutrean_dataset |> 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    TRUE ~ CLASS)) %>% 
+    TRUE ~ CLASS)) |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+    TRUE ~ CLASS)) |> 
+  filter(RMTYPE != "INDET") |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |> 
   mutate("Blank/Core" = Blank / Core)
 
 # Cleaning up to create a single table for scatterplot
-gravettian_ratiobc_b <-gravettian_ratiobc %>%
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+gravettian_ratiobc_b <-gravettian_ratiobc |>
+  filter(`Blank/Core` != "Inf") |> 
+  dplyr::mutate("Assemblage" = "Gravettian") |> 
   select(Assemblage, RMTYPE, `Blank/Core`)
-proto_ratiobc_b <- proto_ratiobc %>% 
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+proto_ratiobc_b <- proto_ratiobc |> 
+  filter(`Blank/Core` != "Inf") |> 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") |> 
   select(Assemblage, RMTYPE, `Blank/Core`)
-solutrean_ratiobc_b <- solutrean_ratiobc %>% 
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+solutrean_ratiobc_b <- solutrean_ratiobc |> 
+  filter(`Blank/Core` != "Inf") |> 
+  dplyr::mutate("Assemblage" = "Solutrean") |> 
   select(Assemblage, RMTYPE, `Blank/Core`)
 ratio_blankcore <- bind_rows(gravettian_ratiobc_b, proto_ratiobc_b,solutrean_ratiobc_b)
 
@@ -858,70 +858,70 @@ ratio_blankcore |>
 
 # DS preparation and tool-to-debitage ratio tables
 ## For Gravettian
-gravettian_ratiotd <- phase_dataset %>% 
-  filter(Level %in% c(6, 7)) %>% 
-  filter(RMTYPE != "INDET") %>% 
+gravettian_ratiotd <- phase_dataset |> 
+  filter(Level %in% c(6, 7)) |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
     CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+    TRUE ~ CLASS)) |> 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |> 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
 
 ## For Proto-Solutrean
-proto_ratiotd <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
+proto_ratiotd <- phase_dataset |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
     CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+    TRUE ~ CLASS)) |> 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |> 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
 
 ## For Solutrean
-solutrean_ratiotd <- solutrean_dataset %>% 
-  filter(RMTYPE != "INDET") %>% 
+solutrean_ratiotd <- solutrean_dataset |> 
+  filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
     CLASS == "Retouched piece" ~ "RetouchedPiece",
     CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
-    TRUE ~ CLASS)) %>% 
+    TRUE ~ CLASS)) |> 
   mutate(CLASS = case_when(
     CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
     CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
+    TRUE ~ CLASS)) |> 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) |> 
+  count(RMTYPE, CLASS, sort = TRUE) |> 
+  group_by(RMTYPE, CLASS) |>
+  summarise(n=sum(n)) |> 
+  spread(CLASS, n, fill=0) |> 
+  mutate(sum = rowSums(across(where(is.numeric)))) |> 
+  filter(!sum <= 5) |> 
   mutate("Tool/Blank" = RetouchedPiece / Blank)
 
 # Creating a single table with all ratios by assemblage for the scatterplot
-gravettian_ratiotd_b <-gravettian_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+gravettian_ratiotd_b <-gravettian_ratiotd |> 
+  dplyr::mutate("Assemblage" = "Gravettian") |> 
   select(Assemblage, RMTYPE, `Tool/Blank`)
-proto_ratiotd_b <- proto_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+proto_ratiotd_b <- proto_ratiotd |> 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") |> 
   select(Assemblage, RMTYPE, `Tool/Blank`)
-solutrean_ratiotd_b <- solutrean_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+solutrean_ratiotd_b <- solutrean_ratiotd |> 
+  dplyr::mutate("Assemblage" = "Solutrean") |> 
   select(Assemblage, RMTYPE, `Tool/Blank`)
 ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
 

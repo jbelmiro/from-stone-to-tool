@@ -139,6 +139,7 @@ A similar conclusion was suggested based on the interpretation of the chert sour
 ```{r}
 #| label: library
 
+# Read libraries necessary for running the script
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -153,17 +154,18 @@ library(knitr)
 ```{r}
 #| label: get-data
 
-# Technological data
+# Reading the datasets
+## Technological data
 gravettian_tech <- read.csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
 proto_tech <- read.csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
 solutrean_JC <- read.csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
 solutrean_points <- read.csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
 
-# RM data
+## RM data
 shelter_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_SHELTER.csv')) # Shelter RM analysis
 terrace_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_TERRACE.csv')) # Terrace RM analysis
 
-# Context data
+## Context data
 context <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_context.csv')) # Terrace Field DB - lithic artefact info
 xyz <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_xyz.csv')) # Terrace Field DB - just coordinates
 
@@ -172,10 +174,12 @@ xyz <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_xyz.csv')) # Terra
 ```{r}
 #| label: terrace-databases-setup
 
-cols_to_concat_terrace <- c("UNIT", "ID")
+# Setting up the Terrace dataset
+cols_to_concat_terrace <- c("UNIT", "ID") # Vector to join UNIT and ID into a single variable
 context$ID <- str_squish(context$ID) # Remove empty spaces from ID field
 xyz$ID <- str_squish(xyz$ID) # Remove empty spaces from UNIT field
 
+# Cleaning up DS and uniformising variable names
 proto_tech_WIP <- proto_tech %>%
   tidyr::unite(col='ID', all_of(cols_to_concat_terrace), sep="-", remove=TRUE) %>% 
   rename(CLASS = Class, COREPREPPROD = CorePreparProd, PIECECOMPLETENESS = PieceCompleteness, CORTEX = Cortex, CORTEXLOCATION = CortexLocation, PLATFORMTYPE = PlatformType, PLATFORMCORTEX = PlatformCortex, SCARCOUNT = ScarCount, THICKNESS = Thickness,
@@ -190,9 +194,6 @@ proto_tech_WIP <- proto_tech %>%
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
-proto_original_chert <- proto_tech %>% 
-  filter(RawMaterial %in% c("Chert", "Chalcedony"))
-
 gravettian_tech <- gravettian_tech %>% 
   mutate(RETOUCHEDPIECETYPOLOGY = case_when(
     RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
@@ -206,7 +207,7 @@ gravettian_tech <- gravettian_tech %>%
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
     TRUE ~ CLASS))
 
-terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech)
+terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech) # Creating single DS with Proto and Gravettian
 
 terrace_RM_WIP <- terrace_RM %>%
   mutate(RMTYPE = case_when(
@@ -262,6 +263,7 @@ phase_dataset <- terrace_dataset %>%
 ```{r}
 #| label: shelter-solutrean-setup
 
+# Setting up the Terrace dataset
 cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
 solutrean_WIP <- solutrean_JC %>% 
@@ -323,7 +325,7 @@ solutrean_tech <- solutrean_WIP %>%
   dplyr::select(ID, CLASS, LEVEL, UNIT, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
-solutrean_points <- solutrean_points %>% # Creating ID from 
+solutrean_points <- solutrean_points %>% 
   mutate_at("YEAR", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=TRUE)
   
@@ -361,113 +363,49 @@ solutrean_dataset <- solutrean_dataset %>%
 ```{r}
 #| label: general-tables
 
-solutrean_general <- solutrean_dataset %>%
+# Tables with class by raw material type (n and %)
+## For Gravettian
+gravettian_general <- phase_dataset |>
+  filter(Level %in% c(6, 7)) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) %>% 
-  tabyl(CLASS, RMTYPE) %>%
-  adorn_totals(c("row", "col")) %>%
-  adorn_percentages("col") %>%
-  adorn_pct_formatting(2) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) |>
+  tabyl(CLASS, RMTYPE) |> 
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages("col") |> 
+  adorn_pct_formatting(2) |> 
   adorn_ns("front")
 
-proto_general <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(CLASS != "Chip") %>% 
+## For Proto-Solutrean (4E and top of 5)
+proto_general <- phase_dataset |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(CLASS != "Chip") |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) %>% 
-  tabyl(CLASS, RMTYPE) %>%
-  adorn_totals(c("row", "col")) %>%
-  adorn_percentages("col") %>%
-  adorn_pct_formatting(2) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) |> 
+  tabyl(CLASS, RMTYPE) |> 
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages("col") |> 
+  adorn_pct_formatting(2) |> 
   adorn_ns("front")
 
-gravettian_general <- phase_dataset %>% 
-  filter(Level %in% c(6, 7)) %>%
+## For Solutrean
+solutrean_general <- solutrean_dataset |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
                                         "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) %>% 
-  tabyl(CLASS, RMTYPE) %>%
-  adorn_totals(c("row", "col")) %>%
-  adorn_percentages("col") %>%
-  adorn_pct_formatting(2) %>%
+                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) |> 
+  tabyl(CLASS, RMTYPE) |> 
+  adorn_totals(c("row", "col")) |> 
+  adorn_percentages("col") |> 
+  adorn_pct_formatting(2) |> 
   adorn_ns("front")
 
-
 ```
-
-```{r}
-#| label: tbl-general-gravettian
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Gravettian assemblage (levels 6 and 7) of the Terrace area of Vale Boi.
-
-kable(gravettian_general)
-
-```
-
-```{r}
-#| label: tbl-general-proto
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area of Vale Boi.
-
-kable(proto_general)
-
-```
-
-```{r}
-#| label: tbl-general-solutrean
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Solutrean assemblage (levels A to C) of the Shelter area of Vale Boi.
-
-kable(solutrean_general)
-
-```
-
-```{r}
-#| label: raw-material-graph
-#| include: false
-
-library(ggplot2)
-library(scales)
-
-solutrean_dataset %>%
-  filter(RMTYPE != "INDET") %>% 
-  dplyr::group_by(LEVEL, RMTYPE) %>% 
-  dplyr::summarise(n = n()) %>%
-  mutate(percent = n/sum(n)) %>% 
-  ggplot(aes(x = LEVEL, y = percent, fill = RMTYPE)) +
-  geom_bar(stat = "identity", width = 0.5) +
-  scale_y_continuous(labels = scales::percent_format()) +
-  #theme_minimal() + #type of theme
-  labs(y = "Count %") +# change labels
-  guides(fill=guide_legend(title=NULL)) + # remove legend title
-  geom_text(aes(label=ifelse(percent >= 0.05, paste0(sprintf("%.1f", percent*100),"%"),"")),
-                position=position_stack(vjust=0.5), colour="white", size=3) +
-  theme(axis.title.x = element_blank()) + 
-  scale_fill_manual(values = c("#C74B50", "#D49B54", "#911F27", "#630A10",
-                              "#FACE7F", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#996666", "#BDD2B6", "#798777", "#BDC7C9"))
-
-```
-
-## Assemblage description
-
-For the Gravettian assemblage, local cherts show similar patterns, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies. For T2, cores represent 13.6% of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation and maintenance product are present. Retouched tools seem to be especially relevant in T2 (\~18%), being the most frequent class after blanks. The presence of burin spalls (8.1%) in T2 also hints at the production of burins. In comparison, T5 shows similar percentages of retouched tools and shatter (\~12% and \~14%, respectively). T1 (chalcedony) shows similar patterns, although with higher percentages of shatter (34.3%). In comparison, non-local chert types (especially T6 with n=169 and T7 with n=86) show similar percentages of blanks (\~40-50%) but higher percentages of retouched tools (\~30%). Cores, core fragments and core preparation and maintenance products are also present even if in small percentages (\<4%), as well as shatter (\~12%). In both types burin spalls are also present (7.1% for T6 and 4.6% for T7). The TL cherts show, as expected, blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4). The presence of core maintenance products in TL is possibly related to the limited knapping of TL01 (jasper).
-
-Regarding the Proto-Solutrean assemblage, the local types show high frequency of blanks (\>50%, including blank fragments), followed by shatter (\~11-27%), cores (\~9-12%) and retouched tools (\~5-15% ). A single burin spall was identified in T4. There is also the absence of core preparation and maintenance products across all local cherts. T1 (chalcedony) is composed mostly of blanks and a retouched tool (Vale Comprido point). The absence of cores but presence of shatter may hint at the knapping of this raw material at the site, but the absence of formal cores perhaps due to the quality of nodules/lenses, which are characterised by fractures. For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (`r 38.3+10`%, `r 40.4+12.7`% and `r 46.1+23.1`%, respectively). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site. Similarly, T7 shows the presence of cores and core fragments (`r 4.2+4.2`%), shatter (17.0%) and a single core preparation and maintenance product. In comparison, T8, despite more limited in number (n=13), shows only one core, with the rest of the artefacts being blanks (as previously noted) or retouched tools (23.1% and n=3). Aside from the TL artefacts, all non-local cores show at least 1 core and frequently the presence of shatter. As expected, the TL artifacts include a blank and a retouched. However, a shatter was also identified.
-
-The Solutrean assemblages show similar patterns to those observed in previous assemblages. For local cherts, especially T2 (n=506) which accounts for the majority of local chert present in the studied samples, the majority of the debitage is composed of flakes and elongated blanks (`r 42+13.4+17.8+10.7`%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (\~3%). The non-local cherts most present in the Solutrean of the Shelter area are T6 (n=86) and T8 (n=30). These show similar patterns to the local cherts, with high percentages of blanks (\>50%). Cores and core preparation and maintenance are also present in small percentages (\<10%), as well as retouched tools (\<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study. It is important to notice, however, that alike previous results from the Solutrean assemblages of the Terrace area, a large portion of the studied sample was altered and did not allow for a chert type attribution (`r 201*100/914`%).
-
-## Measurement and weight descriptive statistics
-
-In the Gravettian assemblages, blanks and retouched tools show little differences in the measurements of artefacts of local and non-local chert types. The only exception are T6 and T7 blanks, which show slightly lower weight means and lower maximum length (\~35 mm) than the other types. For cores, T2 shows bigger (heavier) values than T6 (means of 21.3 and 12.6, and maximum weight of 37.2 gr and 22.5 gr, respectively), even if they seem to vary in morphology, with little patterns regarding thickness, width and length.
-
-In the Proto-Solutrean assemblage, blanks show lower values for length and weight in non-local cherts (T6-T8), varying between a mean of \~19-20 mm and maximum of \<30 mm for length, and mean of \<3 gr and maximum of \<7 gr for weight. In retouched tools, weight also shows smaller means for non-local cherts (\~3-2 gr), although with higher standard deviation (\~1.6). Regarding cores, the sample size for non-local cherts is small and only T7 statistics could be obtained. Despite this, when compared to local cherts (T2-T5), T7 cores show smaller mean and maximum values (7.3 gr and 8 gr, respectively).
-
-For the Solutrean assemblage, there seems to be no clear difference in the measurements and weights of artefacts between local and non-local cherts. This is true especially for the most represented classes (flakes and elongated blanks). Regarding cores, many of the local and non-local cherts are not available for the statistics due to missing data. However, the smallest weight mean seem to be for cores of T6 (16.5 gr), although with high standard deviation and maximum value (16.5 and 48.6 gr, respectively).
-
-When comparing between technocomplexes, there are little differences in the general size and weight of the artifacts. For example, for key classes where size and weight differences could be expected (e.g., cores), the length measurements are mostly all located between 20-40 mm and weight between 10-40 gr. However, a few key differences were noted. T4 cores (the chert type most frequent in the Proto-Solutrean assemblage) shows the largest weights of cores of all assemblages, both in the Solutrean and Proto-Solutrean assemblage, as well as T5 in the Solutrean assemblage. Similarly, retouched tools show weights between 0.5-10 gr in all assemblages. T6 and T7 have consistently the smaller weights, especially compared to T2 during the Proto-Solutrean and Gravettian which shows slightly higher weights.
 
 ```{r}
 #| label: stats-setup
+
+# Scatterplots for width and length and Boxplots for weight by assemblage
 
 # Solutrean statistics
 # DS preparation
@@ -658,263 +596,6 @@ gravettian_stats_weight <- gravettian_stats %>%
 
 ```
 
-```{r}
-#| label: fig-solutrean-boxplots
-#| fig-cap: Boxplots Gravettian.
-
-solutrean_graphs <- ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a1", "a2"), ncol = 2, common.legend = TRUE, legend = "bottom")
-
-```
-
-```{r}
-#| label:  fig-proto-boxplots
-#| fig-cap: Boxplots Proto-Solutrean
-
-proto_graphs <- ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
-
-```
-
-```{r}
-#| label: fig-gravettian-boxplots
-#| fig-cap: Boxplots Solutrean
-
-gravettian_graphs <- ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("c1", "c2"), ncol = 2, common.legend = TRUE, legend = "bottom")
-
-```
-
-## Blank to core ratios
-
-The analysis shows different patterns in the blank to core ratios not only between chert types, but also between assemblages. For the Gravettian, local types (T1 and T2) show lower ratios (\<4) of blanks to cores, although other local types (T3-T5) have no identified cores. The non-local types, especially T6 and T7 show higher ratios (\~8) of blanks to cores. In the Proto-Solutrean occupation, T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores. Finally, the Solutrean assemblage shows similar patterns, with the local cherts showing lower blank to core ratios (\<7), while the non-local cherts show higher ratios (\>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample.
-
-```{r}
-#| label: ratio-blankcore
-
-# Solutrean ratio
-solutrean_ratiobc <- solutrean_dataset %>% 
-  mutate(CLASS = case_when(
-    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
-    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    TRUE ~ CLASS)) %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Blank/Core" = Blank / Core)
-
-# Proto-Solutrean ratio
-proto_ratiobc <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>%
-  mutate("Blank/Core" = Blank / Core)
-
-proto5_ratiobc <- phase_dataset %>% 
-  filter(Level == 5) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Blank/Core" = Blank / Core)
-
-# Gravettian ratio
-gravettian_ratiobc <- phase_dataset %>% 
-  filter(Level %in% c(6, 7)) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "Core")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Blank/Core" = Blank / Core)
-
-```
-
-```{r}
-#| label: fig-ratiobc
-#| fig-cap: Plotted ratios of blanks-to-core by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
-
-gravettian_ratiobc_b <-gravettian_ratiobc %>%
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Gravettian") %>% 
-  select(Assemblage, RMTYPE, `Blank/Core`)
-proto_ratiobc_b <- proto_ratiobc %>% 
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
-  select(Assemblage, RMTYPE, `Blank/Core`)
-solutrean_ratiobc_b <- solutrean_ratiobc %>% 
-  filter(`Blank/Core` != "Inf") %>% 
-  dplyr::mutate("Assemblage" = "Solutrean") %>% 
-  select(Assemblage, RMTYPE, `Blank/Core`)
-ratio_blankcore <- bind_rows(gravettian_ratiobc_b, proto_ratiobc_b,solutrean_ratiobc_b)
-
-# Scatterplot with local vs non-local RM Types
-ratio_blankcore |>
-  dplyr::mutate(Source = case_when(
-    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
-    RMTYPE == "TYPE 6" ~ "T6",
-    RMTYPE == "TYPE 7" ~ "T7",
-    RMTYPE == "TYPE 8" ~ "T8",
-    RMTYPE == "TYPE 9" ~ "T9",
-    RMTYPE == "TYPE 10" ~ "T10",
-    RMTYPE == "TYPE 11" ~ "T11",
-    TRUE ~ RMTYPE)) |>
-  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
-                                        "T8", "T9", "T10", "T11", "TL"))) |>
-  ggplot(aes(x=Assemblage, y=`Blank/Core`, colour = Source)) +
-  geom_point(size=3) +
-  coord_cartesian(clip = "off") +
-  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
-
-```
-
-## Retouched tools to debitage ratios
-
-Throughout the different assemblages, the difference in retouched tools to debitage ratios by chert types, especially between local and non-local types, seem to show similar patterns. In this sense, in general, non-local types seem to consistently show the higher ratios when compared to local cherts. In the Gravettian assemblages this pattern is the most accentuated since T1 to T5 show low ratios (0.25-0.5) of retouched to debitage, while TL and T6-T8 show higher ratios (0.9-1.0). The exception is T10 (non-local type), which shows a lower ratio (0.28), more akin to local cherts. In the Proto-Solutrean assemblage, the lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage. In the Solutrean assemblage, all local cherts (T2-T5) show low retouch to debitage ratios (\<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3).
-
-```{r}
-#| label: ratios-retouchdebitage
-
-proto_ratiotd <- phase_dataset %>% 
-  filter(Level %in% c("4E", "4E/5")) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Tool/Blank" = RetouchedPiece / Blank)
-
-proto5_ratiotd <- phase_dataset %>% 
-  filter(Level == 5) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Tool/Blank" = RetouchedPiece / Blank)
-
-gravettian_ratiotd <- phase_dataset %>% 
-  filter(Level %in% c(6, 7)) %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Tool/Blank" = RetouchedPiece / Blank)
-
-solutrean_ratiotd <- solutrean_dataset %>% 
-  filter(RMTYPE != "INDET") %>% 
-  mutate(CLASS = case_when(
-    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
-    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    CLASS == "Retouched piece" ~ "RetouchedPiece",
-    CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
-    TRUE ~ CLASS)) %>% 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
-    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) %>% 
-  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
-  count(RMTYPE, CLASS, sort = TRUE) %>% 
-  group_by(RMTYPE, CLASS) %>%
-  summarise(n=sum(n)) %>% 
-  spread(CLASS, n, fill=0) %>% 
-  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
-  filter(!sum <= 5) %>% 
-  mutate("Tool/Blank" = RetouchedPiece / Blank)
-
-```
-
-```{r}
-#| label: fig-ratiotd
-#| fig-cap: Plotted ratios of tools-to-debitage by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
-
-gravettian_ratiotd_b <-gravettian_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Gravettian") %>% 
-  select(Assemblage, RMTYPE, `Tool/Blank`)
-proto_ratiotd_b <- proto_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
-  select(Assemblage, RMTYPE, `Tool/Blank`)
-solutrean_ratiotd_b <- solutrean_ratiotd %>% 
-  dplyr::mutate("Assemblage" = "Solutrean") %>% 
-  select(Assemblage, RMTYPE, `Tool/Blank`)
-ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
-
-# Scatterplot with local vs non-local RM Types
-ratio_tooldebitage |>
-  dplyr::mutate(Source = case_when(
-    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
-    RMTYPE == "TYPE 6" ~ "T6",
-    RMTYPE == "TYPE 7" ~ "T7",
-    RMTYPE == "TYPE 8" ~ "T8",
-    RMTYPE == "TYPE 10" ~ "T10",
-    RMTYPE == "TYPE 11" ~ "T11",
-    TRUE ~ RMTYPE)) |>
-  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
-                                        "T8", "T9", "T10", "T11", "TL"))) |>
-  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
-  geom_point(size=3) +
-  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
-                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
-
-```
-
-## Tool typology diversity
-
-Solutrean has a total of 43 retouched tools (complete and fragments), with a high variety of retouched tools (11), ranging from 5 (11.6%) to 4 (9.3%) per tool type. The typologies which are most frequently present in the studied sample are bifacial blanks and bifacial fragments, amounting to a total of 23.2% of products related to bifacial tool/point production. Two types of points were identified: shouldered points (2 complete and 1 fragment, amounting to a total of 6.9%) and tanged and 4 winged points (9.3%). Other frequent retouched typologies are endscrappers (9.3%), notches (11.6%), retouched blanks (\~14%) and splintered pieces (11.6%). Regarding chert type, a substantial portion of retouched tools are of unidentified chert types (n=13), mostly due to alterations (fire and post depositional). Most retouched tools with identified chert are local (n=13, accounting to `r 13*100/43`%), followed by Type 6 cherts, previously suggested to be from Central Portugal (n=7, accounting to `r 7*100/43`%). Local types show a higher variability retouched typologies (9 types), although this may be related to the higher amount of tools. In comparison, Type 6 shows only 5 different typologies.
-
-For the Proto-Solutrean, 65 chert retouched tools were identified, with `r 15*100/65`% (n=15) having an unidentified chert type. A total of `r 1+10+2+8+5` retouched tools correspond to local cherts, while `r 10+9+3+1` correspond to non-local cherts. Regarding the typology, 14 different types of retouched tools were identified. Endscrappers (26.2%), splintered pieces (17%), burins (12.3%) and retouched flakes (7.7%) were the most prevalent. In comparison to the high frequency of point-related technology observed during the Solutrean, Vale Comprido points are barely present in chalcedony and chert (n=1), as they are mostly present in dolerite and chert was mainly used for other tools as seen in previous studies (\*\*). Regarding the types of chalcedony and chert, local raw materials show 9 different typologies, with Vale Comprido points, Solutrean retouch and notches being present only in the local types, even if in small numbers. Non-local cherts show 10 different typologies of retouched tools. Perforator-endscrapper, truncation, backed bladelet and retouched blades typologies can only be found in non-local varieties, albeit also in small numbers.
-
-In the Gravettian assemblage, 170 retouched tools were identified, with 22.9% (n=39) having an unidentified chert type. From the identified chert types, 24.1% of retouched tools are from local types and 52.9% from non-local cherts, with 34.1% of these being from T6 and 14.1% of T7. Regarding typologies, 15 types of retouched tools were identified (excluding fragments). All these typologies were found in the non-local chert group, while only 7 retouched tool typologies were identified in local cherts/chalcedony. The most common typologies identified in the assemblage were burins (n=52), endscrappers (n=17), retouched flakes (n=30) and splintered pieces (n=26). From all these, the majority were produced in non-local chert, mainly T6 and in lesser numbers T7. Although in lesser numbers as well, backed bladelets were also identified (n=6), but only present in non-local chert types (T6 and T7).
 
 ```{r}
 #| label: tool-diversity
@@ -1045,6 +726,20 @@ gravettian_retouched_tab <- gravettian_retouched_tab |> # Replace 0% values with
 
 ```
 
+## Gravettian (levels 6-7)
+
+The sample studied for the Gravettian occupation (>2012 excavations) of the Terrace area included 766 artifacts. When crossing the lithic class with chert type, we see that the local cherts show similar patterns, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies: for T2, cores represent 13.6% of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation and maintenance product are present. Retouched tools seem to be especially relevant in T2 (~18%), being the most frequent class after blanks. The presence of burin spalls (8.1%) in T2 is expected due to the prevalence of burins (see below). In comparison, T5 shows similar percentages of retouched tools and shatter (~12% and ~14%, respectively). T1 (chalcedony) shows similar patterns, although with higher percentages of shatter (34.3%). In comparison, non-local chert types (especially T6 with n=169 and T7 with n=86) show similar percentages of blanks (~40-50%) but higher percentages of retouched tools (~30%). Cores, core fragments and core preparation and maintenance products are also present even if in small percentages (<4%), as well as shatter (~12%). In both chert types burin spalls are also present (7.1% for T6 and 4.6% for T7). The TL cherts show, as expected, blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4). The presence of core maintenance products in TL is possibly related to the limited knapping of TL01 (jasper).
+
+```{r}
+#| label: tbl-general-gravettian
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Gravettian assemblage (levels 6 and 7) of the Terrace area of Vale Boi.
+
+kable(gravettian_general)
+
+```
+
+As seen in table **, 170 retouched tools were identified, with 22.9% (n=39) having an unidentified chert type. From the identified chert types, 24.1% of retouched tools are from local types and 52.9% from non-local cherts. Regarding typologies, 15 types of retouched tools were identified (excluding retouched tool fragments). All these typologies were found in the non-local chert group, while only 7 retouched tool typologies were identified in local cherts/chalcedony. The most common typologies identified in the assemblage were burins (n=52), endscrappers (n=17), retouched flakes (n=30) and splintered pieces (n=26). From all these, the majority were produced in non-local chert, mainly T6 and in lesser numbers T7. Although in lesser numbers as well, backed bladelets were also identified (n=6), but only present in non-local chert types (T6 and T7).
+
 ```{r}
 #| label: tbl-retouch-gravettian
 #| tbl-cap: Number and percentage of retouched tools by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
@@ -1052,6 +747,217 @@ gravettian_retouched_tab <- gravettian_retouched_tab |> # Replace 0% values with
 kable(gravettian_retouched_tab)
   
 ```
+
+Regarding the sizes of the lithic artifacts (width, length and weight), blanks (flakes and elongated products) and retouched tools show little differences in the measurements of artefacts of local and non-local chert types. The only exception are T6 and T7 flakes, which show slightly lower weight means (~2.6-3.0 gr) and lower maximum length (~20-22 mm) than the other types. For cores, T2 shows bigger (heavier) values than T6 (means of 21.3 and 12.6, and maximum weight of 37.2 gr and 22.5 gr, respectively), even if they seem to vary in morphology, with little patterns regarding thickness, width and length.
+
+```{r}
+#| label: fig-gravettian-boxplots
+#| fig-cap: Boxplots Solutrean
+
+gravettian_graphs <- ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("c1", "c2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+
+```
+
+As mentioned in the methodology, two different ratios were calculated: blank-to-core and tools-to-debitage. In general, non-local chert types show higher values for these ratios. Local types (T1 and T2) show lower ratios (<4) of blanks to cores, although other local types (T3-T5) have no identified cores. The non-local types, especially T6 and T7 show higher ratios (~8) of blanks to cores. T1 to T5 show low ratios (0.25-0.5) of retouched to debitage, while TL and T6-T8 show higher ratios (0.9-1.0). The exception is T10 (non-local type), which shows a lower ratio (0.28), more akin to local cherts.
+
+```{r}
+#| label: fig-ratiobc
+#| fig-cap: Plotted ratios of blanks-to-core by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
+
+# DS preparation and tool-to-debitage ratio tables
+## For Gravettian
+gravettian_ratiobc <- phase_dataset %>% 
+  filter(Level %in% c(6, 7)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+# For Proto-Solutrean
+proto_ratiobc <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>%
+  mutate("Blank/Core" = Blank / Core)
+
+# For Solutrean
+solutrean_ratiobc <- solutrean_dataset %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    TRUE ~ CLASS)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    TRUE ~ CLASS)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  filter(CLASS %in% c("Blank", "Core")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Blank/Core" = Blank / Core)
+
+# Cleaning up to create a single table for scatterplot
+gravettian_ratiobc_b <-gravettian_ratiobc %>%
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+proto_ratiobc_b <- proto_ratiobc %>% 
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+solutrean_ratiobc_b <- solutrean_ratiobc %>% 
+  filter(`Blank/Core` != "Inf") %>% 
+  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Blank/Core`)
+ratio_blankcore <- bind_rows(gravettian_ratiobc_b, proto_ratiobc_b,solutrean_ratiobc_b)
+
+# Scatterplot with local vs non-local RM Types
+ratio_blankcore |>
+  dplyr::mutate(Source = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |>
+  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |>
+  ggplot(aes(x=Assemblage, y=`Blank/Core`, colour = Source)) +
+  geom_point(size=3) +
+  coord_cartesian(clip = "off") +
+  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
+
+```
+
+```{r}
+#| label: fig-ratiotd
+#| fig-cap: Plotted ratios of tools-to-debitage by assemblage and by chert type. All local cherts were grouped in a single category "Local", while non-local cherts maintained their individual IDs.
+
+# DS preparation and tool-to-debitage ratio tables
+## For Gravettian
+gravettian_ratiotd <- phase_dataset %>% 
+  filter(Level %in% c(6, 7)) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+## For Proto-Solutrean
+proto_ratiotd <- phase_dataset %>% 
+  filter(Level %in% c("4E", "4E/5")) %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+## For Solutrean
+solutrean_ratiotd <- solutrean_dataset %>% 
+  filter(RMTYPE != "INDET") %>% 
+  mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    CLASS == "Retouched piece" ~ "RetouchedPiece",
+    CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
+    TRUE ~ CLASS)) %>% 
+  mutate(CLASS = case_when(
+    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "Blank", # To add proximal fragments to ratio
+    CLASS == "RetouchedPieceFrag" & PIECECOMPLETENESS == "Proximal" ~ "RetouchedPiece",
+    TRUE ~ CLASS)) %>% 
+  filter(CLASS %in% c("Blank", "RetouchedPiece")) %>% 
+  count(RMTYPE, CLASS, sort = TRUE) %>% 
+  group_by(RMTYPE, CLASS) %>%
+  summarise(n=sum(n)) %>% 
+  spread(CLASS, n, fill=0) %>% 
+  mutate(sum = rowSums(across(where(is.numeric)))) %>% 
+  filter(!sum <= 5) %>% 
+  mutate("Tool/Blank" = RetouchedPiece / Blank)
+
+# Creating a single table with all ratios by assemblage for the scatterplot
+gravettian_ratiotd_b <-gravettian_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Gravettian") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+proto_ratiotd_b <- proto_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Proto-Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+solutrean_ratiotd_b <- solutrean_ratiotd %>% 
+  dplyr::mutate("Assemblage" = "Solutrean") %>% 
+  select(Assemblage, RMTYPE, `Tool/Blank`)
+ratio_tooldebitage <- bind_rows(gravettian_ratiotd_b, proto_ratiotd_b,solutrean_ratiotd_b)
+
+# Scatterplot with local vs non-local RM Types
+ratio_tooldebitage |>
+  dplyr::mutate(Source = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |>
+  mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |>
+  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
+  geom_point(size=3) +
+  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+                              "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
+
+```
+
+## Proto-Solutrean (levels 4E and top of level 5)
+
+The final lithic sample from the Proto-Solutrean assemblage, consisting of the levels 4E and top of level 5, consists of 635 artifacts. When crossing the lithic class with chert type, we see that the local types show high frequency of blanks (>50%, including blank fragments), followed by shatter (~11-27%), cores (~9-12%) and retouched tools (~5-15%). A single burin spall was identified in T4. There is also the absence of core preparation and maintenance products across all local cherts. T1 (chalcedony) is composed mostly of blanks and a retouched tool (Vale Comprido point). The absence of cores but presence of shatter may hint at the knapping of this raw material at the site, but the absence of formal cores perhaps due to the quality of nodules/lenses, which are characterised by fractures. For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (48.3%, 53.1% and 69.2%, respectively). Retouched tools are present in smaller frequencies for the previous mentioned chert types (~17-23%). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site. Similarly, T7 shows the presence of cores and core fragments (8.4%), shatter (17.0%) and a single core preparation and maintenance product. In comparison, T8, despite more limited in number (n=13), shows only one core, with the rest of the artefacts being blanks (as previously noted) or retouched tools (23.1% and n=3). Aside from the TL artefacts, all non-local cores show at least 1 core and frequently the presence of shatter. As expected, the TL artifacts include a blank and a retouched. However, a shatter was also identified.
+In total, 65 chert retouched tools were identified, with 23.1% (n=15) having an unidentified chert type. A total of 26 retouched tools correspond to local cherts, while 23 correspond to non-local cherts.
+
+```{r}
+#| label: tbl-general-proto
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area of Vale Boi.
+
+kable(proto_general)
+
+```
+
+Regarding the typology, 14 different types of retouched tools were identified. Endscrappers (26.2%), splintered pieces (17%), burins (12.3%) and retouched flakes (7.7%) were the most prevalent. Vale Comprido points, the Proto-Solutrean fossil director, are barely present in chalcedony and chert (n=1), as they are mostly present in dolerite, while chert was mainly used for other tools as seen in previous studies (Belmiro et al., 2021). Regarding the types of chalcedony and chert, local raw materials show 9 different typologies, with Vale Comprido points, Solutrean retouch and notches being present only in the local types, even if in small numbers. Non-local cherts show 10 different typologies of retouched tools. Perforator-endscrapper, truncation, backed bladelet and retouched blades typologies can only be found in non-local varieties, albeit also in small numbers.
 
 ```{r}
 #| label: tbl-retouch-proto
@@ -1061,6 +967,32 @@ kable(proto_retouch_tab)
 
 ```
 
+Regarding the debitage, cores and tool sizes, flakes show slightly higher means in local cherts (~21-22 mm for length and 3.5-4.5 gr for weight), in comparison to non-local cherts, especially T6-T8 (~19-20 mm for length and 1.3-2.6 gr in weight), with exception of chalcedony which shows consistently low sizes (21.8 mm for length and 2.8 gr for weight). Elongated blank however, show no differences between local and non-local chert types. In retouched tools, weight also shows smaller means for non-local cherts (~3-2 gr), although with higher standard deviation (~1.6). Regarding cores, the sample size for non-local cherts is small and only T7 statistics could be obtained. Despite this, when compared to local cherts (T2-T5), T7 cores show smaller mean and maximum values (7.3 gr and 8 gr, respectively).
+
+```{r}
+#| label:  fig-proto-boxplots
+#| fig-cap: Boxplots Proto-Solutrean
+
+proto_graphs <- ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+
+```
+
+Similar to the Gravettian, non-local cherts seem to show the highest values in the calculated blank-to-core and tool-to-debitage ratios. T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores. The lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage.
+
+## Solutrean (levels A to C)
+
+The Solutrean assemblages show similar patterns to those observed in previous assemblages. The final sample from levels A, B and C from the Solutrean occupations of the Shelter area consists of 914 artifacts. When crossing the class data with type of raw material, we see that local chert, especially T2 (n=506) which accounts for the majority of local chert present in the studied samples, the majority of the debitage is composed of flakes and elongated blanks (83.9%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (~3%). The non-local cherts most present in the Solutrean of the Shelter area are T6 (n=86) and T8 (n=30). These show similar patterns to the local cherts, with high percentages of blanks (>50%). Cores and core preparation and maintenance are also present in small percentages (~3-6% and 3.5% only for T6, respectively), as well as retouched tools (<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study (see Materials and Methods section). It is important to notice, however, that alike previous results from the Solutrean assemblages of the Terrace area, a large portion of the studied sample was altered and did not allow for a chert type attribution (21.9912473%).
+
+```{r}
+#| label: tbl-general-solutrean
+#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Solutrean assemblage (levels A to C) of the Shelter area of Vale Boi.
+
+kable(solutrean_general)
+
+```
+
+The analysed Solutrean sample has a total of 43 retouched tools (complete and fragments), with a high variety of retouched tools (11), ranging from 5 (11.6%) to 4 (9.3%) per tool type. These results however, are significantly reduced from the original dataset (Cascalheira et al., 2013), possibly due to no bucket coordinates being used. The typologies which are most frequently present in the studied sample are bifacial blanks and bifacial fragments, amounting to a total of 23.2% of products related to bifacial tool/point production. Two types of points were identified: shouldered points (2 complete and 1 fragment, amounting to a total of 6.9%) and tanged and 4 winged points (9.3%). Other frequent retouched typologies are end scrappers (9.3%), notches (11.6%), retouched blanks (~14%) and splintered pieces (11.6%). Regarding chert type, a substantial portion of retouched tools are of unidentified chert types (n=13), mostly due to alterations (fire and post depositional). Most retouched tools with identified chert are local (n=13, accounting to 30.2325581%), followed by Type 6 cherts, previously suggested to be from Central Portugal (n=7, accounting to 16.2790698%). Local types show a higher variability retouched typologies (9 types), although this may be related to the higher number of tools. In comparison, Type 6 shows only 5 different typologies.
+
 ```{r}
 #| label: tbl-retouch-solutrean
 #| tbl-cap: Number and percentage of retouched tools by raw material of the Solutrean assemblage (level A to C) of the Shelter area.
@@ -1068,6 +1000,18 @@ kable(proto_retouch_tab)
 kable(solutrean_retouch_tab)
 
 ```
+
+For the Solutrean assemblage, there seems to be no clear difference in the measurements and weights of artefacts between local and non-local cherts. This is true especially for the most represented classes (flakes and elongated blanks). Regarding cores, many of the local and non-local cherts are not available for the statistics due to missing data. However, the smallest weight mean seem to be for cores of T6 (16.5 gr), although with high standard deviation and maximum value (16.5 and 48.6 gr, respectively).
+
+```{r}
+#| label: fig-solutrean-boxplots
+#| fig-cap: Boxplots Gravettian.
+
+solutrean_graphs <- ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a1", "a2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+
+```
+
+Regarding the blank-to-core and tools-to-debitage ratios, the Solutrean assemblage shows similar patterns as the previous assemblages, with the local cherts showing lower blank to core ratios (<7), while the non-local cherts show higher ratios (>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample. Similarly, local cherts (T2-T5) show low retouch to debitage ratios (<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3).
 
 # Discussion
 

@@ -770,7 +770,7 @@ Regarding the sizes of the lithic artifacts (width, length and weight), blanks (
 #| label: fig-gravettian-boxplots
 #| fig-cap: Boxplots Solutrean
 
-gravettian_graphs <- ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("c1", "c2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -989,7 +989,7 @@ Regarding the debitage, cores and tool sizes, flakes show slightly higher means 
 #| label:  fig-proto-boxplots
 #| fig-cap: Boxplots Proto-Solutrean
 
-proto_graphs <- ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("b1", "b2"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 
@@ -1023,7 +1023,7 @@ For the Solutrean assemblage, there seems to be no clear difference in the measu
 #| label: fig-solutrean-boxplots
 #| fig-cap: Boxplots Gravettian.
 
-solutrean_graphs <- ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a1", "a2"), ncol = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
 

@@ -956,6 +956,29 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol 
 
 Similar to the Gravettian, non-local cherts seem to show the highest values in the calculated blank-to-core and tool-to-debitage ratios. T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores. The lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage.
 
+```{r}
+#| label: tbl-TL-classes
+#| tbl-cap: Trace lithologies cherts from the Gravettian and Proto-Solutrean assemblages of the Terrace and Solutrean assemblage from the Shelter and corresponding technological class.
+
+TL_classes_terrace <- phase_dataset |> 
+  filter(RMTYPE == "TL") |> 
+  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
+
+TL_classes_shelter <- solutrean_dataset |> 
+  mutate(Technocomplex = case_when(
+    LEVEL == "A" | LEVEL == "B" | LEVEL == "C" ~ "Solutrean")) |> 
+  filter(RMTYPE == "TL") |> 
+  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
+
+TL_classes <- rbind(TL_classes_terrace, TL_classes_shelter)
+TL_classes <- TL_classes |> 
+  rename(TL = SUBTYPE) |> 
+  arrange(TL)
+
+kable(head(TL_classes))
+
+```
+
 ## Solutrean (levels A to C)
 
 The Solutrean assemblages show similar patterns to those observed in previous assemblages. The final sample from levels A, B and C from the Solutrean occupations of the Shelter area consists of 914 artifacts. When crossing the class data with type of raw material, we see that local chert, especially T2 (n=506) which accounts for the majority of local chert present in the studied samples, the majority of the debitage is composed of flakes and elongated blanks (83.9%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (~3%). The non-local cherts most present in the Solutrean of the Shelter area are T6 (n=86) and T8 (n=30). These show similar patterns to the local cherts, with high percentages of blanks (>50%). Cores and core preparation and maintenance are also present in small percentages (~3-6% and 3.5% only for T6, respectively), as well as retouched tools (<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study (see Materials and Methods section). It is important to notice, however, that alike previous results from the Solutrean assemblages of the Terrace area, a large portion of the studied sample was altered and did not allow for a chert type attribution (21.9912473%).
@@ -989,6 +1012,7 @@ ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"
 ```
 
 Regarding the blank-to-core and tools-to-debitage ratios, the Solutrean assemblage shows similar patterns as the previous assemblages, with the local cherts showing lower blank to core ratios (<7), while the non-local cherts show higher ratios (>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample. Similarly, local cherts (T2-T5) show low retouch to debitage ratios (<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3).
+
 
 # Discussion
 

@@ -617,6 +617,7 @@ kable(head(gravettian_stats_retouch))
 
 TL_classes_terrace <- phase_dataset |> 
   filter(RMTYPE == "TL") |> 
+  filter(Level != "5") |>
   select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
 
 TL_classes_shelter <- solutrean_dataset |> 

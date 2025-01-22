@@ -608,3 +608,28 @@ kable(head(gravettian_stats_cores))
 kable(head(gravettian_stats_retouch))
 
 ```
+
+# TL cherts
+
+```{r}
+#| label: tbl-TL-classes
+#| tbl-cap: Trace lithologies cherts from the Gravettian and Proto-Solutrean assemblages of the Terrace and Solutrean assemblage from the Shelter and corresponding technological class.
+
+TL_classes_terrace <- phase_dataset |> 
+  filter(RMTYPE == "TL") |> 
+  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
+
+TL_classes_shelter <- solutrean_dataset |> 
+  mutate(Technocomplex = case_when(
+    LEVEL == "A" | LEVEL == "B" | LEVEL == "C" ~ "Solutrean")) |> 
+  filter(RMTYPE == "TL") |> 
+  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
+
+TL_classes <- rbind(TL_classes_terrace, TL_classes_shelter)
+TL_classes <- TL_classes |> 
+  rename(TL = SUBTYPE) |> 
+  arrange(TL)
+
+kable(head(TL_classes))
+
+```

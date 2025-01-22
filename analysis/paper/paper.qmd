@@ -704,7 +704,7 @@ gravettian_retouched_tab <- gravettian_retouch |>
 
 ## Gravettian (levels 6-7)
 
-The sample studied for the Gravettian occupation (\>2012 excavations) of the Terrace area included 766 artifacts. Of these, 209 (`r round(209*100/766, 2)`%) have an indeterminate chert type (@tbl-general-gravettian). Chalcedony (T1) and local cherts (T2-5) show a total of `r 35+110+17+13+72` artefacts (`r round((35+110+17+13+72)*100/766, 2)`%). Non-local cherts show different numbers of artefacts depending on the type, with T6 and T7 showing the highest values (169 or `r round(169*100/766, 2)`% of the total assemblage, and 86 or `r round(86*100/766, 2)`%, respectively); the other non-local cherts have artefact counts lower than 20 per type. The TL cherts also show smaller numbers, with 12 artefacts.
+The sample studied for the Gravettian occupation (\>2012 excavations) of the Terrace area included 766 artifacts. Of these, 209 (`r round(209*100/766, 2)`%) have an indeterminate chert type (@tbl-general-gravettian). Chalcedony (T1) and local cherts (T2-5) show a total of `r 35+110+17+13+72` artefacts (`r round((35+110+17+13+72)*100/766, 2)`%). Non-local cherts show different numbers of artefacts depending on the type, with T6 and T7 showing the highest values (169 or `r round(169*100/766, 2)`% of the total assemblage, and 86 or `r round(86*100/766, 2)`%, respectively); the other non-local cherts have artefact counts lower than 20 per type. The TL cherts also show smaller numbers, with 12 artefacts, corresponding to 7 different types of TL cherts (table s++ in SOM ++).
 
 @tbl-general-gravettian shows the number and percentages of technological classes per chert type. Local cherts show similar patterns between them, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks (including blank fragments) represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies: for T2, cores represent 13.6% (n=15 including core fragments) of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation and maintenance product are present, all frequencies between \~5-1%. Retouched tools seem to be especially relevant in T2 (n= 20, \~18% including retouched piece fragments), making them the most frequent class after blanks. T5 shows similar percentages of retouched tools and shatter (\~12% and \~14%, respectively). T1 (chalcedony) shows similar patterns to other local cherts, although with higher percentages of shatter (34.3%).
 
@@ -914,9 +914,7 @@ ratio_tooldebitage |>
 
 ```
 
-Regarding the sizes of the lithic artifacts (width, length and weight), blanks (flakes and elongated products) and retouched tools show little differences in the measurements of artefacts of local and non-local chert types. The only exception are T6 and T7 flakes, which show slightly lower weight means (\~2.6-3.0 gr) and lower maximum length (\~20-22 mm) than the other types. For cores, T2 shows bigger (heavier) values than T6 (means of 21.3 and 12.6, and maximum weight of 37.2 gr and 22.5 gr, respectively), even if they seem to vary in morphology, with little patterns regarding thickness, width and length.
-
-Regarding the weight (@fig-gravettian-boxplots b), although there is some variability, non-local types T6 and T7 seem to have the lowest weights in all classes (flakes, elongated blanks, cores and retouched tools). The lowest means for flakes are for T6 and T7 (\~2.5 gr). However, in general, the lightest flakes seem to be from T2 and T6, although T2 also shows several heavy outliers. Elongated products show even smaller means for T6 and T7 (0.5-1 gr), especially when compared to local cherts (\~2.5 gr). Regarding cores, @tbl-general-gravettian shows that type T2 and T6 have the highest number of cores; between these two types, T6 has the lightest cores, with a maximum of \~21 gr and with a mean of \~12 gr, in comparison to T2 with a maximum of \~37 gr and a mean of \~21 gr. Retouched tools shows similar median values among all chert types (2.5-4 gr), although T6 and T7 have the lowest means (\~4 gr); in general, and given the high number of retouched tools for T6 (@tbl-general-gravettian), this non-local chert seems to have been consistently reduced with a third quartile ending in the 5 gr mark.
+The sizes of lithic artefacts (flakes, elongated blanks, cores and retouched tools) are explored through scatterplots of width and length (@fig-gravettian-boxplots a) and boxplots for weight (@fig-gravettian-boxplots b); complete tables with descriptive statistics can also be found in SOM ++, table s++. The scatterplots show different patterns in the several analysed classes. Flakes are longer and wider in local cherts and generally smaller in non-local types (\~20-22 mm maximum lengths for T6 and T7). This is similar for elongated blanks, with non-local cherts presenting thinner and short bladelets than local types. Core width is variable between both local and non-local cherts; however, non-local cherts show a concentration of cores in the ~20 mm length mark, while local cherts show a wider variation of longer cores. Retouched tools show no differences in width and length between local and non-local cherts. Regarding the weight (@fig-gravettian-boxplots b), although there is some variability, non-local types T6 and T7 seem to have the lowest weights in all classes (flakes, elongated blanks, cores and retouched tools). The lowest means for flakes are for T6 and T7 (\~2.5 gr). However, in general, the lightest flakes seem to be from T2 and T6, although T2 also shows several heavy outliers. Elongated products show even smaller means for T6 and T7 (0.5-1 gr), especially when compared to local cherts (\~2.5 gr). Regarding cores, @tbl-general-gravettian shows that type T2 and T6 have the highest number of cores; between these two types, T6 has the lightest cores, with a maximum of \~21 gr and with a mean of \~12 gr, in comparison to T2 with a maximum of \~37 gr and a mean of \~21 gr. Retouched tools shows similar median values among all chert types (2.5-4 gr), although T6 and T7 have the lowest means (\~4 gr); in general, and given the high number of retouched tools for T6 (@tbl-general-gravettian), this non-local chert seems to have been consistently reduced with a third quartile ending in the 5 gr mark.
 
 ```{r}
 #| label: fig-gravettian-boxplots
@@ -928,7 +926,7 @@ ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "
 
 ## Proto-Solutrean (levels 4E and top of level 5)
 
-The final lithic sample from the Proto-Solutrean assemblage, consisting of the levels 4E and top of level 5, consists of 635 artifacts. Of these, 167 (`r round(167*100/635, 2)`%) have an indeterminate chert type. Local cherts correspond to `r 32+62+32+158+51` artefacts (`r round((32+62+32+158+51)*100/635, 2`%), with T4 being the most present local chert (n=158 or `r round(158*100/(32+62+32+158+51), 2)`% of the local types). Non-local types are present in smaller numbers (n=`r 60+47+13+9+1` or `r round((60+47+13+9+1)*100/635, 2)`%), with T6 and T7 being the most relevant (n=60 and n=47, respectively), and the TL group includes 3 artefacts.
+The final lithic sample from the Proto-Solutrean assemblage, consisting of the levels 4E and top of level 5, consists of 635 artifacts. Of these, 167 (`r round(167*100/635, 2)`%) have an indeterminate chert type. Local cherts correspond to `r 32+62+32+158+51` artefacts (`r round((32+62+32+158+51)*100/635, 2)`%), with T4 being the most present local chert (n=158 or `r round(158*100/(32+62+32+158+51), 2)`% of the local types). Non-local types are present in smaller numbers (n=`r 60+47+13+9+1` or `r round((60+47+13+9+1)*100/635, 2)`%), with T6 and T7 being the most relevant (n=60 and n=47, respectively), and the TL group includes 3 artefacts, corresponding to 2 types of TL cherts (Table s++ in SOM ++).
 
 When crossing the lithic class with chert type (@tbl-general-proto), we see that the local types show high frequency of blanks (\>50%, including blank fragments), followed by shatter (\~11-27%). Cores are present in small numbers (n=`r 4+5+13+6`), corresponding to ~9-12% of the classes in each local type, with the exception of T1 (chalcedony), with no cores. Core preparation and maintenance products are absent in all local cherts. For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (48.3%, 53.1% and 69.2%, respectively). Retouched tools are present in smaller frequencies for the previous mentioned chert types (\~17-23%). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site; all other non-local types show at least 1 core and frequently the presence of shatter. As expected, the TL artifacts include a blank and a retouched. However, a shatter was also identified.
 
@@ -950,7 +948,9 @@ kable(proto_retouch_tab)
 
 ```
 
-Regarding the debitage, cores and tool sizes, flakes show slightly higher means in local cherts (\~21-22 mm for length and 3.5-4.5 gr for weight), in comparison to non-local cherts, especially T6-T8 (\~19-20 mm for length and 1.3-2.6 gr in weight), with exception of chalcedony which shows consistently low sizes (21.8 mm for length and 2.8 gr for weight). Elongated blank however, show no differences between local and non-local chert types. In retouched tools, weight also shows smaller means for non-local cherts (\~3-2 gr), although with higher standard deviation (\~1.6). Regarding cores, the sample size for non-local cherts is small and only T7 statistics could be obtained. Despite this, when compared to local cherts (T2-T5), T7 cores show smaller mean and maximum values (7.3 gr and 8 gr, respectively).
+As seen in @fig-ratiotd (see also table s++ in the SOM ++), the lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage. Regarding the blank to core ratio (@fig-ratiobc and table s++ in the SOM ++), T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores (@tbl-general-proto).
+
+Regarding the size (width, length and weight) of lithic artefacts (flakes, elongated blanks, cores and retouched tools), several patterns can be seen between local and non-local chert types (@fig-proto-boxplots, table s++ and s++ in the SOM ++). The distribution of width and length (@fig-proto-boxplots a) for flakes shows a concentration of non-local flakes below the 25 mm width and length (with means around 20 mm), while local cherts are more variable and show larger widths and lengths. Similarly, the larger elongated blanks are from local cherts, although there is variability in the sizes. Although there are clear differences in the number of cores between local and non-local cherts (@tbl-general-proto) making patterns harder to identify, non-local cherts seem to show smaller cores. Finally, regarding retouched tools, non-local cherts also seem to be smaller, with widths concentrated below the 20 mm mark, while local cherts are concentrated above the 20 mm mark; no differences were identified regarding length. As for weight (@fig-proto-boxplots b and table s++ in SOM ++), flakes seem to be heavier than and non-local cherts (means of 3.5-4.5 gr and 1.3-2.6 gr, respectively); especially T4 shows heavier flakes and outliers, than T6 and T7. In comparison, elongated blanks show no differences between local and non-local cherts. Although non-local chert cores are barely represented in the assemblage (@tbl-general-proto), they show the lighter weights than local cherts. Retouched tools show the clearest differences, with non-local cherts presenting lighter weights than local cherts.
 
 ```{r}
 #| label:  fig-proto-boxplots
@@ -960,30 +960,8 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol 
 
 ```
 
-Similar to the Gravettian, non-local cherts seem to show the highest values in the calculated blank-to-core and tool-to-debitage ratios. T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores. The lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage.
 
-```{r}
-#| label: tbl-TL-classes
-#| tbl-cap: Trace lithologies cherts from the Gravettian and Proto-Solutrean assemblages of the Terrace and Solutrean assemblage from the Shelter and corresponding technological class.
 
-TL_classes_terrace <- phase_dataset |> 
-  filter(RMTYPE == "TL") |> 
-  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
-
-TL_classes_shelter <- solutrean_dataset |> 
-  mutate(Technocomplex = case_when(
-    LEVEL == "A" | LEVEL == "B" | LEVEL == "C" ~ "Solutrean")) |> 
-  filter(RMTYPE == "TL") |> 
-  select(Technocomplex, SUBTYPE, ID, CLASS, RETOUCHEDPIECETYPOLOGY)
-
-TL_classes <- rbind(TL_classes_terrace, TL_classes_shelter)
-TL_classes <- TL_classes |> 
-  rename(TL = SUBTYPE) |> 
-  arrange(TL)
-
-kable(head(TL_classes))
-
-```
 
 ## Solutrean (levels A to C)
 
@@ -1011,7 +989,9 @@ kable(solutrean_retouch_tab)
 
 ```
 
-For the Solutrean assemblage, there seems to be no clear difference in the measurements and weights of artefacts between local and non-local cherts. This is true especially for the most represented classes (flakes and elongated blanks). Regarding cores, many of the local and non-local cherts are not available for the statistics due to missing data. However, the smallest weight mean seem to be for cores of T6 (16.5 gr), although with high standard deviation and maximum value (16.5 and 48.6 gr, respectively).
+Regarding the tools-to-debitage and blank-to-core ratios, the Solutrean assemblage shows similar patterns as the previous assemblages (@fig-ratiotd and @fig-ratiobc, respectively). Local cherts (T2-T5) show low retouch to debitage ratios (\<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3). Similarly, local cherts show lower blank to core ratios (\<7), while the non-local cherts show higher ratios (\>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample (@tbl-general-solutrean).
+
+Unlike the other assemblages, there seems to be no clear difference in the measurements and weights of artefacts between local and non-local cherts (@fig-solutrean-boxplots and table s++ in SOM ++). The exception are elongated blanks, with show differences between T2 and T6, with T6 showing smaller width and lengths (<35 mm and 15 mm, respectively), than the local type. Similarly, elongated blank weights are smaller in T6 (ranging between 0-5-2 gr). Core weights are also slightly lower in T6 (means of 16.5 gr) than in T2, although the sample is comparatively small (@tbl-general-solutrean).
 
 ```{r}
 #| label: fig-solutrean-boxplots
@@ -1020,8 +1000,6 @@ For the Solutrean assemblage, there seems to be no clear difference in the measu
 ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
-
-Regarding the blank-to-core and tools-to-debitage ratios, the Solutrean assemblage shows similar patterns as the previous assemblages, with the local cherts showing lower blank to core ratios (\<7), while the non-local cherts show higher ratios (\>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample. Similarly, local cherts (T2-T5) show low retouch to debitage ratios (\<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3).
 
 # Discussion
 

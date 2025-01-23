@@ -62,6 +62,22 @@ Highlights: `r rmarkdown::metadata$highlights`
 
 <!-- The actual document text starts here: -->
 
+```{r}
+#| label: library
+
+# Read libraries necessary for running the script
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(janitor)
+library(ggpubr)
+library(knitr)
+library(tibble)
+
+```
+
 # Introduction
 
 Lithic technological organisation has long been a central focus in archaeology for the insights it offers into past human behaviour and lifeways. Nelson (1991) defines lithic technological organisation as the selection and integration of strategies for the production, use, transportation, discarding, and management of tools and raw materials. Kelly (1988) describes it as the interplay of space and time in lithic tool production within a cultural system. This includes activities such as raw material sourcing and distribution, tool manufacture, use, reuse, and discard, as well as broader behavioural patterns like mobility and settlement systems. Together, these definitions underscore the multifaceted nature of lithic technological organisation and its utility in examining key aspects of hunter-gatherer adaptations over time.
@@ -142,6 +158,20 @@ An inherent caveat of using datasets collected by different researchers is relat
 
 After data collection, the databases were imported into R Programming Environment, where the information was processed through the creation of descriptive statistical analysis and writing of this article. Some differences in the collection process, especially between the study by Cascalheira (2010) and the following studies, required homogenization. For example, where in Cascalheira (2010) retouch was an independent variable, with a Yes or No option followed by a variable to classify the type of retouch, in Belmiro (2020) and Belmiro et al. (2021), retouch was identified in the Class variable as RetouchedPiece, followed by a variable to choose the retouch typology. In this situation, the Solutrean dataset was corrected, so that all artifacts with retouch were classified as RetouchedPiece in the Class variable, instead of the original classification. The original datasets without alterations can be found in the online repository, as all the alterations to the original datasets were done through R Studio and can be found in the original R Script. Finally, technological and raw material data had to be merged in a single dataset. This was done through the merging of the several datasets through the artifact identifier “ID”, the sequential identifier which is attributed to each total station plot during excavation, whether relating to individual artifacts plotted in their exact location, or bucket coordinates, relating to the center of the excavated area, and attributed to all artifacts found in the sieved sediment in the bucket. Since the raw material study only focused piece plotted artifacts with individual coordinates (leaving out bucket artifacts), as these correspond to artifacts with dimensions superior to 2 cm or complete bladelets (thus excluding small fragments and chips), the final dataset used in this study does not directly correspond to the full datasets analysed in the original studies. Similarly, the raw material study used only currently accessible artifacts from the assemblages. This is especially relevant for the Shelter Solutrean chert assemblage, where shatter is absent from the sample due to the availability for study. This stands as a caveat for the current study, since it is using only portion of the assemblages, leaving out possibly important debris. Despite this, the current study still offers a novel and key approach to the study of lithic assemblages at the site, with a methodology that includes all the knapping sequence, of a large number of artifacts from the UP sequence of a single site, as seen in table \*\*, which shows the number of artifacts used in the final analysis of this paper, after corrections, homogenization and merging.
 
+```{r}
+#| label: tbl-samples
+#| tbl-cap: "Sample absolute number comparison between original datasets (chert and chalcedony only) for the Solutrean occupation of the Shelter area (levels A-C) published in Cascalheira (2010), the Proto-Solutrean occupation of the Terrace (levels 4E and 5) published in Belmiro et. al., (2021) and the Solutrean occupation of the Terrace (levels 6-7) and the final datasets used in the study after filtering individually plotted IDs (excluding bucket points) and merging with the geoarchaeological dataset published in Belmiro et al., (2025)."
+
+table_samples <- tibble::tribble(
+  ~Assemblage, ~`Original dataset (n)`, ~`Merged dataset (n)`,
+  "Shelter level A-C", 3359, 910,
+  "Terrace level 4E-5", 1821, 635,
+  "Terrace level 6-7", 781, 766)
+
+knitr::kable(head(table_samples))
+
+```
+
 After the homogenization and merging of the datasets, descriptive statistical analysis was applied to describe and interpret the relation between the raw material and technological data. As mentioned above, the goal of the study was to test two hypotheses related to the technological organisation of local and non-local cherts, and between different UP occupations. To test these hypotheses, we evaluated several parameters for each dataset and assemblage and compared the results between chert types and assemblages. The parameters evaluated in the current study were: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. Debitage, core and retouched tool sizes were analysed through descriptive statistics (mean, sd, min and max, tables available in the SOM\*\*) and plotted through boxplots. The ratios were obtained through the division of each group (e.g., tools by debitage and blanks by core), by chert type and assemblage. All other parameters were observed through number and percentages tables. All the analyses were done through code in R Studio.
 
 The entirety of the R code used for the analysis, datasets, and visual representations contained in this paper can be accessed through our online research compendium. We used the rrtools package by Marwick et al. [-@marwickPackagingDataAnalytical2018] to create a research compendium and write a reproducible journal article. The provided files include the complete set of raw data used in the analysis, along with a custom R project [@wickhamPackagesOrganizeTest2015] containing the code required to generate all tables and figures. To enable maximum reuse, the code is made available under the MIT license, data under CC‐0, and figures under CC‐BY [additional details can be found in @marwickComputationalReproducibilityArchaeological2017].
@@ -149,29 +179,14 @@ The entirety of the R code used for the analysis, datasets, and visual represent
 # Results
 
 ```{r}
-#| label: library
-
-# Read libraries necessary for running the script
-library(readr)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(ggplot2)
-library(janitor)
-library(ggpubr)
-library(knitr)
-
-```
-
-```{r}
 #| label: get-data
 
 # Reading the datasets
 ## Technological data
-gravettian_tech <- read.csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
-proto_tech <- read.csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
-solutrean_JC <- read.csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
-solutrean_points <- read.csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
+gravettian_tech <- read_csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
+proto_tech <- read_csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
+solutrean_JC <- read_csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
+solutrean_points <- read_csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
 
 ## RM data
 shelter_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_SHELTER.csv')) # Shelter RM analysis
@@ -280,8 +295,8 @@ cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in
 
 solutrean_WIP <- solutrean_JC |> 
   filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
-  filter(Raw.material %in% c("Chert", "Chalcedony")) |> # Filtering raw materials
-  filter(Screen != "Crivo") |>  # Filtering out all bucket lithics since they were not included in the RM analysis
+  filter(`Raw material` %in% c("Chert", "Chalcedony")) |>  # Filtering raw materials
+  filter(!Screen %in% c("Crivo", "crivo")) |>  # Filtering out all bucket lithics since they were not included in the RM analysis
   mutate_at("Date", str_replace, "20", "") |> # Removing initial part of the year to match IDs
   dplyr::rename("YEAR" = "Date") |> 
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
@@ -289,7 +304,7 @@ solutrean_WIP <- solutrean_JC |>
 # Dataset filtering for chert/chalcedony and levels (A-C), 3298 + 61 solutrean points, n=3359
 solutrean_original_chert <- solutrean_JC |> 
   filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
-  filter(Raw.material %in% c("Chert", "Chalcedony"))
+  filter(`Raw material` %in% c("Chert", "Chalcedony"))
 
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
 solutrean_WIP <- solutrean_WIP |> 
@@ -950,7 +965,7 @@ kable(proto_retouch_tab)
 
 As seen in @fig-ratiotd (see also table s++ in the SOM ++), the lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage. Regarding the blank to core ratio (@fig-ratiobc and table s++ in the SOM ++), T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores (@tbl-general-proto).
 
-Regarding the size (width, length and weight) of lithic artefacts (flakes, elongated blanks, cores and retouched tools), several patterns can be seen between local and non-local chert types (@fig-proto-boxplots, table s++ and s++ in the SOM ++). The distribution of width and length (@fig-proto-boxplots a) for flakes shows a concentration of non-local flakes below the 25 mm width and length (with means around 20 mm), while local cherts are more variable and show larger widths and lengths. Similarly, the larger elongated blanks are from local cherts, although there is variability in the sizes. Although there are clear differences in the number of cores between local and non-local cherts (@tbl-general-proto) making patterns harder to identify, non-local cherts seem to show smaller cores. Finally, regarding retouched tools, non-local cherts also seem to be smaller, with widths concentrated below the 20 mm mark, while local cherts are concentrated above the 20 mm mark; no differences were identified regarding length. As for weight (@fig-proto-boxplots b and table s++ in SOM ++), flakes seem to be heavier than and non-local cherts (means of 3.5-4.5 gr and 1.3-2.6 gr, respectively); especially T4 shows heavier flakes and outliers, than T6 and T7. In comparison, elongated blanks show no differences between local and non-local cherts. Although non-local chert cores are barely represented in the assemblage (@tbl-general-proto), they show the lighter weights than local cherts. Retouched tools show the clearest differences, with non-local cherts presenting lighter weights than local cherts.
+Regarding the size (width, length and weight) of lithic artefacts (flakes, elongated blanks, cores and retouched tools), several patterns can be seen between local and non-local chert types (@fig-proto-boxplots, table s++ and s++ in the SOM ++). The distribution of width and length (@fig-proto-boxplots a) for flakes shows a concentration of non-local flakes below the 25 mm width and length (with means around 20 mm), while local cherts are more variable and show larger widths and lengths. Similarly, the larger elongated blanks are from local cherts, although there is variability in the sizes. Although there are clear differences in the number of cores between local and non-local cherts (@tbl-general-proto) making patterns harder to identify, non-local cherts seem to show smaller cores. Finally, regarding retouched tools, non-local cherts also seem to be smaller, with widths concentrated below the 20 mm mark, while local cherts are concentrated above the 20 mm mark; no differences were identified regarding length. As for weight (@fig-proto-boxplots b and table s++ in SOM ++), local flakes seem to be heavier than  non-local cherts (means of 3.5-4.5 gr and 1.3-2.6 gr, respectively); especially T4 shows heavier flakes and outliers, than T6 and T7. In comparison, elongated blanks show no differences between local and non-local cherts. Although non-local chert cores are barely represented in the assemblage (@tbl-general-proto), they show the lighter weights than local cherts. Retouched tools show the clearest differences, with non-local cherts presenting lighter weights than local cherts.
 
 ```{r}
 #| label:  fig-proto-boxplots
@@ -1003,21 +1018,70 @@ ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"
 
 # Discussion
 
-Hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization.
+As mentioned before, this study aimed to test two expectations related to the use and knapping of local and non-local raw materials, in specific, chert and chalcedony, and their relation to settlement and mobility strategies, across several UP occupations. As such, our method derived the following hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization (@tbl-hypotheses).
 
-To test these hypotheses, the following parameters were evaluated for each assemblage and compared between chert types: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios ; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. The results may be summarised as follows:
+```{r}
+#| label: tbl-hypotheses
+#| tbl-cap: A table.
 
-Retouched tools are present in higher percentages in the Gravettian assemblages. Within the assemblage, retouched tools (P1) are present in higher frequencies in the non-local cherts, as well as in core preparation and maintenance products (P2). Debitage sizes (P3) show no differences between local and non-local cherts. Tools-to-debitage ratios (P4) are significantly higher in non-local cherts. Core sizes (P5) are slightly smaller in T6, a non-local chert, and the blank-to-core ratios (P6) are higher in non-local cherts. Alike blanks, retouched sizes (P7) show no relevant differences between local and non-local cherts; however, tool diversity (P8) is higher in non-local cherts, although with high frequency of less specialised tools such as notches and retouched tools, alongside hunting implements such as backed bladelets (P9). The high frequency of burins seen in this assemblage may be related to their use as cores, representing a knapping strategy more than the presence of retouch.
+hypotheses <- readr::read_csv(here::here('analysis/data/tables/hypotheses_short.csv'))
 
-The Proto-Solutrean assemblages show a smaller presence of retouched tools than the Gravettian, and within the assemblage, retouched tools (P1) are slightly more frequent in non-local cherts. Core preparation and maintenance products (P2) are only present in non-local cherts, albeit in very small numbers (n=2). Debitage sizes (P3), core sizes (P5), and retouched tool sizes (P7) are slightly smaller in non-local cherts. Regarding the ratios, tool-to-debitage ratios (P4) are higher in non-local cherts, albeit smaller than those seen in the Gravettian assemblage, and blank-to-core ratios (P6) are also higher in non-local cherts. Little differences were observed in tool diversity (P8) and specialisation (P9) between local and non-local cherts.
+knitr::kable(head(hypotheses))
 
-Finally, the Solutrean shows no relevant differences in the frequencies of retouched tools (P1) and core preparation and maintenance products (P2) between local and non-local cherts. In general, the retouch frequency is lower than that observed in the previous assemblages. Debitage (P3), core (P5), and retouched tool (P7) sizes show no differences between local and non-local cherts. Similarly to the Proto-Solutrean, tools-to-debitage ratios (P4) and blank-to-core ratios (P6) are slightly higher in non-local cherts. Both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
+```
 
-How the results fit or do not fit within the hypothesis, and possible reasons why.
 
-Focus on the high presence of retouch and burins during the Gravettian.
+To test these hypotheses, the following parameters were evaluated for each assemblage and compared between chert types: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios ; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. These parameters and their main results can be found in table @tbl-results-sum, and can be summarised as follows.
 
-Fitting the technological data with the suggested interpretations from article 2.
+In the Gravettian assemblage, retouched tools (P1) are present in higher frequencies in the non-local cherts, as well as in core preparation and maintenance products (P2). Debitage sizes (P3) show smaller sizes and weights for non-local cherts. Tools-to-debitage ratios (P4) are significantly higher in non-local cherts. Core sizes (P5) are slightly smaller in T6, a non-local chert, and the blank-to-core ratios (P6) are higher in non-local cherts. Retouched sizes (P7) show no relevant differences between local and non-local cherts; however, tool diversity (P8) is higher in non-local cherts, although with high frequency of less specialised tools such as notches and retouched tools, alongside hunting implements such as backed bladelets (P9). The high frequency of burins seen in this assemblage may be related to their use as cores, representing a knapping strategy more than the presence of retouch.
+
+```{r}
+#| label: tbl-results-sum
+#| tbl-cap: "Summarised results for analysis parameters. Gr: Gravettian; Pr: Proto-Solutrean; So: Solutrean; Exp: Expectations; L: Local; NL: Non-local." 
+
+p_results <- readr::read_csv(here::here('analysis/data/tables/results_sum.csv'))
+
+knitr::kable(head(p_results))
+
+```
+
+
+The Proto-Solutrean assemblages show a smaller presence of retouched tools than the Gravettian, and within the assemblage, retouched tools (P1) are slightly more frequent in non-local cherts. Core preparation and maintenance products (P2) are only present in non-local cherts, albeit in very small numbers (n=2). Blank sizes (P3), core sizes (P5), and retouched tool sizes (P7) are slightly smaller in non-local cherts. Regarding the ratios, tool-to-debitage ratios (P4) are higher in non-local cherts, albeit smaller than those seen in the Gravettian assemblage, and blank-to-core ratios (P6) are also higher in non-local cherts. Little differences were observed in tool diversity (P8) and specialisation (P9) between local and non-local cherts.
+
+Finally, the Solutrean shows no relevant differences in the frequencies of retouched tools (P1) and core preparation and maintenance products (P2) between local and non-local cherts, with only slightly higher frequencies in the non-local cherts. In general, the retouch frequency is lower than that observed in the previous assemblages. Debitage (P3), core (P5), and retouched tool (P7) sizes show no differences between local and non-local cherts, except for elongated blanks which are smaller in T6 and bigger in T2, and for slightly smaller cores seen in T6, although with high standard deviations. Similarly to the Proto-Solutrean, tools-to-debitage ratios (P4) and blank-to-core ratios (P6) are slightly higher in non-local cherts. Both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
+
+In general, the obtained results seem to fit the study expectations. The Gravettian assemblage seems to show agreement with most of the expectations (table **). Although ~50% of the assemblage is composed of non-local raw materials, making them as frequent as the local cherts, non-local cherts, especially T6 and T7 show differential techno-typological patterns from the local raw materials. Only in expectation e) there seems to be a difference from the expected outcome.
+
+In this sense, it would be expected a lower typological diversity from non-local cherts, since the distance to source and inferred mobility would assume that less specialized tools would be more adequate for several use-case scenarios; instead, our results show higher tool diversity in non-local cherts. However, this scenario also implies that tools are being transported as either less specialized tools or even blanks which are then maintained. Instead, our results also suggest that the long-distance raw materials, especially T6 and T7, are being knapped at the site. As such, the high diversity of tool typology may simply be a reflection of the transportation of volumes and their knapping on site, a possible preference for these raw materials for the production of retouched tools, and thus their high typological variability. Despite this high variability however, less specialized tools such as retouched blanks are still predominant in non-local cherts, as well as specialized tools such as backed bladelets, giving weight to the interpretation that given the possible ease of access to these raw materials, either through high-mobility or exchanged between groups, these were knapped on site, but with longer use-lives, extensive reduction and high presence of retouch and formal tools.
+
+Similarly, the Proto-Solutrean assemblage shows only disagreement with the expected outcomes within the variability of retouched tools (expectation e and P8-9) and possibly the focus on maintenance and prolonging use-lives of tools (expectation a), especially concerning P2. Unlike expected, there are little differences in the amount and type of retouched tool types between local and non-local raw materials. Unlike the Gravettian occupation, however, retouched tools are overall not well-represented in the assemblage. It is key to notice, however, that the Proto-Solutrean occupation of Vale Boi seemed to introduce other raw materials, such as quartz or dolerite, to the production of retouched tools. Although knapping strategies seemed to be overall simpler (e.g., simple platform cores in quartz), splintered pieces are highly represented in quartz. In opposition, most endscrapers are made of chert (Belmiro et al., 2021), while the majority of Vale Comprido points are found in dolerite (Belmiro et al., 2021; Marreiros, 2009). These patterns, then, may correspond to a specialisation of tool production to the type of raw material itself (whether quartz, chert or dolerite), thus making chert, retouched tool variability patterns similar and unrelated to distance of source. Regarding P2, although there is a slightly higher presence of core preparation and maintenance products in non-local cherts, there is an overall lack of this class of artefacts. This means that for the Proto-Solutrean assemblage of Vale Boi, core maintenance variables are not adequate to discern differences between local and non-local raw materials, since these knapping strategies were not consistently used during this chronology.
+
+Finally, the Solutrean assemblages also show only two parameters that disagree with the expectations: debitage sizes (P3) and retouched tool sizes (P7). Flakes show no differences in dimensions and weight between local and non-local raw materials. This may be related to the production process of Solutrean points, which may start with larger flakes or elongated products that are then reconfigured to the desired product, thus producing similar discarded flakes in all chert types. However, elongated blanks do follow the expected patterns, with non-local cherts having smaller products and local cherts. This may mean that non-local cherts, especially T6, are being further reduced in specific strategies for the production of elongated products, thus leading to different patterns between these two classes of blanks. The sizes of retouched tools, alike flakes, also show no relevant differences between local and non-local. However, this variable may not be adequate for the present study, especially regarding the size measurements; both width and length are used for scatterplots, however, the technological database used in this study is missing specific measurements (especially length) for typologies of retouched tools. As such, the scatterplots are further truncated by the difference in analysis methodology, making this pattern possibly invalid.
+
+Aside from the specific expectations for the treatment of local and non-local cherts within each assemblage, when comparing between technocomplexes, a few key patterns also stand out. Chert retouched tools are present in higher percentages in the Gravettian assemblages (~22%) than in the Proto-Solutrean and Solutrean assemblages (<10%). This is also clear through the tool-to-debitage ratios, which are higher in the Gravettian assemblage (@fig-ratiotd).
+
+There are little differences in the general size and weight of the artifacts between assemblages. For example, for key classes where size and weight differences could be expected (e.g., cores), the length measurements are mostly all located between 20-40 mm and weight between 10-40 gr. The major differences seem to be explained better by bigger cores in local chert types and smaller cores for non-local chert types. However, a few key differences were noted. T4 cores (the chert type most frequent in the Proto-Solutrean assemblage) shows the largest weights of cores of all assemblages, both in the Solutrean and Proto-Solutrean assemblage, as well as T5 in the Solutrean assemblage. T6 and T7 have consistently the smaller weights, especially compared to T2 during the Proto-Solutrean and Gravettian, which shows slightly higher weights. This consistency in artefact size throughout the assemblages may be explained by a combination of local lithic resource availability and transport and knapping strategies focusing on intensive reduction and maintenance of non-local raw materials. Belmiro et al. (2023) highlight the small size of chert nodules (usually between ~5-10 cm with a maximum of 20 cm of diameter) in the Algarve region. Although abundant and possibly available throughout all of the UP, given their location in accessible cliffs, these lithic resources are often small and fracture easily when obtained directly from the source. Given the possibly initial small size of the local chert nodules, it may be possible that the small artefact sizes are related not to intensive knapping of the nodules, but to the initial size of the knapped volumes. This is also supported by the lower blank-to-core ratios seen in local raw materials.
+
+In comparison, at least for T6 cherts from central Portugal (for which we have a comparable reference collection of unknapped volumes collected from secondary sources), the initial volumes are frequently larger (>20 cm), although smaller nodules can also be found. This suggests that the small artefact sizes of this non-local resource are not necessarily a product of resource availability but an intentional choice of either transportability of smaller volumes/nodules, knapping strategies focused on intensive reduction and maintenance, or both. This is also supported by the higher blank-to-core and tool-to-debitage ratios seen in non-local raw materials, especially T6.
+
+A key interpretation can be derived. Cores, shatter and debitage are present even in non-local chert types (excluding the TL category), meaning although possibly coming from long-distance (e.g., T6 and T7 with sources over ~200 km, as the crow flies), these raw materials were being introduced to the site as knappable volumes and not only as finished products. This has also been previously suggested, based on the presence of cortex attributed to small transport distances from source to procurement area, in non-local cherts in all assemblages (Belmiro et al., 2025).
+
+## Some extra notes and structure
+
+- Goals of the study
+- Parameters studied
+- Summary of the results based on expectations
+- How they fit within the expectations + how they differ by assemblage
+- General differences between expectations
+- Interpretation of chert procurement and management, and changes through time + settlement changes
+
+When groups move to areas where raw materials are scarcer or of poorer quality (understanding that poorer quality may not mean they are bad quality, simply not as good quality as the raw materials group have current access), more effort is placed in the preparation of transportable cores and tools (Kelly, 1988). This may be the case for the Gravettian assemblage; not only is the percentage of tools high, large enough volumes of stone were transported to the site and knapped, but also high frequency of burins, which may have also been a technological choice to obtain elongated products in an efficient way. There seems to be an effort in transporting raw materials of known good quality in transportable yet adaptable shapes to later shape and use.
+
+It would be also expected that whenever groups have easy access to good quality, non-local raw materials, either due to high mobility or exchanges between groups, these resources become more abundant in the assemblage, but also be less extensively used (Andrefsky, 1994). The idea is that the patterns of non-local raw material use are based on their conservation due to cost of procurement; when that cost is reduced, so is the necessity to conserve the resources, and thus the expected patterns may not be as clear. Despite the high frequency of non-local raw materials, which implies some sort of ease of access to non-local raw materials of good quality, probably due to high residential mobility, the assemblage still shows conservation of raw materials. This is seen in the high frequence of retouched tools and high ratios of tool to debitage when compared to local raw materials. Artefact sizes are also smaller in non-local raw materials then local raw materials and blank-to-core ratios are higher, showing that these non-local raw materials were extensively used. This shows that access to non-local raw materials, making them highly represented in the assemblage, especially the cherts from central Portugal (T6), did not impact the patterns expected for the treatment of non-local raw materials.
+
+A strategy used to raw material transportation is stockpilling lithic raw materials in various production stages, thus reducing the need for extensive lithic production and tool reworking (Kuhn, 2004). Longer-term residential occupations occupations are more likely to involve stockpilling strategies and reduced investment in tool maintenance (Bamforth, 1990). This would create assemblages with more blanks, less maintenance products and less retouched tools such as retouched flakes. However, even with stockpilling, 
+
+
 
 # Conclusion
 

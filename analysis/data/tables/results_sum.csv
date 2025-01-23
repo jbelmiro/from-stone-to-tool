@@ -1,0 +1,11 @@
+﻿Parameters,Gr L,Gr NL,Pr L,Pr NL,So L,So NL,Exp L,Exp NL
+P1: retouched tool %,~12-18%,~30%,5-15%,~17-23%,~3%,<10%,-,+
+P2: maintenance products %,<2%,<4%,0%,<1%,1.30%,3.5% (T6),-,+
+P3: debitage sizes - flakes,> ,< ,> ,< ,=,=,-,+
+P3: debitage sizes - elongated,> ,< ,>=,<=,> (T2),< (T6),-,+
+P4: tools-to-debitage ratio,0.25-0.5,0.9-1.0,<0.1-0.2,0.3-0.5,<0.1,0.1-0.3,-,+
+P5: core sizes,> (T2),< (T6),> ,< ,> ,< ,-,+
+P6: blank-to-core ratios,<4,~8,~6-9,11,<7,>9,-,+
+P7: retouched tool sizes,=,=,> ,< ,=*,=*,-,+
+P8: tool diversity,7,15,9,10,9,5,+,-
+P9: tool specialization,"Burins, endscrapers, retouched flakes, splitered pieces","Burins, endscrapers, retouched flakes, splintered pieces, backed bladelets","Endscrappers, splintered pieces, burins, retouched flakes","Endscrappers, splintered pieces, burins, retouched flakes","Bifacial blanks/fragments, endscrappers, notches, retouched blanks, splintered pieces","Bifacial blanks/fragments, endscrappers, notches, retouched blanks, splintered pieces",+,-

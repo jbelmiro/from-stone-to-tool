@@ -309,7 +309,7 @@ solutrean_original_chert <- solutrean_JC |>
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
 solutrean_WIP <- solutrean_WIP |> 
   mutate(Class = case_when( # This alteration is being done on the original class column
-    Retouched == "Yes" ~ "Retouched piece", # Whenever retouch is present, class is now Retouched piece
+    Retouched == "Yes" ~ "RetouchedPiece", # Whenever retouch is present, class is now Retouched piece
     TRUE ~ Class)) |> 
   mutate(CLASS = case_when( # Creating a column for clustered classes, to match the other DBs
     Class == "Blade" | Class == "Bladelet" ~ "ElongBlank", # Cluster blades with bladelets. The distinction can come later through a mutate and the measurements
@@ -391,12 +391,54 @@ solutrean_dataset <- solutrean_dataset |>
 #| label: general-tables
 
 # Tables with class by raw material type (n and %)
+##
+general_table <- phase_dataset |> 
+    dplyr::mutate(RMTYPE = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    TRUE ~ RMTYPE)) |> 
+  dplyr::mutate(CLASS = case_when(
+    CLASS == "BlankFrag" ~ "Blank fragment",
+    CLASS == "BurinSpall" ~ "Burin spall",
+    CLASS == "CoreFrag" ~ "Core fragment",
+    CLASS == "CorePreparProd" ~ "Core prep product",
+    CLASS == "RetouchedPiece" ~ "Retouched",
+    CLASS == "RetouchedPieceFrag" ~ "Retouched fragment",
+    TRUE ~ CLASS)) |> 
+  dplyr::mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Retouched blade" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake" | RETOUCHEDPIECETYPOLOGY == "Retouched flake fragment" ~ "Retouched blank",
+    RETOUCHEDPIECETYPOLOGY == "Splintered piece fragment" ~ "Splintered piece",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+
+general_table_solutrean <- solutrean_dataset |> 
+   dplyr::mutate(RMTYPE = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" ~ "T6",
+    RMTYPE == "TYPE 7" ~ "T7",
+    RMTYPE == "TYPE 8" ~ "T8",
+    RMTYPE == "TYPE 9" ~ "T9",
+    RMTYPE == "TYPE 10" ~ "T10",
+    RMTYPE == "TYPE 11" ~ "T11",
+    TRUE ~ RMTYPE)) |> 
+  dplyr::mutate(CLASS = case_when(
+    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
+    CLASS == "ElongBlankFrag" | CLASS == "FlakeFrag" ~ "Blank fragment",
+    CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "CorePrepProd" ~ "Core prep product",
+    CLASS == "RetouchedPiece" | CLASS == "Retouched piece" ~ "Retouched",
+    CLASS == "Retouched piece fragment" ~ "Retouched fragment",
+    TRUE ~ CLASS))
+
 ## For Gravettian
-gravettian_general <- phase_dataset |>
+gravettian_general <- general_table |>
   filter(Level %in% c(6, 7)) |>
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) |>
+  filter(RMTYPE != "INDET") |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "TL"))) |>
   tabyl(CLASS, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
@@ -405,12 +447,12 @@ gravettian_general <- phase_dataset |>
   mutate(across(where(is.character), ~ gsub("^0   \\(0\\.00%\\)$", " ", .)))
 
 ## For Proto-Solutrean (4E and top of 5)
-proto_general <- phase_dataset |> 
+proto_general <- general_table |> 
   filter(Level %in% c("4E", "4E/5")) |> 
   filter(CLASS != "Chip") |> 
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TL", "INDET"))) |> 
+  filter(RMTYPE != "INDET") |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "TL"))) |> 
   tabyl(CLASS, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
@@ -419,10 +461,10 @@ proto_general <- phase_dataset |>
   mutate(across(where(is.character), ~ gsub("^0   \\(0\\.00%\\)$", " ", .)))
 
 ## For Solutrean
-solutrean_general <- solutrean_dataset |> 
-  mutate(RMTYPE = factor(RMTYPE, levels = c("TYPE 1","TYPE 2", "TYPE 3", "TYPE 4",
-                                        "TYPE 5", "TYPE 6","TYPE 7", 
-                                        "TYPE 8", "TYPE 9", "TYPE 10", "TYPE 11", "TL", "INDET"))) |> 
+solutrean_general <- general_table_solutrean |> 
+  filter(RMTYPE != "INDET") |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |> 
   tabyl(CLASS, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
@@ -632,87 +674,38 @@ gravettian_stats_weight <- gravettian_stats |>
 
 # Solutrean table
 ## Table preparation
-solutrean_retouch <- solutrean_dataset |>
-    mutate(CLASS = case_when(
-    CLASS == "Retouched piece" ~ "RetouchedPiece",
-    CLASS == "Retouched piece fragment" ~ "RetouchedPieceFrag",
-    TRUE ~ CLASS)) |>
-  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) |>
-  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) |>
-  filter(RETOUCHEDPIECETYPOLOGY != "") |>
-  dplyr::mutate(RMTYPE = case_when(
-    RMTYPE == "TYPE 1" ~ "T1",
-    RMTYPE == "TYPE 2" ~ "T2",
-    RMTYPE == "TYPE 3" ~ "T3",
-    RMTYPE == "TYPE 4" ~ "T4",
-    RMTYPE == "TYPE 5" ~ "T5",
-    RMTYPE == "TYPE 6" ~ "T6",
-    RMTYPE == "TYPE 7" ~ "T7",
-    RMTYPE == "TYPE 8" ~ "T8",
-    RMTYPE == "TYPE 9" ~ "T9",
-    RMTYPE == "TYPE 10" ~ "T10",
-    RMTYPE == "TYPE 11" ~ "T11",
-    TRUE ~ RMTYPE))
-## Janitor tabyl for final table with n and %
-solutrean_retouch_tab <- solutrean_retouch |>
+solutrean_retouch <- general_table_solutrean |>
+  filter(CLASS %in% c("Retouched", "Retouched fragment")) |>
+  filter(RMTYPE != "INDET") |> 
+  filter(RETOUCHEDPIECETYPOLOGY != "") |> 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
   adorn_totals(c("row", "col")) |>
   mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
-  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T5, T6, T7, T8, T11, INDET, Total) |> # Ordering values
+  select(RETOUCHEDPIECETYPOLOGY, Local, T6, T7, T8, T11, Total) |> # Ordering values
   rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 # Proto-solutrean table
 ## Table preparation
-proto_retouch <- phase_dataset |>
-  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) |>
+proto_retouch <- general_table |>
+  filter(CLASS %in% c("Retouched", "Retouched fragment")) |>
   filter(Level %in% c("4E", "4E/5")) |>
-  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) |>
-  dplyr::mutate(RMTYPE = case_when(
-    RMTYPE == "TYPE 1" ~ "T1",
-    RMTYPE == "TYPE 2" ~ "T2",
-    RMTYPE == "TYPE 3" ~ "T3",
-    RMTYPE == "TYPE 4" ~ "T4",
-    RMTYPE == "TYPE 5" ~ "T5",
-    RMTYPE == "TYPE 6" ~ "T6",
-    RMTYPE == "TYPE 7" ~ "T7",
-    RMTYPE == "TYPE 8" ~ "T8",
-    RMTYPE == "TYPE 9" ~ "T9",
-    RMTYPE == "TYPE 10" ~ "T10",
-    RMTYPE == "TYPE 11" ~ "T11",
-    TRUE ~ RMTYPE))
-## Janitor tabyl for final table with n and %
-proto_retouch_tab <- proto_retouch |>
+  filter(!RMTYPE == "INDET") |> 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
   adorn_totals(c("row", "col")) |> 
   mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
-  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, TL, INDET, Total) |> # Ordering values
+  select(RETOUCHEDPIECETYPOLOGY, Local, T6, T7, T8, T9, TL, Total) |> # Ordering values
   rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 # Gravettian table
 ## Table preparation
-gravettian_retouch <- phase_dataset |> 
-  filter(CLASS %in% c("RetouchedPiece", "RetouchedPieceFrag")) |>
+gravettian_retouch <- general_table |> 
+  filter(CLASS %in% c("Retouched", "Retouched fragment")) |>
   filter(Level %in% c(6, 7)) |> 
-  select(RMTYPE, RETOUCHEDPIECETYPOLOGY) |> 
-  dplyr::group_by(RMTYPE) |>
-  dplyr::mutate(RMTYPE = case_when(
-    RMTYPE == "TYPE 1" ~ "T1",
-    RMTYPE == "TYPE 2" ~ "T2",
-    RMTYPE == "TYPE 3" ~ "T3",
-    RMTYPE == "TYPE 4" ~ "T4",
-    RMTYPE == "TYPE 5" ~ "T5",
-    RMTYPE == "TYPE 6" ~ "T6",
-    RMTYPE == "TYPE 7" ~ "T7",
-    RMTYPE == "TYPE 8" ~ "T8",
-    RMTYPE == "TYPE 9" ~ "T9",
-    RMTYPE == "TYPE 10" ~ "T10",
-    TRUE ~ RMTYPE))
-## Janitor tabyl for final table with n and %
-gravettian_retouched_tab <- gravettian_retouch |> 
+  filter(!RMTYPE == "INDET") |> 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
   adorn_totals(c("row", "col")) |>
   mutate(across(where(is.numeric), ~ ifelse(. == 0, " ", .))) |>
-  select(RETOUCHEDPIECETYPOLOGY, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TL, INDET, Total) |> # Ordering values
+  select(RETOUCHEDPIECETYPOLOGY, Local, T6, T7, T8, T9, T10, TL, Total) |> # Ordering values
   rename(Typology = RETOUCHEDPIECETYPOLOGY)
 
 ```
@@ -726,20 +719,34 @@ The sample studied for the Gravettian occupation (\>2012 excavations) of the Ter
 When compared to local cherts, non-local chert types (especially T6 and T7) show similar percentages of blanks (n=`r 44+24` or 40% and `r 21+21`\`or \~50%, respectively) but higher percentages of retouched tools (\~30%). Cores, core fragments and core preparation and maintenance products are also present in all non-local cherts (excluding TL) even if in percentages below 4% (n\<4), as well as shatter (\~12%). The exception is T6 that shows the highest numbers of cores and core fragments (n=8), although with low frequencies (4.6%). The TL cherts show mostly blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4).
 
 ```{r}
-#| label: tbl-general-gravettian
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Gravettian assemblage (levels 6 and 7) of the Terrace area of Vale Boi.
+#| label: tbl-general
+#| tbl-cap: Number and percentage of technotypological classes by raw material type of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages.
+#| tbl-subcap: 
+#| - "Number and percentage of technotypological classes by raw material from the Gravettian assemblage (levels 6 and 7) of the Terrace area."
+#| - "Number and percentage of technotypological classes by raw material from the Proto-Solutrean assemblage (levels 4E and 5) of the Terrace area."
+#| - "Number and percentage of technotypological classes by raw material from the Solutrean assemblage (levels A-C) of the Shelter area."
+#| layout-nrow: 4
 
-kable(gravettian_general)
+kable(head(gravettian_general))
+kable(head(proto_general))
+kable(head(solutrean_general))
 
 ```
 
 As seen in table @tbl-retouch-gravettian, 170 retouched tools were identified, with 39 (`r round(39*100/170, 2)`%) having an unidentified chert type. From the identified chert types, `r 3+20+4+2+9` (`r round((3+20+4+2+9)*100/170, 2)`%) of retouched tools are from local types, `r 58+24+3+1+3` (`r round((58+24+3+1+3)*100/170, 2)`%) from non-local cherts and 4 are from the TL group. From all chert types, T6 shows the highest numbers of retouched pieces (n=58, `r round(58*100/170, 2)`%). Regarding typologies, 15 types of retouched tools were identified (excluding retouched tool fragments). All these typologies were found in the non-local chert group, while only 7 retouched tool typologies were identified in local cherts/chalcedony. The most common typologies identified in the assemblage (and for all chert types) were burins (n=52), endscrappers (n=17), retouched flakes (n=30) and splintered pieces (n=26). From all these, the majority were produced in non-local chert, mainly T6 and in lesser numbers T7. Although in lesser numbers as well, backed bladelets were also identified (n=6), but only present in non-local chert types (T6 and T7). The presence of burin spalls in local chert, especially T2 (n=9) and non-local cherts (T6 with n=12 and T7 with n=4) is expected due to the prevalence of burins (@tbl-general-gravettian).
 
 ```{r}
-#| label: tbl-retouch-gravettian
-#| tbl-cap: Number and percentage of retouched tools by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area.
+#| label: tbl-retouch
+#| tbl-cap: Number and percentage of retouched tools by raw material of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages. Retouched blank typology includes flakes, blades and bladelets and respective fragments.
+#| tbl-subcap: 
+#| - "Number and percentage of retouched tools by raw material from the Gravettian assemblage (levels 6 and 7) of the Terrace area."
+#| - "Number and percentage of retouched tools by raw material from the Proto-Solutrean assemblage (levels 4E and 5) of the Terrace area."
+#| - "Number and percentage of retouched tools by raw material from the Solutrean assemblage (levels A-C) of the Shelter area."
+#| layout-nrow: 4
 
-kable(gravettian_retouched_tab)
+kable(head(gravettian_retouched))
+kable(head(proto_retouch))
+kable(head(solutrean_retouch))
   
 ```
 
@@ -974,9 +981,6 @@ Regarding the size (width, length and weight) of lithic artefacts (flakes, elong
 ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
-
-
-
 
 ## Solutrean (levels A to C)
 

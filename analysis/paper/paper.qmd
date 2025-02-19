@@ -120,6 +120,16 @@ Our goal is to understand the provisioning, use and management strategies of che
 
 2.  Non-local raw materials are expected to present a) a majority of formal tools, in the case of individual provisioning or higher use-lives, with knapping strategies characterised by the manufacture, use and maintenance; b) an increased reduction intensity and high tools to debitage ratio; c) smaller cores and higher blank-to-core ratio; d) more extensive reduction and high presence of retouch and/or tool maintenance; e) lower tool diversity, characterised by less specialised tools, such as the presence of retouched blanks as multipurpose tools. This may be related to scarcer or poorer quality of raw materials which leads to the prepared transportation of lithic resources to a site, but also related to more mobile settlement patterns as well as short-term site occupations.
 
+```{r}
+#| label: tbl-expectations
+#| tbl-cap: A table.
+
+hypotheses <- readr::read_csv(here::here('analysis/data/tables/hypotheses_short.csv'))
+
+knitr::kable(head(hypotheses))
+
+```
+
 Despite these expectations, it is important to notice that, especially in occupations with a high percentage of non-local cherts at the site (e.g., Gravettian occupations of level 7 and 6 of the Terrace at Vale Boi), these technological may not reflect a preoccupation with intensive management of a scarce and limited non-local resource, and be more a reflection of the type of provisioning applied following the suggested model by Kuhn (2004). In this sense, distance from source may have had little intrinsic meaning in the past, especially regarding non-local raw materials. There are several ways in which raw materials may be transported to a site, and the relationship between distance and cost may vary depending on how this takes place [@kuhn2004]. When non-local raw materials are as abundant as local ones, the difference in the technological organization between these materials may be less obvious (Andrefsky, 2004).
 
 ## Site descriptions
@@ -687,14 +697,6 @@ gravettian_retouch <- general_table |>
 
 ```
 
-## Gravettian (levels 6-7)
-
-The sample studied for the Gravettian occupation (\>2012 excavations) of the Terrace area included 766 artifacts. Of these, 209 (`r round(209*100/766, 2)`%) have an indeterminate chert type (@tbl-general-gravettian). Chalcedony (T1) and local cherts (T2-5) show a total of `r 35+110+17+13+72` artefacts (`r round((35+110+17+13+72)*100/766, 2)`%). Non-local cherts show different numbers of artefacts depending on the type, with T6 and T7 showing the highest values (169 or `r round(169*100/766, 2)`% of the total assemblage, and 86 or `r round(86*100/766, 2)`%, respectively); the other non-local cherts have artefact counts lower than 20 per type. The TL cherts also show smaller numbers, with 12 artefacts, corresponding to 7 different types of TL cherts (table s++ in SOM ++).
-
-@tbl-general-gravettian shows the number and percentages of technological classes per chert type. Local cherts show similar patterns between them, with T2 and T5 being the types with higher numbers of artefacts (n=110 and n=72, respectively). For all local cherts, blanks (including blank fragments) represent more than 50% of the artefacts. Cores and core maintenance products are only present in T2 and T5, although in small frequencies: for T2, cores represent 13.6% (n=15 including core fragments) of the group and core preparation and maintenance products represent 1.8% (n=2). For T5 only 4 core fragments and 1 core preparation and maintenance product are present, all frequencies between \~5-1%. Retouched tools seem to be especially relevant in T2 (n= 20, \~18% including retouched piece fragments), making them the most frequent class after blanks. T5 shows similar percentages of retouched tools and shatter (\~12% and \~14%, respectively). T1 (chalcedony) shows similar patterns to other local cherts, although with higher percentages of shatter (34.3%).
-
-When compared to local cherts, non-local chert types (especially T6 and T7) show similar percentages of blanks (n=`r 44+24` or 40% and `r 21+21`\`or \~50%, respectively) but higher percentages of retouched tools (\~30%). Cores, core fragments and core preparation and maintenance products are also present in all non-local cherts (excluding TL) even if in percentages below 4% (n\<4), as well as shatter (\~12%). The exception is T6 that shows the highest numbers of cores and core fragments (n=8), although with low frequencies (4.6%). The TL cherts show mostly blanks and blank fragments (n=3 and n=2, respectively), and retouched tools (n=4).
-
 ```{r}
 #| label: tbl-general
 #| tbl-cap: Number and percentage of technotypological classes by raw material type of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages.
@@ -704,13 +706,11 @@ When compared to local cherts, non-local chert types (especially T6 and T7) show
 #| - "Number and percentage of technotypological classes by raw material from the Solutrean assemblage (levels A-C) of the Shelter area."
 #| layout-nrow: 4
 
-kable(head(gravettian_general))
-kable(head(proto_general))
-kable(head(solutrean_general))
+kable(gravettian_general)
+kable(proto_general)
+kable(solutrean_general)
 
 ```
-
-As seen in table @tbl-retouch-gravettian, 170 retouched tools were identified, with 39 (`r round(39*100/170, 2)`%) having an unidentified chert type. From the identified chert types, `r 3+20+4+2+9` (`r round((3+20+4+2+9)*100/170, 2)`%) of retouched tools are from local types, `r 58+24+3+1+3` (`r round((58+24+3+1+3)*100/170, 2)`%) from non-local cherts and 4 are from the TL group. From all chert types, T6 shows the highest numbers of retouched pieces (n=58, `r round(58*100/170, 2)`%). Regarding typologies, 15 types of retouched tools were identified (excluding retouched tool fragments). All these typologies were found in the non-local chert group, while only 7 retouched tool typologies were identified in local cherts/chalcedony. The most common typologies identified in the assemblage (and for all chert types) were burins (n=52), endscrappers (n=17), retouched flakes (n=30) and splintered pieces (n=26). From all these, the majority were produced in non-local chert, mainly T6 and in lesser numbers T7. Although in lesser numbers as well, backed bladelets were also identified (n=6), but only present in non-local chert types (T6 and T7). The presence of burin spalls in local chert, especially T2 (n=9) and non-local cherts (T6 with n=12 and T7 with n=4) is expected due to the prevalence of burins (@tbl-general-gravettian).
 
 ```{r}
 #| label: tbl-retouch
@@ -721,9 +721,9 @@ As seen in table @tbl-retouch-gravettian, 170 retouched tools were identified, w
 #| - "Number and percentage of retouched tools by raw material from the Solutrean assemblage (levels A-C) of the Shelter area."
 #| layout-nrow: 4
 
-kable(head(gravettian_retouched))
-kable(head(proto_retouch))
-kable(head(solutrean_retouch))
+kable(gravettian_retouch)
+kable(proto_retouch)
+kable(solutrean_retouch)
   
 ```
 
@@ -917,33 +917,9 @@ The sizes of lithic artefacts (flakes, elongated blanks, cores and retouched too
 
 ```{r}
 #| label: fig-gravettian-boxplots
-#| fig-cap: Boxplots Solutrean
+#| fig-cap: Boxplots Gravettian
 
 ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
-
-```
-
-## Proto-Solutrean (levels 4E and top of level 5)
-
-The final lithic sample from the Proto-Solutrean assemblage, consisting of the levels 4E and top of level 5, consists of 635 artifacts. Of these, 167 (`r round(167*100/635, 2)`%) have an indeterminate chert type. Local cherts correspond to `r 32+62+32+158+51` artefacts (`r round((32+62+32+158+51)*100/635, 2)`%), with T4 being the most present local chert (n=158 or `r round(158*100/(32+62+32+158+51), 2)`% of the local types). Non-local types are present in smaller numbers (n=`r 60+47+13+9+1` or `r round((60+47+13+9+1)*100/635, 2)`%), with T6 and T7 being the most relevant (n=60 and n=47, respectively), and the TL group includes 3 artefacts, corresponding to 2 types of TL cherts (Table s++ in SOM ++).
-
-When crossing the lithic class with chert type (@tbl-general-proto), we see that the local types show high frequency of blanks (\>50%, including blank fragments), followed by shatter (\~11-27%). Cores are present in small numbers (n=`r 4+5+13+6`), corresponding to ~9-12% of the classes in each local type, with the exception of T1 (chalcedony), with no cores. Core preparation and maintenance products are absent in all local cherts. For non-local types, especially those with higher number of artefacts (T6-T8), blanks and blank fragments are the most frequent class (48.3%, 53.1% and 69.2%, respectively). Retouched tools are present in smaller frequencies for the previous mentioned chert types (\~17-23%). For T6 the absence of cores but the presence of shatter and a single core preparation and maintenance product suggests knapping on site; all other non-local types show at least 1 core and frequently the presence of shatter. As expected, the TL artifacts include a blank and a retouched. However, a shatter was also identified.
-
-```{r}
-#| label: tbl-general-proto
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area of Vale Boi.
-
-kable(proto_general)
-
-```
-
-In total, 65 chert retouched tools were identified, with 23.1% (n=15) having an unidentified chert type (@tbl-retouch-proto). A total of `r 1+10+2+8+5` (`r round((1+10+2+8+5)*100/65, 2)`%) retouched tools correspond to local cherts, while `r 10+9+3+1+1` (`r round((10+9+3+1+1)*100/65, 2)`%) correspond to non-local and TL cherts. As seen in @tbl-retouch-proto, 14 different types of retouched tools were identified. Endscrappers (26.2%), splintered pieces (17%), burins (12.3%) and retouched flakes (7.7%) were the most prevalent. Local raw materials show 9 different typologies, with Vale Comprido points, Solutrean retouch and notches being present only in the local types, even if in small numbers. Non-local cherts show 10 different typologies of retouched tools. Perforator-endscrapper, truncation, backed bladelet and retouched blades typologies can only be found in non-local varieties, albeit also in small numbers.
-
-```{r}
-#| label: tbl-retouch-proto
-#| tbl-cap: Number and percentage of retouched tools by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area.
-
-kable(proto_retouch_tab)
 
 ```
 
@@ -952,36 +928,10 @@ As seen in @fig-ratiotd (see also table s++ in the SOM ++), the lowest ratio of 
 Regarding the size (width, length and weight) of lithic artefacts (flakes, elongated blanks, cores and retouched tools), several patterns can be seen between local and non-local chert types (@fig-proto-boxplots, table s++ and s++ in the SOM ++). The distribution of width and length (@fig-proto-boxplots a) for flakes shows a concentration of non-local flakes below the 25 mm width and length (with means around 20 mm), while local cherts are more variable and show larger widths and lengths. Similarly, the larger elongated blanks are from local cherts, although there is variability in the sizes. Although there are clear differences in the number of cores between local and non-local cherts (@tbl-general-proto) making patterns harder to identify, non-local cherts seem to show smaller cores. Finally, regarding retouched tools, non-local cherts also seem to be smaller, with widths concentrated below the 20 mm mark, while local cherts are concentrated above the 20 mm mark; no differences were identified regarding length. As for weight (@fig-proto-boxplots b and table s++ in SOM ++), local flakes seem to be heavier than  non-local cherts (means of 3.5-4.5 gr and 1.3-2.6 gr, respectively); especially T4 shows heavier flakes and outliers, than T6 and T7. In comparison, elongated blanks show no differences between local and non-local cherts. Although non-local chert cores are barely represented in the assemblage (@tbl-general-proto), they show the lighter weights than local cherts. Retouched tools show the clearest differences, with non-local cherts presenting lighter weights than local cherts.
 
 ```{r}
-#| label:  fig-proto-boxplots
-#| fig-cap: Boxplots Proto-Solutrean
+#| label: fig-proto-boxplots
+#| fig-cap: Boxplots Proto-solutrean.
 
 ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
-
-```
-
-## Solutrean (levels A to C)
-
-The Solutrean assemblages show similar patterns to those observed in previous assemblages. The final sample from levels A, B and C from the Solutrean occupations of the Shelter area consists of 914 artifacts. Of these, 201 (`r round(201*100/914, 2)`%) correspond to the indeterminate chert group. Local cherts correspond to `r 16+506+4+10+30` (`r round((16+506+4+10+30)*100/914, 2)`%) artefacts, mostly from T2 (n=506). Non-local cherts (including the TL group) correspond to `r 86+9+30+3+1+17+1` (`r round((86+9+30+3+1+17+1)*100/914, 2)`%) artefacts, mostly from T6 (n=86).
-
-When crossing the class data with type of raw material (@tbl-general-solutrean), we see that for local chert, especially T2, the majority of the debitage is composed of flakes and elongated blanks (83.9%). Cores are also present (10.5%), alongside a small percentage of core preparation and maintenance products (1.3%). In comparison to debitage products, retouched tools are scarce in the sample (\~3%). Non-local cherts, especially T6 and T8, show similar patterns to the local cherts, with high percentages of blanks (\>50%). Cores and core preparation and maintenance are also present in small percentages (\~3-6% and 3.5% only for T6, respectively), as well as retouched tools (\<10%). However, these specific results are truncated by the lack of shatter, which were not present in the sample used for the study (see Materials and Methods section).
-
-```{r}
-#| label: tbl-general-solutrean
-#| tbl-cap: Number and percentage of technotypological classes by raw material type from the Solutrean assemblage (levels A to C) of the Shelter area of Vale Boi.
-
-kable(solutrean_general)
-
-```
-
-The analysed Solutrean sample has a total of 43 retouched tools (complete and fragments), with `r 3+13+1` corresponding to local cherts and `r 7+1+2+3` to non-local cherts, with the remaining being cherts of unidentified type. These results are significantly reduced from the original dataset (Cascalheira et al., 2013), possibly due to no bucket coordinates being used.
-From the 43 retouched tools, 11 different typologies were identified (without accounting for fragments). 
-The typologies which are most frequently present in the studied sample are bifacial blanks and bifacial fragments (n=10). Two types of points were identified: shouldered points (n=3, including fragments) and tanged and winged points (n=4). Other frequent retouched typologies are retouched blanks (n=6), notches (n=5), splintered pieces (n=5) and endscrappers (n=4). Local types show a higher variability retouched typologies (9 types), although this may be related to the higher number of tools. In comparison, Type 6 shows only 5 different typologies.
-
-```{r}
-#| label: tbl-retouch-solutrean
-#| tbl-cap: Number and percentage of retouched tools by raw material of the Solutrean assemblage (level A to C) of the Shelter area.
-
-kable(solutrean_retouch_tab)
 
 ```
 
@@ -991,7 +941,7 @@ Unlike the other assemblages, there seems to be no clear difference in the measu
 
 ```{r}
 #| label: fig-solutrean-boxplots
-#| fig-cap: Boxplots Gravettian.
+#| fig-cap: Boxplots Solutrean.
 
 ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
@@ -999,18 +949,7 @@ ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"
 
 # Discussion
 
-As mentioned before, this study aimed to test two expectations related to the use and knapping of local and non-local raw materials, in specific, chert and chalcedony, and their relation to settlement and mobility strategies, across several UP occupations. As such, our method derived the following hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization (@tbl-hypotheses).
-
-```{r}
-#| label: tbl-hypotheses
-#| tbl-cap: A table.
-
-hypotheses <- readr::read_csv(here::here('analysis/data/tables/hypotheses_short.csv'))
-
-knitr::kable(head(hypotheses))
-
-```
-
+As mentioned before, this study aimed to test two expectations related to the use and knapping of local and non-local raw materials, in specific, chert and chalcedony, and their relation to settlement and mobility strategies, across several UP occupations. As such, our method derived the following hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization (@tbl-expectations).
 
 To test these hypotheses, the following parameters were evaluated for each assemblage and compared between chert types: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios ; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. These parameters and their main results can be found in table @tbl-results-sum, and can be summarised as follows.
 

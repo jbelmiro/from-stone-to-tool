@@ -494,13 +494,9 @@ solutrean_general <- general_table_solutrean |>
 solutrean_stats <- solutrean_dataset |> 
   filter(RMTYPE != "INDET") |>
    mutate(CLASS = case_when(
-    CLASS == "Thinning flake" ~ "ThinningFlake",
-    CLASS == "ElongBlank" ~ "ElongatedProd",
+    CLASS == "ElongBlank" ~ "Blank",
+    CLASS == "Flake" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    CLASS == "Retouched piece" ~ "RetouchedPiece",
-    TRUE ~ CLASS)) |> 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
     TRUE ~ CLASS)) |> 
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
@@ -514,26 +510,26 @@ solutrean_stats <- solutrean_dataset |>
 
 # Scatterplot for width and length
 solutrean_scatter <- solutrean_stats |>
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(CLASS %in% c("Blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
   facet_wrap(~CLASS) +
-  labs(x="Length (mm)", y="Max. Width (mm") +
+  labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDC7C9", "#798777"))
 
 # Boxplot for individual measurements
 # Weight
 solutrean_stats_weight <- solutrean_stats |>
-  filter(CLASS %in% c("Flake", "ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS, scales = "free_y") +
@@ -549,15 +545,7 @@ solutrean_stats_weight <- solutrean_stats |>
 # DS prep
 proto_stats <- phase_dataset |> 
   filter(Level %in% c("4E", "4E/5")) |> 
-  filter(!RMTYPE == "INDET") |> 
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) |>
-  mutate(elong = MAXWIDTH*2-LENGTH) |>
-  mutate(CLASS = case_when(
-    CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
-    CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
-    TRUE ~ CLASS)) |> 
+  filter(!RMTYPE == "INDET") |>
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
     RMTYPE == "TYPE 6" ~ "T6",
@@ -569,24 +557,24 @@ proto_stats <- phase_dataset |>
 
 # Scatterplots for width and length
 proto_scatter <- proto_stats |>
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(CLASS %in% c("Blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
    mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
   facet_wrap(~CLASS) +
-  labs(x="Length (mm)", y="Max. Width (mm") +
+  labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDD2B6", "#798777", "#BDC7C9"))
 
 # Boxplots weight
 proto_stats_weight <- proto_stats |>
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6", "T7", "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS, scales = "free_y") +
@@ -604,14 +592,6 @@ proto_stats_weight <- proto_stats |>
 gravettian_stats <- phase_dataset |>
   filter(Level %in% c(6, 7)) |>
   filter(RMTYPE != "INDET") |>
-  mutate(CLASS = case_when(
-    CLASS == "BlankFrag" & PIECECOMPLETENESS == "Proximal" ~ "BlankFragProx", # To add proximal fragments to ratio
-    TRUE ~ CLASS)) |> 
-  mutate(elong = MAXWIDTH*2-LENGTH) |>
-  mutate(CLASS = case_when(
-    CLASS == "Blank" & elong > 0 ~ "Flake", # QUESTION: do I keep flakes and elong separate or join into blanks?
-    CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
-    TRUE ~ CLASS)) |> 
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
     RMTYPE == "TYPE 6" ~ "T6",
@@ -623,26 +603,26 @@ gravettian_stats <- phase_dataset |>
 
 # Scatterplots for width and length
 gravettian_scatter <- gravettian_stats |>
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |>
+  filter(CLASS %in% c("Blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
    mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake", "ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
   facet_wrap(~CLASS) +
-  labs(x="Length (mm)", y="Max. Width (mm") +
+  labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
 
 # Boxplots
 # Weight
 gravettian_stats_weight <- gravettian_stats |>
-  filter(CLASS %in% c("Flake","ElongatedProd", "Core", "RetouchedPiece")) |> 
+  filter(CLASS %in% c("Blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   filter(!(RMTYPE == "Local" & WEIGHT > 40)) |> # Removed a single outlier at 60 weight while ensuring that the data remains consistent. Only mean changed significantly and was normalised
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6", "T7", "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Flake","ElongatedProd", "Core", "RetouchedPiece"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
   facet_wrap(~CLASS, scales = "free_y") +

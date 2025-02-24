@@ -893,6 +893,34 @@ ratio_tooldebitage |>
 
 ```
 
+```{r}
+#| label: stats-wilcox
+
+wilcox_t <- phase_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, Level)
+
+wt_blank_proto <- wilcox_t |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(CLASS == "Blank")
+
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_blank_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_proto, exact = FALSE)
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_proto <- wilcox.test(LENGTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bw_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+
+```
+
+
 The sizes of lithic artefacts (flakes, elongated blanks, cores and retouched tools) are explored through scatterplots of width and length (@fig-gravettian-boxplots a) and boxplots for weight (@fig-gravettian-boxplots b); complete tables with descriptive statistics can also be found in SOM ++, table s++. The scatterplots show different patterns in the several analysed classes. Flakes are longer and wider in local cherts and generally smaller in non-local types (\~20-22 mm maximum lengths for T6 and T7). This is similar for elongated blanks, with non-local cherts presenting thinner and short bladelets than local types. Core width is variable between both local and non-local cherts; however, non-local cherts show a concentration of cores in the ~20 mm length mark, while local cherts show a wider variation of longer cores. Retouched tools show no differences in width and length between local and non-local cherts. Regarding the weight (@fig-gravettian-boxplots b), although there is some variability, non-local types T6 and T7 seem to have the lowest weights in all classes (flakes, elongated blanks, cores and retouched tools). The lowest means for flakes are for T6 and T7 (\~2.5 gr). However, in general, the lightest flakes seem to be from T2 and T6, although T2 also shows several heavy outliers. Elongated products show even smaller means for T6 and T7 (0.5-1 gr), especially when compared to local cherts (\~2.5 gr). Regarding cores, @tbl-general-gravettian shows that type T2 and T6 have the highest number of cores; between these two types, T6 has the lightest cores, with a maximum of \~21 gr and with a mean of \~12 gr, in comparison to T2 with a maximum of \~37 gr and a mean of \~21 gr. Retouched tools shows similar median values among all chert types (2.5-4 gr), although T6 and T7 have the lowest means (\~4 gr); in general, and given the high number of retouched tools for T6 (@tbl-general-gravettian), this non-local chert seems to have been consistently reduced with a third quartile ending in the 5 gr mark.
 
 ```{r}

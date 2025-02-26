@@ -420,8 +420,10 @@ general_table <- phase_dataset |>
     CLASS == "RetouchedPieceFrag" ~ "Retouched fragment",
     TRUE ~ CLASS)) |> 
   dplyr::mutate(RETOUCHEDPIECETYPOLOGY = case_when(
-    RETOUCHEDPIECETYPOLOGY == "Retouched blade" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake" | RETOUCHEDPIECETYPOLOGY == "Retouched flake fragment" ~ "Retouched blank",
+    RETOUCHEDPIECETYPOLOGY == "Retouched blade" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake" | RETOUCHEDPIECETYPOLOGY == "Retouched flake fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched burin spall" ~ "Retouched blank",
     RETOUCHEDPIECETYPOLOGY == "Splintered piece fragment" ~ "Splintered piece",
+    RETOUCHEDPIECETYPOLOGY == "Backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed flake" ~ "Backed tool",
+    RETOUCHEDPIECETYPOLOGY == "Retouched burin" ~ "Burin",
     TRUE ~ RETOUCHEDPIECETYPOLOGY))
 
 general_table_solutrean <- solutrean_dataset |> 
@@ -643,6 +645,10 @@ gravettian_stats_weight <- gravettian_stats |>
 ## Table preparation
 solutrean_retouch <- general_table_solutrean |>
   filter(CLASS %in% c("Retouched", "Retouched fragment")) |>
+  dplyr::mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Bifacial fragment" ~ "Bifacial blank",
+    RETOUCHEDPIECETYPOLOGY == "Shouldered point fragment" ~ "Shouldered point",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
   filter(RMTYPE != "INDET") |> 
   filter(RETOUCHEDPIECETYPOLOGY != "") |> 
   tabyl(RETOUCHEDPIECETYPOLOGY, RMTYPE) |>
@@ -896,6 +902,8 @@ ratio_tooldebitage |>
 ```{r}
 #| label: stats-wilcox
 
+# Terrace wilcox statistics
+## DB prep
 wilcox_t <- phase_dataset |> 
   dplyr::mutate(Prov = case_when(
     RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
@@ -904,19 +912,142 @@ wilcox_t <- phase_dataset |>
   filter(Prov %in% c("Local", "Non-local")) |> 
   select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, Level)
 
+# Proto-Solutrean blanks statistical test
+## NL cores were not represented enough (n) for statistics
 wt_blank_proto <- wilcox_t |> 
   filter(Level %in% c("4E", "4E/5")) |> 
   filter(CLASS == "Blank")
 
+## Blanks weight (bw)
 dplyr::group_by(wt_blank_proto, Prov) |> 
   summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
-res_blank_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_proto, exact = FALSE)
+res_bw_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_proto, exact = FALSE)
+## Blanks length (bl)
 dplyr::group_by(wt_blank_proto, Prov) |> 
   summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
 res_bl_proto <- wilcox.test(LENGTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+## Blanks width (bw)
 dplyr::group_by(wt_blank_proto, Prov) |> 
   summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
-res_bw_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+res_bwi_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+
+# Gravettian blanks statistical test
+wt_blank_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS == "Blank")
+
+## Blanks weight
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_bw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_grav, exact = FALSE)
+## Blanks length
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_blank_grav, exact = FALSE)
+## Blanks width
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_grav, exact = FALSE)
+
+## Gravettian cores statistical test
+wt_core_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_grav, exact = FALSE)
+
+# Shelter wilcox statistics
+## DB prep
+wilcox_t_shelter <- solutrean_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "TYPE 1" | RMTYPE == "TYPE 2" | RMTYPE == "TYPE 3" | RMTYPE == "TYPE 4" | RMTYPE == "TYPE 5" ~ "Local",
+    RMTYPE == "TYPE 6" | RMTYPE == "TYPE 7" | RMTYPE == "TYPE 8" | RMTYPE == "TYPE 9" | RMTYPE == "TYPE 11" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+   mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    TRUE ~ CLASS)) |>
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, LEVEL)
+
+# Solutrean blanks statistical test
+wt_blank_s <- wilcox_t_shelter |>
+  filter(CLASS == "Blank")
+
+## Blanks weight
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_bw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_s, exact = FALSE)
+## Blanks length
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_s <- wilcox.test(LENGTH ~ Prov, data = wt_blank_s, exact = FALSE)
+## Blanks width
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_s, exact = FALSE)
+
+wt_core_s <- wilcox_t_shelter |>
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_s <- wilcox.test(LENGTH ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_s, exact = FALSE)
+
+p.value_blanks <- tibble(
+  Technocomplex = c("Gravettian", " "," ", " ", "Proto-Solutrean", " ", " ", " ", "Solutrean", " ", " ", " "),
+  Variable = c("Weight", "Length", "Width", "(n)","Weight", "Length", "Width","(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("2.8", "25.8", "19.1", "82", "2.2", "23.4", "16.8", "154", "1.7", "25.1", "16.6", "342"),
+  NL_median = c("1.9", "21.2", "17.8", "69", "1.7", "19.4", "16.6", "49", "1.5", "21.9", "18.8", "86"),
+  P_Value = round(c(res_bw_grav$p.value, res_bl_grav$p.value, res_bwi_grav$p.value, 0, res_bw_proto$p.value, res_bl_proto$p.value, res_bwi_proto$p.value, 0, res_bw_s$p.value, res_bl_s$p.value, res_bwi_s$p.value, 0), 5)) |>   mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 4), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.00000***" ~ "-",
+    TRUE ~ P_value))
+
+
+p.value_cores <- tibble(
+  Technocomplex = c("Gravettian", "", "", "", "Solutrean", "", "", ""),
+  Variable = c("Weight", "Length", "Width", "(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("20", "29.6", "27.6", "14", "16.5", "28.3", "30.7", "59"),
+  NL_median = c("11.8", "21.9", "29.7", "10", "11.7", "25.6", "26.0", "7"),
+  P_Value = round(c(res_cw_grav$p.value, res_cl_grav$p.value, res_cwi_grav$p.value, 0, res_cw_s$p.value, res_cl_s$p.value, res_cwi_s$p.value, 0), 3)) |> 
+  mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 3), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.000***" ~ "-",
+    TRUE ~ P_value))
 
 ```
 

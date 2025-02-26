@@ -62,21 +62,23 @@ library(janitor)
 ```{r}
 #| label: get-data
 
-# Technological data
-gravettian_tech <- read.csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
-proto_tech <- read.csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
-solutrean_JC <- read.csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
-solutrean_points <- read.csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
+# Reading the datasets
+## Technological data
+gravettian_tech <- read_csv(here::here('analysis/data/raw_data/VBT_6_7_JB.csv'))
+proto_tech <- read_csv(here::here('analysis/data/raw_data/VBT_4E_5_JB.csv'))
+solutrean_JC <- read_csv(here::here('analysis/data/raw_data/VBR_ABC_JC.csv'))
+solutrean_points <- read_csv(here::here('analysis/data/raw_data/shelter_points_JC.csv'))
 
-# RM data
+## RM data
 shelter_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_SHELTER.csv')) # Shelter RM analysis
 terrace_RM <- read_csv(here::here('analysis/data/raw_data/MACRO_IND_TERRACE.csv')) # Terrace RM analysis
 
-# Context data
+## Context data
 context <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_context.csv')) # Terrace Field DB - lithic artefact info
 xyz <- read_csv(here::here('analysis/data/raw_data/VB_Terrace_xyz.csv')) # Terrace Field DB - just coordinates
 
 ```
+
 
 ```{r}
 #| label: databases-setup
@@ -92,33 +94,25 @@ proto_tech_WIP <- proto_tech |>
   rename(CLASS = Class, COREPREPPROD = CorePreparProd, PIECECOMPLETENESS = PieceCompleteness, CORTEX = Cortex, CORTEXLOCATION = CortexLocation, PLATFORMTYPE = PlatformType, PLATFORMCORTEX = PlatformCortex, SCARCOUNT = ScarCount, THICKNESS = Thickness,
         MAXWIDTH = MaxWidth, LENGTH = Length, COREPLATFORM = CorePlatform, MAINFACECORTEX = MainFaceCortex, 
         MAINFACESCARCOUNT = MainFaceScarCount, COREABANDON = CoreAbandon, RETOUCHEDPIECETYPOLOGY = RetouchedPieceTypology) |> 
-  mutate(RETOUCHEDPIECETYPOLOGY = case_when(
-    RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
-    RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed bladelet",
-    RETOUCHEDPIECETYPOLOGY == "Dentilhado" ~ "Denticulate",
-    RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |> 
   dplyr::select(ID, CLASS, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE, PLATFORMCORTEX,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, MAINFACECORTEX, MAINFACESCARCOUNT, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
 gravettian_tech <- gravettian_tech |> 
-  mutate(RETOUCHEDPIECETYPOLOGY = case_when(
-    RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" ~ "Splintered piece",
-    RETOUCHEDPIECETYPOLOGY == "Retouched flake siret fragment" | RETOUCHEDPIECETYPOLOGY == "Retouched flake frag" ~ "Retouched flake fragment",
-    RETOUCHEDPIECETYPOLOGY == "Retouched bladelet frag" ~ "Retouched bladelet fragment",
-    RETOUCHEDPIECETYPOLOGY == "Multiple burin" | RETOUCHEDPIECETYPOLOGY == "Burin splintered piece" | RETOUCHEDPIECETYPOLOGY == "Burin on truncation" ~ "Burin",
-    RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" ~ "Backed bladelet",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |> 
   mutate(CLASS = case_when(
     CLASS == "Flake" | CLASS == "ElongBlank" ~ "Blank",
     CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
-    TRUE ~ CLASS))
+    TRUE ~ CLASS)) |> 
+  dplyr::mutate(RETOUCHEDPIECETYPOLOGY = case_when( # Solving typing issue
+    RETOUCHEDPIECETYPOLOGY == "Carenated endscrapper" ~ "Carenated endscraper",
+    RETOUCHEDPIECETYPOLOGY == "Endscrapper" ~ "Endscraper",
+    RETOUCHEDPIECETYPOLOGY == "Endscrapper-burin" ~ "Burin",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
 
 terrace_tech <- bind_rows(proto_tech_WIP, gravettian_tech) # Creating single DS with Proto and Gravettian
 
 terrace_RM_WIP <- terrace_RM |> 
   mutate(RMTYPE = case_when(
-    RMTYPE == "Type 2" ~ "T2",
+    RMTYPE == "TYPE 2" ~ "T2",
     RMTYPE == "Chalcedony" ~ "T1", # Altering first group names to final group names. Subtypes are maintained as before.
     RMTYPE == "TYPE 15" ~ "T3",
     RMTYPE == "TYPE 7" ~ "T4",
@@ -163,29 +157,39 @@ phase_dataset <- terrace_dataset |>
     TRUE ~ Level)) |> # Adding technocomplex name based on the levels
   mutate(Technocomplex = case_when(
     Level == "4E" | Level == "4E/5" | Level == 5 ~ "Proto-Solutrean",
-    Level == 6 | Level == 7 ~ "Gravettian"))
-
-# Shelter dataset setup
+    Level == 6 | Level == 7 ~ "Gravettian")) |> 
+  mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Splintered piece with notch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece with lateral retouch" | RETOUCHEDPIECETYPOLOGY == "Splintered piece fragment" ~ "Splintered piece",
+    RETOUCHEDPIECETYPOLOGY == "Retouched blade" | RETOUCHEDPIECETYPOLOGY == "Retouched bladelet" | RETOUCHEDPIECETYPOLOGY == "Retouched flake" | RETOUCHEDPIECETYPOLOGY == "Retouched burin spall" ~ "Retouched blank",
+    RETOUCHEDPIECETYPOLOGY == "Retouched bladelet frag" | RETOUCHEDPIECETYPOLOGY == "Retouched flake frag" | RETOUCHEDPIECETYPOLOGY == "Retouched flake siret fragment"  ~ "Retouched blank fragment",
+    RETOUCHEDPIECETYPOLOGY == "Multiple burin" | RETOUCHEDPIECETYPOLOGY == "Burin splintered piece" | RETOUCHEDPIECETYPOLOGY == "Burin on truncation" | RETOUCHEDPIECETYPOLOGY == "Retouched burin" ~ "Burin",
+    RETOUCHEDPIECETYPOLOGY == "Dentilhado" ~ "Denticulate",
+    RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
+    RETOUCHEDPIECETYPOLOGY == "Backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed flake" | RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed tool",
+    RETOUCHEDPIECETYPOLOGY == "Carenated endscraper" ~ "Endscraper",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+  
+# Setting up the Shelter dataset
 cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
-solutrean_WIP <- solutrean_JC %>% 
-  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
-  filter(Raw.material %in% c("Chert", "Chalcedony")) %>% # Filtering raw materials
-  filter(Screen != "Crivo") %>%  # Filtering out all bucket lithics since they were not included in the RM analysis
-  mutate_at("Date", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
-  dplyr::rename("YEAR" = "Date") %>% 
+solutrean_WIP <- solutrean_JC |> 
+  filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
+  filter(`Raw material` %in% c("Chert", "Chalcedony")) |>  # Filtering raw materials
+  filter(!Screen %in% c("Crivo", "crivo")) |>  # Filtering out all bucket lithics since they were not included in the RM analysis
+  mutate_at("Date", str_replace, "20", "") |> # Removing initial part of the year to match IDs
+  dplyr::rename("YEAR" = "Date") |> 
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
 # Dataset filtering for chert/chalcedony and levels (A-C), 3298 + 61 solutrean points, n=3359
-solutrean_original_chert <- solutrean_JC %>% 
-  filter(Layer %in% c("A", "B", "C")) %>% # Filtering Solutrean layers
-  filter(Raw.material %in% c("Chert", "Chalcedony"))
+solutrean_original_chert <- solutrean_JC |> 
+  filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
+  filter(`Raw material` %in% c("Chert", "Chalcedony"))
 
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
-solutrean_WIP <- solutrean_WIP %>% 
+solutrean_WIP <- solutrean_WIP |> 
   mutate(Class = case_when( # This alteration is being done on the original class column
-    Retouched == "Yes" ~ "Retouched piece", # Whenever retouch is present, class is now Retouched piece
-    TRUE ~ Class)) %>% 
+    Retouched == "Yes" ~ "RetouchedPiece", # Whenever retouch is present, class is now Retouched piece
+    TRUE ~ Class)) |> 
   mutate(CLASS = case_when( # Creating a column for clustered classes, to match the other DBs
     Class == "Blade" | Class == "Bladelet" ~ "ElongBlank", # Cluster blades with bladelets. The distinction can come later through a mutate and the measurements
     Class == "Core front" | Class == "Core tablet" | Class == "Core trimming elem." | Class == "Crested piece" ~ "CorePrepProd", # Cluster all preparation products
@@ -193,21 +197,21 @@ solutrean_WIP <- solutrean_WIP %>%
     Class == "Flake distal frag." | Class == "Flake mesial frag." | Class == "Flake prox. frag." ~ "FlakeFrag", # Cluster flake frags into a single category
     Class == "Blade distal frag." | Class == "Blade mesial frag." | Class == "Blade prox. frag." 
     | Class == "Bladelet distal frag." | Class == "Bladelet mesial frag." | Class == "Bladelet prox. frag." ~ "ElongBlankFrag", # Cluster elong frags into a single category
-    TRUE ~ Class)) %>% 
+    TRUE ~ Class)) |> 
   mutate(COREPREPPROD = case_when( # Creating a column for the types of core preparation and maintenance products (COREPREPPROD)
     Class == "Core front" ~ "Core front",
     Class == "Core tablet" ~ "Core tablet",
     Class == "Core trimming elem." ~ "Core trim",
-    Class == "Crested piece" ~ "Crested piece")) %>% 
+    Class == "Crested piece" ~ "Crested piece")) |> 
   mutate(PIECECOMPLETENESS = case_when( # Creating a column for the portions present in flake or elongblank fragments to match other DBs
     Class == "Flake distal frag." | Class == "Blade distal frag." | Class == "Bladelet distal frag." ~ "Distal",
     Class == "Flake mesial frag." | Class == "Blade mesial frag." | Class == "Bladelet mesial frag." ~ "Mesial",
-    Class == "Flake prox. frag." | Class == "Blade prox. frag." | Class == "Bladelet prox. frag." ~ "Proximal")) %>% 
-  rename(PLATFORMTYPE = Platform_type) %>% # Renaming column
+    Class == "Flake prox. frag." | Class == "Blade prox. frag." | Class == "Bladelet prox. frag." ~ "Proximal")) |> 
+  rename(PLATFORMTYPE = Platform_type) |> # Renaming column
   mutate(PLATFORMTYPE = case_when( # Renaming variables to match correspondent variables in the other DBs
     PLATFORMTYPE == "Multifacetted" ~ "Faceted",
     PLATFORMTYPE == "Unfacetted" ~ "Plain",
-    TRUE ~ PLATFORMTYPE)) %>%
+    TRUE ~ PLATFORMTYPE)) |>
   mutate(Type = case_when( # Translating retouched types from Zilhão 1997 to simplified typologies
     Type == "92b" ~ "Retouched piece fragment",
     Type == "92a" ~ "Retouched blank",
@@ -218,28 +222,28 @@ solutrean_WIP <- solutrean_WIP %>%
     Type == "61" ~ "Truncation",
     Type == "28" ~ "Burin",
     Type == "7" | Type == "5b" | Type == "4"  ~ "Endscrapper",
-    TRUE ~ Type)) %>%
+    TRUE ~ Type)) |>
   rename(LEVEL = Layer, UNIT = Unit, CORTEX = Percent_of_cortex, CORTEXLOCATION = Loc_of_cortex, THICKNESS = Thickness,
          MAXWIDTH = Width, LENGTH = Length, COREPLATFORM = Core_platfform, SCARCOUNT = N_of_Scars, COREABANDON = Core_abandon,
          RETOUCHEDPIECETYPOLOGY = Type)  # Renaming column
   
-solutrean_tech <- solutrean_WIP %>%
+solutrean_tech <- solutrean_WIP |>
   dplyr::select(ID, CLASS, LEVEL, UNIT, COREPREPPROD, PIECECOMPLETENESS, CORTEX, CORTEXLOCATION, PLATFORMTYPE,
                 SCARCOUNT, THICKNESS, MAXWIDTH, LENGTH, COREPLATFORM, COREABANDON, RETOUCHEDPIECETYPOLOGY)
 
-solutrean_points <- solutrean_points %>% # Creating ID from 
-  mutate_at("YEAR", str_replace, "20", "") %>% # Removing initial part of the year to match IDs
+solutrean_points <- solutrean_points |> 
+  mutate_at("YEAR", str_replace, "20", "") |> # Removing initial part of the year to match IDs
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=TRUE)
   
 solutrean_tech <- bind_rows(solutrean_tech, solutrean_points) # Uniting technology dataset with points (2167 to 2228)
 
-solutrean_tech <- solutrean_tech %>% # Originally 2228
+solutrean_tech <- solutrean_tech |> # Originally 2228
   distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets (down to 1993)
 
-shelter_RM_WIP <- shelter_RM %>%
-  mutate_at("ID", str_replace, "VB", "") %>% # Remove "VB" from ID
+shelter_RM_WIP <- shelter_RM |>
+  mutate_at("ID", str_replace, "VB", "") |> # Remove "VB" from ID
   mutate(RMTYPE = case_when(
-    RMTYPE == "Type 2" ~ "T2",
+    RMTYPE == "Type 2" | RMTYPE == "TYPE 2" ~ "T2",
     RMTYPE == "Chalcedony" ~ "T1", # Altering first group names to final group names. Subtypes are maintained as before.
     RMTYPE == "TYPE 15" ~ "T3",
     RMTYPE == "TYPE 7" ~ "T4",
@@ -251,15 +255,19 @@ shelter_RM_WIP <- shelter_RM %>%
     RMTYPE == "Oolitic" ~ "T10",
     RMTYPE == "TYPE GB" ~ "T11",
     RMTYPE == "ND_A" ~ "INDET",
-    .default = RMTYPE)) %>%
-  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%  # Select variables
+    .default = RMTYPE)) |>
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) |>  # Select variables
   distinct(ID, .keep_all = TRUE) # Keeping individual IDs to avoid buckets
 
 solutrean_dataset <- full_join(solutrean_tech, shelter_RM_WIP, by = "ID") # The complete dataset has 2818 (44 points) entries
-solutrean_dataset <- solutrean_dataset %>%
-  drop_na(RMTYPE) %>%   # Dropping NAs on the RM database drops dataset to 1514
-  drop_na(CLASS) # Dropping NAs on the technological class drops dataset to 914
-
+solutrean_dataset <- solutrean_dataset |>
+  drop_na(RMTYPE) |>   # Dropping NAs on the RM database drops dataset to 1514
+  drop_na(CLASS) |>  # Dropping NAs on the technological class drops dataset to 914
+  dplyr::mutate(RETOUCHEDPIECETYPOLOGY = case_when(
+    RETOUCHEDPIECETYPOLOGY == "Bifacial fragment" ~ "Bifacial blank",
+    RETOUCHEDPIECETYPOLOGY == "Shouldered point fragment" ~ "Shouldered point",
+    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+  
 ```
 
 # Assemblage description
@@ -268,12 +276,23 @@ solutrean_dataset <- solutrean_dataset %>%
 #| label: general-tables
 
 # Tables with class by raw material type (n and %)
-## For Gravettian
-gravettian_general <- phase_dataset |>
-  filter(Level %in% c(6, 7)) |>
+general_table_som <- phase_dataset |> 
+  dplyr::mutate(CLASS = case_when(
+    CLASS == "BlankFrag" ~ "Blank fragment",
+    CLASS == "BurinSpall" ~ "Burin spall",
+    CLASS == "CoreFrag" ~ "Core fragment",
+    CLASS == "CorePreparProd" ~ "Core prep product",
+    CLASS == "RetouchedPiece" ~ "Retouched",
+    CLASS == "RetouchedPieceFrag" ~ "Retouched fragment",
+    TRUE ~ CLASS)) |> 
   dplyr::mutate(RMTYPE = case_when(
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
       TRUE ~ RMTYPE)) |> 
+  filter(CLASS != "Chip")
+
+## For Gravettian
+gravettian_general_som <- general_table_som |>
+  filter(Level %in% c(6, 7)) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL", "INDET"))) |>
   tabyl(CLASS, RMTYPE) |> 
@@ -284,12 +303,8 @@ gravettian_general <- phase_dataset |>
   mutate(across(where(is.character), ~ gsub("^0   \\(0\\.00%\\)$", " ", .)))
 
 ## For Proto-Solutrean (4E and top of 5)
-proto_general <- phase_dataset |> 
+proto_general_som <- general_table_som |> 
   filter(Level %in% c("4E", "4E/5")) |> 
-  filter(CLASS != "Chip") |> 
-  dplyr::mutate(RMTYPE = case_when(
-      RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
-      TRUE ~ RMTYPE)) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL", "INDET"))) |>
   tabyl(CLASS, RMTYPE) |> 
@@ -300,10 +315,18 @@ proto_general <- phase_dataset |>
   mutate(across(where(is.character), ~ gsub("^0   \\(0\\.00%\\)$", " ", .)))
 
 ## For Solutrean
-solutrean_general <- solutrean_dataset |> 
+solutrean_general_som <- solutrean_dataset |> 
   dplyr::mutate(RMTYPE = case_when(
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
-      TRUE ~ RMTYPE)) |> 
+      TRUE ~ RMTYPE)) |>
+  dplyr::mutate(CLASS = case_when(
+    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
+    CLASS == "ElongBlankFrag" | CLASS == "FlakeFrag" ~ "Blank fragment",
+    CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "CorePrepProd" ~ "Core prep product",
+    CLASS == "RetouchedPiece" | CLASS == "Retouched piece" ~ "Retouched",
+    CLASS == "Retouched piece fragment" ~ "Retouched fragment",
+    TRUE ~ CLASS)) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL", "INDET"))) |>
   tabyl(CLASS, RMTYPE) |> 
@@ -390,7 +413,7 @@ When compared to local cherts, non-local chert types (especially T6 and T7) show
 #| label: tbl-general-gravettian
 #| tbl-cap: Number and percentage of technotypological classes by raw material type from the Gravettian assemblage (levels 6 and 7) of the Terrace area of Vale Boi.
 
-kable(gravettian_general)
+kable(gravettian_general_som)
 
 ```
 
@@ -414,7 +437,7 @@ When crossing the lithic class with chert type (@tbl-general-proto), we see that
 #| label: tbl-general-proto
 #| tbl-cap: Number and percentage of technotypological classes by raw material type from the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area of Vale Boi.
 
-kable(proto_general)
+kable(proto_general_som)
 
 ```
 
@@ -438,7 +461,7 @@ When crossing the class data with type of raw material (@tbl-general-solutrean),
 #| label: tbl-general-solutrean
 #| tbl-cap: Number and percentage of technotypological classes by raw material type from the Solutrean assemblage (levels A to C) of the Shelter area of Vale Boi.
 
-kable(solutrean_general)
+kable(solutrean_general_som)
 
 ```
 
@@ -685,10 +708,8 @@ gravettian_stats_cores <- gravettian_stats |>
 #| label: tbl-solutrean
 #| tbl-cap: "Stats for Solutrean occupation."
 #| tbl-subcap: 
-#|  - "Stats for flakes"
-#|  - "Stats for elongated blanks"
+#|  - "Stats for blanks"
 #|  - "Stats for cores"
-#|  - "Stats for retouched"
 #| layout-nrow: 4
 
 kable(head(solutrean_stats_blank))
@@ -700,11 +721,9 @@ kable(head(solutrean_stats_cores))
 #| label: tbl-proto
 #| tbl-cap: "Stats for Proto-Solutrean occupation."
 #| tbl-subcap: 
-#|  - "Stats for flakes"
-#|  - "Stats for elongated blanks"
+#|  - "Stats for blanks"
 #|  - "Stats for cores"
-#|  - "Stats for retouched"
-#| layout-nrow: 4
+#| layout-nrow: 2
 
 kable(head(proto_stats_blank))
 kable(head(proto_stats_cores))
@@ -715,11 +734,9 @@ kable(head(proto_stats_cores))
 #| label: tbl-gravettian
 #| tbl-cap: "Stats for Gravettian occupation."
 #| tbl-subcap: 
-#|  - "Stats for flakes"
-#|  - "Stats for elongated blanks"
+#|  - "Stats for blanks"
 #|  - "Stats for cores"
-#|  - "Stats for retouched"
-#| layout-nrow: 4
+#| layout-nrow: 2
 
 kable(head(gravettian_stats_blank))
 kable(head(gravettian_stats_cores))
@@ -728,11 +745,177 @@ kable(head(gravettian_stats_cores))
 
 # Statistical tests
 
+```{r}
+#| label: stats-wilcox
+#| include: false
+
+# Terrace wilcox statistics
+## DB prep
+wilcox_t <- phase_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
+    RMTYPE == "T6" | RMTYPE == "T7" | RMTYPE == "T8" | RMTYPE == "T9" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, Level)
+
+# Proto-Solutrean blanks statistical test
+## NL cores were not represented enough (n) for statistics
+wt_blank_proto <- wilcox_t |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(CLASS == "Blank")
+
+## Blanks weight (bw)
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_bw_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_proto, exact = FALSE)
+## Blanks length (bl)
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_proto <- wilcox.test(LENGTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+## Blanks width (bw)
+dplyr::group_by(wt_blank_proto, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bwi_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_proto, exact = FALSE)
+
+# Gravettian blanks statistical test
+wt_blank_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS == "Blank")
+
+## Blanks weight
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_bw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_grav, exact = FALSE)
+## Blanks length
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_blank_grav, exact = FALSE)
+## Blanks width
+dplyr::group_by(wt_blank_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_grav, exact = FALSE)
+
+## Gravettian cores statistical test
+wt_core_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_grav, exact = FALSE)
+
+# Shelter wilcox statistics
+## DB prep
+wilcox_t_shelter <- solutrean_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
+    RMTYPE == "T6" | RMTYPE == "T7" | RMTYPE == "T8" | RMTYPE == "T9" | RMTYPE == "T11" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+   mutate(CLASS = case_when(
+    CLASS == "Flake" | CLASS == "ElongBlank" | CLASS == "Thinning flake" ~ "Blank",
+    TRUE ~ CLASS)) |>
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, LEVEL)
+
+# Solutrean blanks statistical test
+wt_blank_s <- wilcox_t_shelter |>
+  filter(CLASS == "Blank")
+
+## Blanks weight
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_bw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_blank_s, exact = FALSE)
+## Blanks length
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_bl_s <- wilcox.test(LENGTH ~ Prov, data = wt_blank_s, exact = FALSE)
+## Blanks width
+dplyr::group_by(wt_blank_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_bwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_blank_s, exact = FALSE)
+
+wt_core_s <- wilcox_t_shelter |>
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_s <- wilcox.test(LENGTH ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_s, exact = FALSE)
+
+p.value_blanks <- tibble(
+  Technocomplex = c("Gravettian", " "," ", " ", "Proto-Solutrean", " ", " ", " ", "Solutrean", " ", " ", " "),
+  Variable = c("Weight", "Length", "Width", "(n)","Weight", "Length", "Width","(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("2.8", "25.8", "19.1", "82", "2.2", "23.4", "16.8", "154", "1.7", "25.1", "16.6", "342"),
+  NL_median = c("1.9", "21.2", "17.8", "69", "1.7", "19.4", "16.6", "49", "1.5", "21.9", "18.8", "86"),
+  P_Value = round(c(res_bw_grav$p.value, res_bl_grav$p.value, res_bwi_grav$p.value, 0, res_bw_proto$p.value, res_bl_proto$p.value, res_bwi_proto$p.value, 0, res_bw_s$p.value, res_bl_s$p.value, res_bwi_s$p.value, 0), 5)) |>   mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 4), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.00000***" ~ "-",
+    TRUE ~ P_value))
+
+
+p.value_cores <- tibble(
+  Technocomplex = c("Gravettian", "", "", "", "Solutrean", "", "", ""),
+  Variable = c("Weight", "Length", "Width", "(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("20", "29.6", "27.6", "14", "16.5", "28.3", "30.7", "59"),
+  NL_median = c("11.8", "21.9", "29.7", "10", "11.7", "25.6", "26.0", "7"),
+  P_Value = round(c(res_cw_grav$p.value, res_cl_grav$p.value, res_cwi_grav$p.value, 0, res_cw_s$p.value, res_cl_s$p.value, res_cwi_s$p.value, 0), 3)) |> 
+  mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 3), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.000***" ~ "-",
+    TRUE ~ P_value))
+
+```
+
 A Mann-Whitney U was conducted to determine whether there are differences in the measurements (weight, length and width) of blanks and cores between local and non-local cherts. To do this, all local cherts (including chalcedony) were grouped in a Local category (L) while all non-local cherts were grouped in a non-local category (NL). Type 10 and TL cherts were excluded from the NL grouping to avoid adding cherts which are the result of probable different procurement strategies and clearly deviate from the other cherts in terms regarding the measurements. The Solutrean assemblage is not represented in the core statistics due to the small sample size of both local and non-local categories.
 
 The results indicate generally significant differences in blank measurements between local and non-local cherts in all technocomplexes; in almost all measurements and groups, local cherts show higher medians. Length seems to be consistently significant (p < 0.01 and < 0.001) between the two groups in all assemblages, with local cherts showing higher median lengths than non-local cherts. In the Gravettian and Proto-Solutrean assemblages, weight is also significantly different between local and non-local blanks (p < 0.05), with local cherts presenting higher medians. In comparison, width differences show no statistical significance, with exception of the Solutrean assemblage. In the Solutrean, blank width is significant (p < 0.05) with the non-local category showing higher medians compared local cherts.
 
 Regarding the cores, in almost all measurements and groups local cherts show higher means than non-local cherts. Despite these differences, the results are not significant  (p > 0.05). It is important to note, however, that the sample size for cores in the Gravettian assemblage and non-local cherts in the Solutrean assemblage are smaller (n < 15) than the blank sample size.
+
+```{r}
+#| label: tbl-pvalue
+#| tbl-cap: "Median values and p value results for the Mann-Whitney test applied to blank and core measurements (weight, length and width)."
+#| tbl-subcap: 
+#|  - "Median values and p value results for the Mann-Whitney test applied to blank measurements"
+#|  - "Median values and p value results for the Mann-Whitney test applied to core measurements"
+#| layout-nrow: 2
+
+kable(head(p.value_blanks))
+kable(head(p.value_cores))
+
+```
 
 # TL cherts
 

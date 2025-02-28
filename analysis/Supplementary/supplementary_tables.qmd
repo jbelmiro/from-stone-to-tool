@@ -538,16 +538,16 @@ gravettian_ratiobc <- phase_dataset %>%
 
 ```{r}
 #| label: tbl-bcratio
-#| tbl-cap: Blank to core ratio by raw material of the Solutrean (a), Proto-Solutrean (b) and Gravettian (c) assemblages.
+#| tbl-cap: Blank to core ratio by raw material of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages.
 #| tbl-subcap: 
-#|  - "Blank to core ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
-#|  - "Blank to core ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
 #|  - "Blank to core ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area."
-#| layout-nrow: 4
+#|  - "Blank to core ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
+#|  - "Blank to core ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
+#| layout-nrow: 3
 
-kable(head(solutrean_ratiobc))
-kable(head(proto_ratiobc))
-kable(head(gravettian_ratiobc))
+kable(gravettian_ratiobc)
+kable(proto_ratiobc)
+kable(solutrean_ratiobc)
 
 ```
 
@@ -616,16 +616,16 @@ gravettian_ratiotd <- phase_dataset %>%
 
 ```{r}
 #| label: tbl-tdratio-solutrean
-#| tbl-cap: Tools to debitage ratio by raw material of the Solutrean (a), Proto-Solutrean (b) and Gravettian (c) assemblages.
+#| tbl-cap: Tools to debitage ratio by raw material of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages.
 #| tbl-subcap: 
-#|  - "Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
-#|  - "Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
 #|  - "Tools to debitage ratio by raw material of the Gravettian assemblage (levels 6 and 7) of the Terrace area."
-#| layout-nrow: 4
+#|  - "Tools to debitage ratio by raw material of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
+#|  - "Tools to debitage ratio by raw material of the Solutrean assemblage (levels A to C) of the Shelter area."
+#| layout-nrow: 3
 
-kable(head(solutrean_ratiotd))
-kable(head(proto_ratiotd))
-kable(head(gravettian_ratiotd))
+kable(gravettian_ratiotd)
+kable(proto_ratiotd)
+kable(solutrean_ratiotd)
 
 ```
 
@@ -638,10 +638,10 @@ kable(head(gravettian_ratiotd))
 # DS preparation
 solutrean_stats <- solutrean_dataset |> 
   filter(RMTYPE != "INDET") |> 
-   mutate(CLASS = case_when(
+  mutate(CLASS = case_when(
     CLASS == "Thinning flake" | CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
     TRUE ~ CLASS)) |> 
-    dplyr::mutate(RMTYPE = case_when(
+  dplyr::mutate(RMTYPE = case_when(
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
       TRUE ~ RMTYPE))
 
@@ -650,14 +650,16 @@ solutrean_stats <- solutrean_dataset |>
 solutrean_stats_blank <- solutrean_stats |>  
   filter(CLASS == "Blank") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
+  drop_na() |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 # For cores
 solutrean_stats_cores <- solutrean_stats |> 
-  filter(CLASS == "Core") |> 
-  select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |>  
+  filter(CLASS == "Core") |>
+  select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
+  drop_na() |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 
 # Proto-Solutrean statistics
 # DS prep
@@ -674,19 +676,22 @@ proto_stats_blank <- proto_stats |>
   filter(CLASS == "Blank") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 # For cores
 proto_stats_cores <- proto_stats |> 
   filter(CLASS == "Core") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 
 # Gravettian statistics
 # DS prep
 gravettian_stats <- phase_dataset |> 
   filter(Level %in% c(6, 7)) |> 
-  filter(RMTYPE != "INDET")
+  filter(RMTYPE != "INDET") |> 
+  dplyr::mutate(RMTYPE = case_when(
+      RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
+      TRUE ~ RMTYPE))
 
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
@@ -694,39 +699,13 @@ gravettian_stats_blank <- gravettian_stats |>
   filter(CLASS == "Blank") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 # For cores
 gravettian_stats_cores <- gravettian_stats |> 
   filter(CLASS == "Core") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
   group_by(RMTYPE, CLASS) |> 
-  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd, max = max, min = min)))
-
-```
-
-```{r}
-#| label: tbl-solutrean
-#| tbl-cap: "Stats for Solutrean occupation."
-#| tbl-subcap: 
-#|  - "Stats for blanks"
-#|  - "Stats for cores"
-#| layout-nrow: 4
-
-kable(head(solutrean_stats_blank))
-kable(head(solutrean_stats_cores))
-
-```
-
-```{r}
-#| label: tbl-proto
-#| tbl-cap: "Stats for Proto-Solutrean occupation."
-#| tbl-subcap: 
-#|  - "Stats for blanks"
-#|  - "Stats for cores"
-#| layout-nrow: 2
-
-kable(head(proto_stats_blank))
-kable(head(proto_stats_cores))
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
 
 ```
 
@@ -738,8 +717,34 @@ kable(head(proto_stats_cores))
 #|  - "Stats for cores"
 #| layout-nrow: 2
 
-kable(head(gravettian_stats_blank))
-kable(head(gravettian_stats_cores))
+kable(gravettian_stats_blank)
+kable(gravettian_stats_cores)
+
+```
+
+```{r}
+#| label: tbl-proto
+#| tbl-cap: "Stats for Proto-Solutrean occupation."
+#| tbl-subcap: 
+#|  - "Stats for blanks"
+#|  - "Stats for cores"
+#| layout-nrow: 2
+
+kable(proto_stats_blank)
+kable(proto_stats_cores)
+
+```
+
+```{r}
+#| label: tbl-solutrean
+#| tbl-cap: "Stats for Solutrean occupation."
+#| tbl-subcap: 
+#|  - "Stats for blanks"
+#|  - "Stats for cores"
+#| layout-nrow: 4
+
+kable(solutrean_stats_blank)
+kable(solutrean_stats_cores)
 
 ```
 
@@ -898,7 +903,7 @@ p.value_cores <- tibble(
 
 ```
 
-A Mann-Whitney U was conducted to determine whether there are differences in the measurements (weight, length and width) of blanks and cores between local and non-local cherts. To do this, all local cherts (including chalcedony) were grouped in a Local category (L) while all non-local cherts were grouped in a non-local category (NL). Type 10 and TL cherts were excluded from the NL grouping to avoid adding cherts which are the result of probable different procurement strategies and clearly deviate from the other cherts in terms regarding the measurements. The Solutrean assemblage is not represented in the core statistics due to the small sample size of both local and non-local categories.
+A Mann-Whitney U statistical test was conducted to determine whether there are differences in the measurements (weight, length and width) of blanks and cores between local and non-local cherts. To do this, all local cherts (including chalcedony) were grouped in a Local category (L) while all non-local cherts were grouped in a non-local category (NL). Type 10 and TL cherts were excluded from the NL grouping to avoid adding cherts which are the result of probable different procurement strategies and clearly deviate from the other cherts in terms regarding the measurements. The Solutrean assemblage is not represented in the core statistics due to the small sample size of both local and non-local categories.
 
 The results indicate generally significant differences in blank measurements between local and non-local cherts in all technocomplexes; in almost all measurements and groups, local cherts show higher medians. Length seems to be consistently significant (p < 0.01 and < 0.001) between the two groups in all assemblages, with local cherts showing higher median lengths than non-local cherts. In the Gravettian and Proto-Solutrean assemblages, weight is also significantly different between local and non-local blanks (p < 0.05), with local cherts presenting higher medians. In comparison, width differences show no statistical significance, with exception of the Solutrean assemblage. In the Solutrean, blank width is significant (p < 0.05) with the non-local category showing higher medians compared local cherts.
 
@@ -912,8 +917,8 @@ Regarding the cores, in almost all measurements and groups local cherts show hig
 #|  - "Median values and p value results for the Mann-Whitney test applied to core measurements"
 #| layout-nrow: 2
 
-kable(head(p.value_blanks))
-kable(head(p.value_cores))
+kable(p.value_blanks)
+kable(p.value_cores)
 
 ```
 
@@ -939,6 +944,6 @@ TL_classes <- TL_classes |>
   rename(TL = SUBTYPE) |> 
   arrange(TL)
 
-kable(head(TL_classes))
+kable(TL_classes)
 
 ```

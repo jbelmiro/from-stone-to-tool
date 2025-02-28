@@ -399,6 +399,7 @@ solutrean_dataset <- solutrean_dataset |>
 
 ```{r}
 #| label: general-tables
+#| include: false
 
 # Tables with class by raw material type (n and %)
 ##
@@ -472,7 +473,7 @@ solutrean_general <- general_table_solutrean |>
 ```{r}
 #| label: general-graphs
 
-phase_dataset |> 
+barplot_gravettian <- phase_dataset |> 
     dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
@@ -494,12 +495,13 @@ phase_dataset |>
   geom_bar(stat = "identity", width = 0.5) +
   geom_text(aes(label=ifelse(n > 3, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Gravettian", y = "Count %") +
   theme_minimal() +
+  theme(axis.title.x=element_blank()) +
+  labs(y = " ") +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
-phase_dataset |> 
+barplot_proto <- phase_dataset |> 
     dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
@@ -522,12 +524,13 @@ phase_dataset |>
   geom_bar(stat = "identity", width = 0.5) +
   geom_text(aes(label=ifelse(n > 3, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Proto-Solutrean", y = "Count %") +
+  labs(y = " ") +
   theme_minimal() +
+  theme(axis.title.x=element_blank()) +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
-solutrean_dataset |> 
+barplot_solutrean <- solutrean_dataset |> 
    dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
@@ -549,13 +552,13 @@ solutrean_dataset |>
   geom_bar(stat = "identity", width = 0.5) +
   geom_text(aes(label=ifelse(n > 3, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
-  labs(x = "Solutrean", y = "Count %") +
+  labs(y = " ") +
   theme_minimal() +
+  theme(axis.title.x=element_blank()) +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
 ```
-
 
 ```{r}
 #| label: stats-setup
@@ -693,22 +696,19 @@ gravettian_stats_weight <- gravettian_stats |>
 
 ```
 
-```{r}
-#| label: tbl-general
-#| tbl-cap: Number and percentage of technotypological classes by raw material type of the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages.
-#| tbl-subcap: 
-#| - "Number and percentage of technotypological classes by raw material from the Gravettian assemblage (levels 6 and 7) of the Terrace area."
-#| - "Number and percentage of technotypological classes by raw material from the Proto-Solutrean assemblage (levels 4E and 5) of the Terrace area."
-#| - "Number and percentage of technotypological classes by raw material from the Solutrean assemblage (levels A-C) of the Shelter area."
-#| layout-nrow: 4
+In all assemblages, blanks and blank fragments are the most frequent class of lithic artefacts and in all chert types (>40% of the assemblages). Cores are, as expected, found in smaller percentages in all assemblages (~3-8%). Cores are present in local cherts in larger numbers than in non-local types (P++); their presence is noted in almost all non-local cherts in all assemblages, except for the TL group. In the Proto-Solutrean assemblage however, non-local chert core presence is small and limited to T7-9 (n=4 complete cores and n=2 core fragments). Albeit in very small numbers in all assemblages (n<10), core preparation and maintenance products (P2) are also present in local and non-local cherts, especially in the non-local types which show the larger sample number such as T6-7. The presence of knapping by-products such as shatter is also seen in both local and non-local cherts in the Gravettian and Proto-Solutrean assemblages. Retouched tools (P1) were identified in all chert types from all studied assemblages; in general, all assemblages show a similar pattern where local cherts show smaller percentages of retouched tools than non-local cherts. However, the assemblages show clear differences in the number of retouched tools.
 
-kable(gravettian_general)
-kable(proto_general)
-kable(solutrean_general)
+```{r}
+#| label: fig-general-graphs
+#| fig-cap: Class by chert type in the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages. Labels within the plots correspond to the number of artefacts within each class. Only labels of n>3 are shown.
+
+ggpubr::ggarrange(barplot_gravettian, barplot_proto, barplot_solutrean, labels = c("a", "b", "c"), nrow = 3, common.legend = TRUE, legend = "right")
 
 ```
 
-Retouched tools were further explored through the tools-to-debitage ratio (@fig-ratiotd and table s++). As seen in @fig-ratiotd, local cherts (T1-5) show low ratios (\~2.5-0.5) of retouched tools to blanks, while TL and T6-T8 show higher ratios (\~0.9-1.0). The exception is T10 (non-local type), which shows a lower ratio (\~0.3), more akin to local cherts. The relation between blank and core numbers was also explored through a blank-to-core ratio (@fig-ratiobc and table s++). The results show that local types T1 and T2 show lower ratios (\<4) of blanks to cores, although other local types (T3-T5) have no identified cores @tbl-general-gravettian. The non-local types, especially T6 and T7 show higher ratios (\~8) of blanks to cores, with T10 once again showing values similar to local cherts (\~4).
+The Gravettian assemblage shows higher percentages of retouched tools (~21%) than the other assemblages (<10%). Detailed tables with tool typology and counts by chert type and assemblage can be found in the SOM (tables +++). Tool diversity (P8) is higher in non-local cherts in the Gravettian assemblage, although with high frequency of less specialised tools such as notches and retouched tools, alongside hunting implements such as backed bladelets (P9). The high frequency of burins seen in this assemblage may be related to their use as cores, representing a knapping strategy more than the presence of retouch. In comparison to the Gravettian, other assemblages show smaller numbers of retouched tools. While in the Proto-Solutrean no pattern was identified between local and non-local retouched tools, in the Solutrean assemblage both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
+
+The relation between blank and core numbers was explored through a blank-to-core ratio (P6; Figure 1 and table s++). In all assemblages, local cherts have generally smaller ratios than non-local cherts, although sample sizes for cores are variable (graph ++). For the Gravettian assemblages, the results show that non-local cherts show ratios above 7 (with the exception of T10), while local cherts have ratios located below 4. The Solutrean assemblage also shows higher ratios for non-local cherts (>12), with local cherts showing ratios below 7.  The Proto-Solutrean assemblage has most blank-to-core ratios below 10, except for non-local T7. However, non-local cores are poorly represented within the assemblage (table ++).
 
 ```{r}
 #| label: fig-ratiobc
@@ -795,6 +795,8 @@ ratio_blankcore |>
                               "#BDD2B6"))
 
 ```
+
+Retouched tools were further explored through the tools-to-debitage ratio (P4; Figure 2 and table s++). In general, the result show that non-local chert types have higher retouch-to-debitage ratios than local types, albeit with differences between assemblages. The Gravettian assemblage shows the highest tool-to-debitage ratios compared to the remaining assemblages; non-local cherts show ratios above 0.9, while local cherts show values below 0.5. In the Proto-Solutrean non-local cherts show ratios between 0.3 to 0.5, while local cherts show ratios below 0.3. This pattern is less clear in the Solutrean assemblage since the ratios are the lowest of all assemblages. Non-local cherts show ratios above 0.1 (with exception of T8) while local cherts show ratios below 0.1 (with exception of the local chalcedony).
 
 ```{r}
 #| label: fig-ratiotd
@@ -883,7 +885,7 @@ ratio_tooldebitage |>
 
 ```
 
-The sizes of lithic artefacts (flakes, elongated blanks, cores and retouched tools) are explored through scatterplots of width and length (@fig-gravettian-boxplots a) and boxplots for weight (@fig-gravettian-boxplots b); complete tables with descriptive statistics can also be found in SOM ++, table s++. The scatterplots show different patterns in the several analysed classes. Flakes are longer and wider in local cherts and generally smaller in non-local types (\~20-22 mm maximum lengths for T6 and T7). This is similar for elongated blanks, with non-local cherts presenting thinner and short bladelets than local types. Core width is variable between both local and non-local cherts; however, non-local cherts show a concentration of cores in the ~20 mm length mark, while local cherts show a wider variation of longer cores. Retouched tools show no differences in width and length between local and non-local cherts. Regarding the weight (@fig-gravettian-boxplots b), although there is some variability, non-local types T6 and T7 seem to have the lowest weights in all classes (flakes, elongated blanks, cores and retouched tools). The lowest means for flakes are for T6 and T7 (\~2.5 gr). However, in general, the lightest flakes seem to be from T2 and T6, although T2 also shows several heavy outliers. Elongated products show even smaller means for T6 and T7 (0.5-1 gr), especially when compared to local cherts (\~2.5 gr). Regarding cores, @tbl-general-gravettian shows that type T2 and T6 have the highest number of cores; between these two types, T6 has the lightest cores, with a maximum of \~21 gr and with a mean of \~12 gr, in comparison to T2 with a maximum of \~37 gr and a mean of \~21 gr. Retouched tools shows similar median values among all chert types (2.5-4 gr), although T6 and T7 have the lowest means (\~4 gr); in general, and given the high number of retouched tools for T6 (@tbl-general-gravettian), this non-local chert seems to have been consistently reduced with a third quartile ending in the 5 gr mark.
+The sizes of blanks (P3) and cores (P5) are explored through scatterplots of width and length (Figure 3 a) and boxplots for weight (Figure 3 b); complete tables with descriptive statistics and non-parametric statistical test results can also be found in SOM ++, table s++. The scatterplots show different patterns in the several analysed classes.
 
 ```{r}
 #| label: fig-gravettian-boxplots
@@ -893,10 +895,6 @@ ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "
 
 ```
 
-As seen in @fig-ratiotd (see also table s++ in the SOM ++), the lowest ratio of retouched to debitage is seen in T1 and T4, with values below 0.1, while other local types show slightly higher values (0.1-0.2). Following the same trend as the Gravettian, the non-local cherts show slightly higher ratios (0.3-0.5) of retouched to debitage. Regarding the blank to core ratio (@fig-ratiobc and table s++ in the SOM ++), T2 and T4 show the lowest ratios (8.7 and 6.2 respectively) of blanks per cores, while the non-local T7 shows the highest ratios (11.0) of blanks to cores. Unlike the Gravettian, T1 (local chalcedony) and T6 (non-local chert) have no cores (@tbl-general-proto).
-
-Regarding the size (width, length and weight) of lithic artefacts (flakes, elongated blanks, cores and retouched tools), several patterns can be seen between local and non-local chert types (@fig-proto-boxplots, table s++ and s++ in the SOM ++). The distribution of width and length (@fig-proto-boxplots a) for flakes shows a concentration of non-local flakes below the 25 mm width and length (with means around 20 mm), while local cherts are more variable and show larger widths and lengths. Similarly, the larger elongated blanks are from local cherts, although there is variability in the sizes. Although there are clear differences in the number of cores between local and non-local cherts (@tbl-general-proto) making patterns harder to identify, non-local cherts seem to show smaller cores. Finally, regarding retouched tools, non-local cherts also seem to be smaller, with widths concentrated below the 20 mm mark, while local cherts are concentrated above the 20 mm mark; no differences were identified regarding length. As for weight (@fig-proto-boxplots b and table s++ in SOM ++), local flakes seem to be heavier than  non-local cherts (means of 3.5-4.5 gr and 1.3-2.6 gr, respectively); especially T4 shows heavier flakes and outliers, than T6 and T7. In comparison, elongated blanks show no differences between local and non-local cherts. Although non-local chert cores are barely represented in the assemblage (@tbl-general-proto), they show the lighter weights than local cherts. Retouched tools show the clearest differences, with non-local cherts presenting lighter weights than local cherts.
-
 ```{r}
 #| label: fig-proto-boxplots
 #| fig-cap: Boxplots Proto-solutrean.
@@ -904,10 +902,6 @@ Regarding the size (width, length and weight) of lithic artefacts (flakes, elong
 ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 ```
-
-Regarding the tools-to-debitage and blank-to-core ratios, the Solutrean assemblage shows similar patterns as the previous assemblages (@fig-ratiotd and @fig-ratiobc, respectively). Local cherts (T2-T5) show low retouch to debitage ratios (\<0.1), with the exception of T1 (chalcedony), which shows a ratio of 1.8. Other non-local cherts (T6-T7 and T11) show slightly higher retouch to debitage ratios (0.1-0.3). Similarly, local cherts show lower blank to core ratios (\<7), while the non-local cherts show higher ratios (\>9). Similar to the Proto-Solutrean, chalcedony cores were also not identified in the studied sample (@tbl-general-solutrean).
-
-Unlike the other assemblages, there seems to be no clear difference in the measurements and weights of artefacts between local and non-local cherts (@fig-solutrean-boxplots and table s++ in SOM ++). The exception are elongated blanks, with show differences between T2 and T6, with T6 showing smaller width and lengths (<35 mm and 15 mm, respectively), than the local type. Similarly, elongated blank weights are smaller in T6 (ranging between 0-5-2 gr). Core weights are also slightly lower in T6 (means of 16.5 gr) than in T2, although the sample is comparatively small (@tbl-general-solutrean).
 
 ```{r}
 #| label: fig-solutrean-boxplots
@@ -917,13 +911,17 @@ ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"
 
 ```
 
-# Discussion
+In the Gravettian assemblage, non-local chert blanks (P3) are smaller than local chert blanks, especially regarding length (~ <25 mm) and weight (<5 gr), with statistically significant differences (p value of 0.00009*** and 0.012, respectively). The local chert blanks, although mostly concentrated below 25 mm width and length and with weights below 5 gr, have the largest number of outliers and variability in terms of size. The same patterns can be seen in the Proto-Solutrean assemblage, where length and weight also show statistically significant differences between chert types (0.046* and 0.004), with non-local types showing smaller values. In comparison, in the Solutrean assemblage, only non-local chert blank length seems to show statistically significant smaller values (p value of 0.0005**) than local chert blanks, being mostly concentrated below ~30 mm, while local chert blank lengths are more variable. While width seems to be more variable in both local and non-local chert blanks, the statistical analysis shows that non-local chert width is significantly higher than local chert blanks (p value of 0.02).
 
-As mentioned before, this study aimed to test two expectations related to the use and knapping of local and non-local raw materials, in specific, chert and chalcedony, and their relation to settlement and mobility strategies, across several UP occupations. As such, our method derived the following hypotheses to test: a) use lives derived from knapping strategies; b) reduction intensity and tools-to-debitage ratios; c) core size and blank-to-core ratios; d) reduction intensity and tool reworking; e) tool typology diversity and specialization (@tbl-expectations).
+Regarding cores (P5), the differences in sizes and weights seem between local and non-local cherts seem to be less obvious than those observed in blanks. In the Gravettian assemblage, there is a cluster of non-local chert cores below the 25 mm width and length, while in general, local chert cores seem to be more variable. Especially regarding weight, T6 cores (non-local) show lighter cores (~12 gr means) compared to local cherts. In the Solutrean assemblage, weight is the only measurement where differences can be seen between local and non-local chert cores; similarly to the Gravettian assemblage, T6 cores show slightly smaller cores (~18 gr means) than local cherts (~22 gr means). Despite these differences, the statistical tests applied to the dimensions between local and non-local chert cores show no statistically significant differences between the groups (p > 0.05). The Proto-Solutrean assemblage shows a small sample of non-local chert cores (n=4), not allowing a clear identification of patterns between the groups; alike the other assemblage however, local chert cores show a high range of sizes (~15-50 mm width and length) and weights (~3-85 gr).
 
-To test these hypotheses, the following parameters were evaluated for each assemblage and compared between chert types: P1) frequency of retouched tools; P2) frequency of maintenance products; P3) debitage sizes; P4) tools-to-debitage ratios ; P5) core sizes; P6) blank-to-core ratios; P7) retouched tool sizes; P8) tool diversity; P9) tool specialization. These parameters and their main results can be found in table @tbl-results-sum, and can be summarised as follows.
+Following the analysis parameters previously described, the summarised results for each parameter can be found in @tbl-results-sum, and can be summarised as follows:
 
 In the Gravettian assemblage, retouched tools (P1) are present in higher frequencies in the non-local cherts, as well as in core preparation and maintenance products (P2). Debitage sizes (P3) show smaller sizes and weights for non-local cherts. Tools-to-debitage ratios (P4) are significantly higher in non-local cherts. Core sizes (P5) are slightly smaller in T6, a non-local chert, and the blank-to-core ratios (P6) are higher in non-local cherts. Retouched sizes (P7) show no relevant differences between local and non-local cherts; however, tool diversity (P8) is higher in non-local cherts, although with high frequency of less specialised tools such as notches and retouched tools, alongside hunting implements such as backed bladelets (P9). The high frequency of burins seen in this assemblage may be related to their use as cores, representing a knapping strategy more than the presence of retouch.
+
+The Proto-Solutrean assemblages show a smaller presence of retouched tools than the Gravettian, and within the assemblage, retouched tools (P1) are slightly more frequent in non-local cherts. Core preparation and maintenance products (P2) are only present in non-local cherts, albeit in very small numbers (n=2). Blank sizes (P3), core sizes (P5), and retouched tool sizes (P7) are slightly smaller in non-local cherts. Regarding the ratios, tool-to-debitage ratios (P4) are higher in non-local cherts, albeit smaller than those seen in the Gravettian assemblage, and blank-to-core ratios (P6) are also higher in non-local cherts. Little differences were observed in tool diversity (P8) and specialisation (P9) between local and non-local cherts.
+
+Finally, the Solutrean shows no relevant differences in the frequencies of retouched tools (P1) and core preparation and maintenance products (P2) between local and non-local cherts, with only slightly higher frequencies in the non-local cherts. In general, the retouch frequency is lower than that observed in the previous assemblages. Debitage (P3), core (P5), and retouched tool (P7) sizes show no differences between local and non-local cherts, except for elongated blanks which are smaller in T6 and bigger in T2, and for slightly smaller cores seen in T6, although with high standard deviations. Similarly to the Proto-Solutrean, tools-to-debitage ratios (P4) and blank-to-core ratios (P6) are slightly higher in non-local cherts. Both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
 
 ```{r}
 #| label: tbl-results-sum
@@ -935,10 +933,7 @@ knitr::kable(head(p_results))
 
 ```
 
-
-The Proto-Solutrean assemblages show a smaller presence of retouched tools than the Gravettian, and within the assemblage, retouched tools (P1) are slightly more frequent in non-local cherts. Core preparation and maintenance products (P2) are only present in non-local cherts, albeit in very small numbers (n=2). Blank sizes (P3), core sizes (P5), and retouched tool sizes (P7) are slightly smaller in non-local cherts. Regarding the ratios, tool-to-debitage ratios (P4) are higher in non-local cherts, albeit smaller than those seen in the Gravettian assemblage, and blank-to-core ratios (P6) are also higher in non-local cherts. Little differences were observed in tool diversity (P8) and specialisation (P9) between local and non-local cherts.
-
-Finally, the Solutrean shows no relevant differences in the frequencies of retouched tools (P1) and core preparation and maintenance products (P2) between local and non-local cherts, with only slightly higher frequencies in the non-local cherts. In general, the retouch frequency is lower than that observed in the previous assemblages. Debitage (P3), core (P5), and retouched tool (P7) sizes show no differences between local and non-local cherts, except for elongated blanks which are smaller in T6 and bigger in T2, and for slightly smaller cores seen in T6, although with high standard deviations. Similarly to the Proto-Solutrean, tools-to-debitage ratios (P4) and blank-to-core ratios (P6) are slightly higher in non-local cherts. Both tool diversity (P8) and tool specialization (P9) are higher in local cherts.
+# Discussion
 
 In general, the obtained results seem to fit the study expectations. The Gravettian assemblage seems to show agreement with most of the expectations (table **). Although ~50% of the assemblage is composed of non-local raw materials, making them as frequent as the local cherts, non-local cherts, especially T6 and T7 show differential techno-typological patterns from the local raw materials. Only in expectation e) there seems to be a difference from the expected outcome.
 

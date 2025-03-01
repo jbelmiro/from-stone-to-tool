@@ -1,30 +1,26 @@
 ---
-title: "Placeholder for article 3"
+title: "From Stone to Tool: How Raw Materials Influenced Upper Paleolithic Technology in Southwestern Iberia (Vale Boi)"
 author:
-  - Jane Doe:
+  - Joana Belmiro:
       correspondence: "yes"
-      email: janedoe@fosg.org
+      email: jfbelmiro@ualg.pt
       orcid: 0000-0003-1689-0557
       institute:
-        - fosg
-        - fop
-  - John Q. Doe:
-      institute: fosg
+        - ICArEHB
+  - Nuno Bicho:
+      institute: ICArEHB
       orcid: 0000-0003-1689-0558
-  - Peder Ås:
-      institute: fosg
+  - Xavier Terradas:
+      institute: CSIC
       orcid: 0000-0003-1689-0559
-  - Juan Pérez:
+  - João Cascalheira:
       orcid: 0000-0003-1689-0551
-      institute:
-        - name: Acme Corporation
-  - Max Mustermann:
-      orcid: 0000-0003-1689-0552
+      institute: ICArEHB
 institute:
-  - fosg:
-      name: Formatting Open Science Group
-      address: 23 Science Street, Eureka, Mississippi, USA
-  - fop: Federation of Planets
+  - ICArEHB:
+      name: Interdisciplinary Center for Archaeology and Human Evolution
+      address: 
+  - CSIC: CSIC
 title-block-published: "Last updated"  
 date: now
 date-format: long
@@ -80,45 +76,49 @@ library(tibble)
 
 # Introduction
 
+The Iberian Peninsula has been a key region for the study of human adaptations and cultural transitions in Archaeology. Located in the westernmost tip of Europe and with a generally stable climate even during the coldest periods punctuating the Late Pleistocene, this region has yielded some of the most significant glacial refugia in Europe [@hewitt2000; @gómez2007; @gonzález-sampériz2010; @carvalho2022].
+
+For this reason, the Iberian Peninsula has been the focal point of several discussions regarding Late Pleistocene human adaptations [@finlayson2006; @zilhão2017; @cascalheira2017].
+
+A particularly good example is the region's role in the discussion of Upper Paleolithic technocomplexes transitions. Previous studies have discussed the territory's potential as a refugium during cold and harsh climatic conditions [@gómez2007; @rodríguez-sánchez2010; @jennings2011]. Other studies have expanded upon this notion of climatic refugia during harsh climatic events, to understand the Iberian Peninsula as a long-term eco-cultural refugia [@cascalheira2017]. Using this framework, this territory would consist of several ecological niches, consistently used through time, possibly due to the stability in the richness and variety of resources. This continuous use would then create long-term regional adaptive structures, which when correlated with the ecological niches, @cascalheira2017 have referred to as eco-cultural niches. In fact, it seems that a large number of caves and rockshelters in Iberia are multi-layered, giving validity to the aforementioned framework [@schmidt2012]. These eco-cultural niches provide an exceptional opportunity to understand long-term dynamics regarding biotic and abiotic resource exploitation since they can provide details on how human populations maintained or changed their adaptive systems when facing environmental changes, and cultural and social transformations or constraints.
+
+More specifically, southwestern Iberia has been shown to be a key eco-cultural niche to study cultural transitions and the role of such a peripheral coastal region within hunter-gatherer social networks [@cascalheira2017]. This has been mostly due to the archaeological site of Vale Boi, located in southwesternmost Iberia and characterized by a nearly complete UP sequence (++). This site is crucial for understanding Upper Paleolithic (UP) adaptations, as it is currently the only site in southwestern Iberia with a long-term occupation spanning most of the UP, enabling the exploration of cultural and technological trends over time (Cascalheira et al. 2017).
+
+For example, Vale Boi has provided valuable insights into hunter-gatherer subsistence strategies and technological organisation (Belmiro et al. 2021; Bicho et al. 2013; Cascalheira et al. 2017; Cascalheira 2019; Horta et al. 2019; Manne et al. 2012; Marreiros et al. 2016), contributing to a better understanding of territory exploitation and interactions with other regions of Iberia throughout the UP. Especially due to lithic technology studies from this site, the region has been shown to have played a shifting and complex role within the larger territory.
+
+During the Gravettian, the peripheral nature of the region studies of Gravettian occupations reveal marked regional differences, suggesting more limited movement of people and information in southwestern Iberia (Marreiros and Bicho, 2013). In comparison, Proto-Solutrean evidence indicates technological similarities and close contact with central Portugal (Belmiro et al., 2021). The Solutrean period stands out as a particularly dynamic phase at Vale Boi, during which the site served as a key connection point between central Portugal and southern Spain, facilitating social networks and cultural exchanges (Cascalheira, 2013; Cascalheira et al., 2017).
+
+Expanding on these findings, recent research has further refined our understanding of mobility and social networks through lithic raw material studies at the site. Our team’s recent work (Belmiro et al., 2025) identified non-local cherts originating from central Portugal (>250 km from Vale Boi) and southern Spain (>200 km from Vale Boi). The proportions of these materials varied across the UP, with earlier occupations (Gravettian) showing high frequencies of non-local chert, while later ones (Proto-Solutrean and Solutrean) exhibited a marked decline. These findings suggest the establishment and maintenance of extensive social networks connecting southwestern Portugal to Southern spain and central Portugal as early as the beginning of the UP.
+
+These results, particularly those related to the Gravettian, were interpreted as outcomes of residential mobility rather than direct social network influences, though further investigation is required.
+
+Despite the insights gained from previous studies, the relationship between lithic technology and raw material use at Vale Boi remains largely uncorrelated. While broader research highlights the complexity of lithic technological organisation, a more integrated approach is needed to fully understand how raw material provisioning influenced technological strategies at the site and what this can tell us about how hunter-gatherer groups organized, explored the territory and connected to others across Iberia. To address this, our goal is to combine lithic technological and chert raw material studies to better characterize hunter-gatherer technological and social adaptations throughout the UP in southwestern Iberia. To do so, we create and test expectations built upon previous archaeological and ethnographic studies of the technological organization of hunter-gatherers.
+
+
+
+## Theoretical framework and objectives
+
 Lithic technological organisation has long been a central focus in archaeology for the insights it offers into past human behaviour and lifeways. Nelson (1991) defines lithic technological organisation as the selection and integration of strategies for the production, use, transportation, discarding, and management of tools and raw materials. Kelly (1988) describes it as the interplay of space and time in lithic tool production within a cultural system. This includes activities such as raw material sourcing and distribution, tool manufacture, use, reuse, and discard, as well as broader behavioural patterns like mobility and settlement systems. Together, these definitions underscore the multifaceted nature of lithic technological organisation and its utility in examining key aspects of hunter-gatherer adaptations over time.
 
 Raw material procurement is a key aspect of lithic technological organisation, as it played a crucial role in the lives of past hunter-gatherer groups by determing the possibilities for tool production and use (Bamforth & Bleed, 1997). Approaches focused on the study of raw materials provide key knowledge on several topics of hunter-gatherer organisation such as procurement and mobility strategies (Ambrose, 1990; Binford, 1979, 1985; Gould, 1985; Kuhn, 1991; Mccall, 2007), occupation types and their duration (Kuhn, 2004; Surovell, 2009; Grove, 2023), and social networks and exchanges (Whallon, 2006; Gamble, 1999). These approaches focus on the characterisation of geological and archaeological raw materials to identify local and non-local raw materials within an assemblage, their possible sources, and examine their proportions within a site over different occupations and periods.
 
-Similar studies have also been applied to lithic assemblages from prehistoric archaeological sites in the Iberian Peninsula (e.g., Aubry et al. 2016; Aubry and Igreja 2009; García-Rojas et al. 2021; Gómez de Soler et al. 2020; Herrero-Alonso et al. 2020; Matias 2016; Nocete et al. 2005; Ortega 2003; Pereira, Andrade, et al. 2016; Pereira et al. 2021, 2022; Ramacciotti et al. 2022; Rodríguez et al. 2011; Sánchez de la Torre et al. 2023; Soto 2016), and contributed to understanding how different groups explored the available lithic resources, aided in identifying extensive movements and social networks throughout the Upper Palaeolithic (e.g., Aubry et al. 2004, 2016; Corchón Rodríguez et al. 2016; Hermida et al. 2016; Marreiros et al. 2016; Sánchez de la Torre et al. 2023).
-
-Until recently, the study of raw materials in southwestern Iberia was limited, and knowledge about mobility and social networks was limited to technological studies, derived from the archaeological site of Vale Boi. This site is crucial for understanding Upper Paleolithic (UP) adaptations, as it is currently the only site in southwestern Iberia with a long-term occupation spanning most of the UP, enabling the exploration of cultural and technological trends over time (Cascalheira et al. 2017). For example, Vale Boi has provided valuable insights into hunter-gatherer subsistence strategies, technological organisation (Belmiro et al. 2021; Nuno Bicho et al. 2013; Cascalheira et al. 2017; Cascalheira 2019; Horta et al. 2019; Manne et al. 2012; Marreiros et al. 2016). This also contributed to understanding different patterns of territory exploitation and contact with other regions of Iberia throughout the UP.
-
-During the Solutrean period, Vale Boi served as a key connection point between central Portugal and southern Spain, facilitating social networks and cultural exchanges (Cascalheira, 2013; Cascalheira et al., 2017). Proto-Solutrean evidence also indicates technological similarities and close contact with central Portugal (Belmiro et al., 2021). In contrast, studies of Gravettian occupations reveal marked regional differences, suggesting more limited movement of people and information in southwestern Iberia (Marreiros and Bicho, 2013).
-
-Recent research has expanded our understanding of mobility and social networks through lithic raw material studies. Our team’s recent work (Belmiro et al., 2025) identified non-local cherts originating from central Portugal (\>250 km from Vale Boi) and souuthern Spain (\>200 km from Vale Boi). The proportions of these materials varied across the UP, with earlier occupations (Gravettian) showing high frequencies of non-local chert, while later ones (Proto-Solutrean and Solutrean) exhibited a marked decline. These findings suggest the establishment and maintenance of extensive social networks connecting southwestern Portugal to Southern spain and central Portugal as early as the beginning of the UP.
-
-These results, particularly those related to the Gravettian, were interpreted as outcomes of residential mobility rather than direct social network influences, though further investigation is required. While distance to source and raw material proportions offer valuable insights, they represent only one aspect of raw material procurement and management. A raw material-focused approach alone is insufficient for comprehensively understanding mobility patterns and technological organisation. Indeed, numerous studies and models from both ethnographic and archaeological perspectives have demonstrated the complex interplay between lithic technological variability, raw material provisioning, and mobility.
+While distance to source and raw material proportions offer valuable insights, they represent only one aspect of raw material procurement and management. A raw material-focused approach alone is insufficient for comprehensively understanding mobility patterns and technological organisation. Indeed, numerous studies and models from both ethnographic and archaeological perspectives have demonstrated the complex interplay between lithic technological variability, raw material provisioning, and mobility.
 
 For example, technological variability within a lithic assemblage may be explained by the abundance and quality of raw materials (Andrefsky, 1994; Brown, 1999; Oestmo, 2017). Whenever raw materials in proximity to a residential site are abundant and of good quality, a high percentage of formal tools are produced (Andrefsky, 1994; Perlès, 1992), and artefacts show less reduction intensity and decreased conversation through retouch (Thacker, 2002). Whenever local raw materials are scarce or of low quality, non-local resources are procured to produce mostly formal tools (Andrefsky, 1994; Perlès, 1992). Similarly, when groups move to areas where raw material is scarcer or of poorer quality, more effort is placed into the preparation of transportable cores and the production of tools (Kelly, 1988).
 
 However, the different patterns between local and non-local raw material proportion and use in lithic assemblages may be less obvious whenever prehistoric groups have easy access to non-local raw materials due to high mobility or exchanges between groups (Akerman et al., 2002; Torrence, 1996; Brown, 1999; Oestmo). Furthermore, Roth and Dibble (1998) demonstrate that even in areas where good quality raw material is abundant, non-local raw materials were still transported to the site, often in the form of large blanks or trimmed cores, and both local and non-local raw materials were retouched into tools.
 
 Tools, flakes and cores often functioned as portable sources of raw material within mobile toolkits or during non-local raw material procurement, enabling stone knapping during periods of limited time or in environments with scarce or unsuitable materials (Kelly, 1988; Morrow, 1996; Gould et al., 1971; Kuhn, 1994; Perlès, 1992; Shott, 1986). For example, the transport of formal cores (e.g., blade cores) and bifaces used as cores have been interpreted as lightweight and reconfigurable raw material storage strategies (Clark, 1987; Kelly, 1988).
-
 Formal tools and the degree of tool maintenance have also been associated with planned preparation, efficient use, and transportability, reflecting their connection to mobile settlement strategies, short-term site occupations (Torrence, 1983) and the regional distribution of raw materials (Bamforth, 1986). For example, non-local raw materials, transported as part of personal toolkits (frequently associated with residential mobility), would primarily arrive at sites as retouched pieces (Kuhn, 2004). These artefacts would show higher degrees of reduction and reworking (Kuhn, 2004) and a higher percentage of non-cortical flakes (Roth and Dibble 1998), as they would have been in use for an extended period before being discarded. When knapped on-site, non-local materials also tend to exhibit higher proportions of retouched tools compared to local materials.
-
 Tool variability and size are also impacted by mobility and uncertainty regarding raw material availability; increased group mobility may create a pattern of limited tool variability, and tools may become less specialised and easily reconfigurable, such as retouched blanks (Shott, 1986; Odell, 1981; Siegel, 1984). Increased mobility also often results in smaller tools (Shott, 1986), although other authors have noted that large tools may be well-suited to a mobile lifestyle due to their extended use-life, allowing them to remain functional in areas where raw materials are scarce or unsuitable for knapping (Morrow, 1996).
 
 The proportions of local vs non-local raw materials discussed thus far have focused greatly on group mobility, which is linked with residential mobility and occupation duration. Residential mobility (e.g., foraging range size and frequency of residential moves) is a defining characteristic of hunter-gatherer societies and plays a central role in their lifeways (Kelly, 1995). It is a key factor driving changes in lithic assemblages (Brown, 1999; Oestmo, 2017; Roth & Dibble, 1998) as it significantly impacts the cost and use of artefacts and raw materials since they affect the relation between the distance of raw material sources to sites (Kuhn, 2004). As such, different raw material and technological patterns have been observed between short-term and long-term occupations.
 
 Short-term occupations typically rely on transported (non-local) toolkits (Torrence, 1983) and raw materials (Surovell, 2009), show higher reduction intensity, and an increased tools-to-debitage ratio in the assemblages (Grove et al., 2023). Long-term occupations, typically rely on provisioning sites with locally available and suitable raw materials, while non-local materials are gradually used and discarded (Grove et al., 2023; Surovell, 2009). Non-local raw material cores are highly reduced and extensively exploited (Kuhn, 2004; Roth & Dibble, 1998) and exhibit higher blank-to-core ratios (Roth & Dibble, 1998).
 
-These studies highlight significant variability in lithic assemblages and raw material proportions, reflecting different facets of hunter-gatherer technological organisation. This variability appears between behaviourally and ethnically similar sites (Bamforth, 1986), across distinct chrono-cultural periods, and even within a single site among various raw materials. To fully understand past hunter-gatherer behaviours, organisation, and lifeways, it is crucial to examine all stages of lithic production—procurement, distribution, use, maintenance, and discard—through interconnected approaches that combine lithic technology and raw material analyses.
+Altogether, different studies highlight significant variability in lithic assemblages and raw material proportions, reflecting different facets of hunter-gatherer technological organisation. This variability appears between behaviourally and ethnically similar sites (Bamforth, 1986), across distinct chrono-cultural periods, and even within a single site among various raw materials. To fully understand past hunter-gatherer behaviours, organisation, and lifeways, it is crucial to examine all stages of lithic production - procurement, distribution, use, maintenance, and discard - through interconnected approaches that combine lithic technology and raw material analyses.
 
-Building on the studies mentioned above and existing (yet currently uncorrelated) data on UP lithic technology and raw material analyses at Vale Boi, we outline the expectations and objectives for the current study.
-
-## Aims
-
-Our goal is to understand the provisioning, use and management strategies of chert lithic resources of the hunter-gatherer groups of Vale Boi during the Upper Paleolithic. We focus on the technological characteristics of the two broader groups of cherts identified at the site: local and non-local, based on the notion that local raw materials will show technological patterns different from those which are non-local. Expanding upon our previous works on chert types present throughout the UP sequence in the Terrace and Shelter area of Vale Boi, and their possible interpretations, and following the previously mentioned studies and models about raw material management and lithic technology organisation focusing mainly on the different management of local and non-local raw materials, associated with mobility and occupation length, we derive two main expectations (fig. 1):
-
-1.  Local raw materials are expected to present a) low use-lives, with knapping strategies characterised by manufacture, use and discard; b) a decreased reduction intensity and low tools to debitage ratio; c) larger cores and lower blank-to-core ratio; d) less extensive reduction and reworking of tools; e) higher tool typology diversity. This may be related to the abundance of local raw materials which leads to less intensive life-use extension, but also to the residential characteristics of the site and low mobility, which increases the reliance on local raw materials.
-
-2.  Non-local raw materials are expected to present a) a majority of formal tools, in the case of individual provisioning or higher use-lives, with knapping strategies characterised by the manufacture, use and maintenance; b) an increased reduction intensity and high tools to debitage ratio; c) smaller cores and higher blank-to-core ratio; d) more extensive reduction and high presence of retouch and/or tool maintenance; e) lower tool diversity, characterised by less specialised tools, such as the presence of retouched blanks as multipurpose tools. This may be related to scarcer or poorer quality of raw materials which leads to the prepared transportation of lithic resources to a site, but also related to more mobile settlement patterns as well as short-term site occupations.
+Our goal is to understand the provisioning, use and management strategies of chert lithic resources of the hunter-gatherer groups of Vale Boi during the Upper Paleolithic. We focus on the technological characteristics of the two broader groups of cherts identified at the site: local and non-local, based on the notion that local raw materials will show technological patterns different from those which are non-local. Expanding upon our previous works on chert types present throughout the UP sequence in the Terrace and Shelter area of Vale Boi, and their possible interpretations, and following the previously mentioned studies and models about raw material management and lithic technology organisation focusing mainly on the different management of local and non-local raw materials, associated with mobility and occupation length, we derive several expectations regarding local and non-local raw materials that can be found summarized in @tbl-expectations.
 
 ```{r}
 #| label: tbl-expectations
@@ -130,9 +130,11 @@ knitr::kable(head(hypotheses))
 
 ```
 
-Despite these expectations, it is important to notice that, especially in occupations with a high percentage of non-local cherts at the site (e.g., Gravettian occupations of level 7 and 6 of the Terrace at Vale Boi), these technological may not reflect a preoccupation with intensive management of a scarce and limited non-local resource, and be more a reflection of the type of provisioning applied following the suggested model by Kuhn (2004). In this sense, distance from source may have had little intrinsic meaning in the past, especially regarding non-local raw materials. There are several ways in which raw materials may be transported to a site, and the relationship between distance and cost may vary depending on how this takes place [@kuhn2004]. When non-local raw materials are as abundant as local ones, the difference in the technological organization between these materials may be less obvious (Andrefsky, 2004).
+Despite these expectations, it is important to notice that, especially in occupations with a high percentage of non-local cherts at the site (e.g., Gravettian occupations of level 7 and 6 of the Terrace at Vale Boi), these technological may not reflect a preoccupation with intensive management of a scarce and limited non-local resource, and be more a reflection of the type of provisioning applied following the suggested model by Kuhn (2004). In this sense, distance from source may have had little intrinsic meaning in the past, especially regarding non-local raw materials. There are several ways in which raw materials may be transported to a site, and the relationship between distance and cost may vary depending on how this takes place (Kuhn, 2004). When non-local raw materials are as abundant as local ones, the difference in the technological organization between these materials may be less obvious (Andrefsky, 2004).
 
-## Site descriptions
+# Materials and methods
+
+## Site description
 
 Vale Boi is situated on the western coast of the Algarve region in southern Portugal, within a small valley that stretches southward to the Atlantic coast, approximately 2 km away. The site is bordered by limestone outcrops, which form rock shelters facing west and southwest. Covering more than 10,000 square meters along the valley slope, Vale Boi includes three main excavated areas: Slope, Terrace, and Shelter, which were excavated between 2000 and 2019 (Bicho et al., 2007, 2012, 2013; Cascalheira et al., 2017; Cascalheira & Bicho, 2013; Manne et al., 2012). Based on the available raw material and technological data, particularly the macroscopic and petrographic research (Belmiro et al., 2025), the Terrace and Shelter areas were selected for the current study.
 
@@ -154,7 +156,7 @@ Using the Whole Assemblage Behavioral Index (WABI), previously used in other stu
 
 A similar conclusion was suggested based on the interpretation of the chert sourcing and proportions in the several UP occupations of the Terrace and Shelter of Vale Boi, and following other models relating local/non-local raw materials with mobility (Grove et al., 2023; Surovell, 2009). The high proportions of non-local chert (\~50%) in the Gravettian occupations (levels 6 and 7), and gradual reduction in the following occupations, were interpreted as a possible result of settlement changes, where the Gravettian occupations corresponded to short-term occupations, and the other occupations corresponded to residential, long-term occupations with more infrequent moves (Belmiro et al., 2025).
 
-# Materials and methods
+## Lithic analysis
 
 The current study includes the statistical correlation between the techno-typological analysis and the geoarchaeological study of the chert lithic assemblages of the UP of Vale Boi. As mentioned above, previous studies have individually analysed the lithic assemblages from Vale Boi focusing on different subjects and methods, obtaining different kinds of data. Specifically, our previous study focused on the macroscopic and petrographic characterisation of cherts, and the identification of distance to sources and proportions through the several UP technocomplexes. This study provided the basis for understanding which cherts were being used at the site, where they were coming from and how/why their use became more or less intense. In that same study, we used previously known data related to settlement type and seasonality to contextualise the changes in chert sources and proportions through time, to better understand the possible strategies of raw material procurement (Hahn, 2002). However, and as mentioned in Belmiro et al. 2025, correlating the obtained data with technological analysis data provides a key step to better understand how these raw materials were being introduced into the site and used, through the correlation with data such as type of lithic class, since it may point towards the specific mobility of artifacts (Hahn, 2002).
 

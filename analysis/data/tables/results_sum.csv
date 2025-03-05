@@ -1,11 +1,17 @@
-﻿Parameters,Gr L,Gr NL,Pr L,Pr NL,So L,So NL,Exp L,Exp NL
-P1: retouched tool %,~12-18%,~30%,5-15%,~17-23%,~3%,<10%,-,+
-P2: maintenance products %,<2%,<4%,0%,<1%,1.30%,3.5% (T6),-,+
-P3: debitage sizes - flakes,> ,< ,> ,< ,=,=,-,+
-P3: debitage sizes - elongated,> ,< ,>=,<=,> (T2),< (T6),-,+
-P4: tools-to-debitage ratio,0.25-0.5,0.9-1.0,<0.1-0.2,0.3-0.5,<0.1,0.1-0.3,-,+
-P5: core sizes,> (T2),< (T6),> ,< ,> ,< ,-,+
-P6: blank-to-core ratios,<4,~8,~6-9,11,<7,>9,-,+
-P7: retouched tool sizes,=,=,> ,< ,=*,=*,-,+
-P8: tool diversity,7,15,9,10,9,5,+,-
-P9: tool specialization,"Burins, endscrapers, retouched flakes, splitered pieces","Burins, endscrapers, retouched flakes, splintered pieces, backed bladelets","Endscrappers, splintered pieces, burins, retouched flakes","Endscrappers, splintered pieces, burins, retouched flakes","Bifacial blanks/fragments, endscrappers, notches, retouched blanks, splintered pieces","Bifacial blanks/fragments, endscrappers, notches, retouched blanks, splintered pieces",+,-
+﻿,Gravettian,,Proto-Solutrean,,Solutrean,
+Parameters,Local,Non-local,Local,Non-local,Local,Non-local
+P1: Retouched tool %,8.5-17%,~33-28%,7.30%,15-19%,1.50%,3-18%
+P2: Core %,5.2-8.5%,~3.5%,9.20%,n<4,10.70%,3-6%
+P3: Maintenance products %,1.40%,1-2%,-,n=2,1.30%,3.50%
+P4: Blank sizes (median),,,,,,
+a) Width,19.1,17.8,16.8,16.6,16.6*,18.8
+b) Length,25.8***,21.2***,23.4**,19.4**,25.1***,21.9***
+c) Weight,2.8*,1.9*,2.2*,1.7*,1.7,1.5
+P5: Tool-to-debitage ratio,0.25-0.5,0.9-1.0,<0.1-0.2,0.3-0.5,<0.1,0.1-0.3
+P6: Core sizes (median),,,,,,
+a) Width,27.6,29.7,30.7,-,30.7,26
+b) Length,29.6,21.9,28.3,-,28.3,25.6
+c) Weight,20,11.8,16.5,-,16.5,11.7
+P7: Blank-to-core ratio,2.6-3.6,~8,4-8.7,-,2.5-7,11.2-25
+P8: Tool diversity,5,8,8,8,9,5
+P9: Tool specialisation,+,-,+,-,+,-

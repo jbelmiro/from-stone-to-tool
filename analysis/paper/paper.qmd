@@ -245,7 +245,7 @@ terrace_RM_WIP <- terrace_RM |>
     RMTYPE == "Oolitic" ~ "T10",
     RMTYPE == "TYPE GB" ~ "T11",
     .default = RMTYPE)) |> 
-  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) %>%
+  select(AREA, ID, RMTYPE, SUBTYPE, WEIGHT, CORTEXTHICKNESS, CORTEXAPPEARANCE) |> 
   distinct(ID, .keep_all = TRUE)
 
 context <- context |>
@@ -305,10 +305,11 @@ solutrean_WIP <- solutrean_JC |>
   dplyr::rename("YEAR" = "Date") |> 
   tidyr::unite(col='ID', all_of(cols_to_concat_shelter), sep="-", remove=FALSE) # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
 
-# Dataset filtering for chert/chalcedony and levels (A-C), 3298 + 61 solutrean points, n=3359
+# Dataset filtering for chert/chalcedony and levels (A-C), 3229 + 61 solutrean points, n=2390
 solutrean_original_chert <- solutrean_JC |> 
   filter(Layer %in% c("A", "B", "C")) |> # Filtering Solutrean layers
-  filter(`Raw material` %in% c("Chert", "Chalcedony"))
+  filter(`Raw material` %in% c("Chert", "Chalcedony")) |> 
+  filter(Class != "Chip")
 
 # In Cascalheira 2010 Retouched piece was not a category but a variable. To match the other DBs, this category was added
 solutrean_WIP <- solutrean_WIP |> 
@@ -771,11 +772,11 @@ bc_ratio <- ratio_blankcore |>
     TRUE ~ RMTYPE)) |>
   mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  ggplot(aes(x=Assemblage, y=`Blank/Core`, colour = Source)) +
-  geom_point(size=3) +
+  ggplot(aes(x=Assemblage, y=`Blank/Core`, fill = Source)) +
+  geom_point(size=3, shape = 21, colour = "black") +
   coord_cartesian(clip = "off") +
   theme(legend.position = "none", axis.title.x = element_blank()) +
-  scale_colour_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+  scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#BDD2B6"))
 
 ```
@@ -859,10 +860,10 @@ td_ratio <- ratio_tooldebitage |>
     TRUE ~ RMTYPE)) |>
   mutate(Source = factor(Source, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  ggplot(aes(x=Assemblage, y=`Tool/Blank`, colour = Source)) +
-  geom_point(size=3) +
+  ggplot(aes(x=Assemblage, y=`Tool/Blank`, fill = Source)) +
+  geom_point(size=3, shape = 21, colour = "black") +
   theme(legend.position = "bottom", axis.title.x = element_blank()) +
-  scale_colour_manual(name = "Chert type", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+  scale_fill_manual(name = "Chert type", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#BDD2B6", "#BDC7C9", "#798777"))
 
 ```
@@ -875,7 +876,7 @@ In all assemblages, blanks and blank fragments are the most frequent class of li
 #| label: fig-general-graphs
 #| fig-cap: Class by chert type in the Gravettian (a), Proto-Solutrean (b) and Solutrean (c) assemblages. Labels within the plots correspond to the number of artefacts within each class. Only labels of n>3 are shown.
 
-ggpubr::ggarrange(barplot_gravettian, barplot_proto, barplot_solutrean, labels = c("a", "b", "c"), nrow = 3, common.legend = TRUE, legend = "right")
+ggpubr::ggarrange(barplot_gravettian, barplot_proto, barplot_solutrean, labels = c("a", "b", "c"), nrow = 3, common.legend = TRUE, legend = "bottom")
 
 ```
 

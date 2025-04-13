@@ -1,30 +1,27 @@
 ---
-title: "SOM result tables"
+title: "Online Resources 1: Supplementary results and tables"
+subtitle: "From Stone to Tool: How Raw Materials Influenced Upper Paleolithic Technology in Southwestern Iberia (Vale Boi). Archaeological and Anthroplogical Sciences"
 author:
-  - Jane Doe:
+  - Joana Belmiro:
       correspondence: "yes"
-      email: janedoe@fosg.org
+      email: jfbelmiro@ualg.pt
       orcid: 0000-0003-1689-0557
       institute:
-        - fosg
-        - fop
-  - John Q. Doe:
-      institute: fosg
+        - ICArEHB
+  - Nuno Bicho:
+      institute: ICArEHB
       orcid: 0000-0003-1689-0558
-  - Peder Ås:
-      institute: fosg
+  - Xavier Terradas:
+      institute: CSIC
       orcid: 0000-0003-1689-0559
-  - Juan Pérez:
+  - João Cascalheira:
       orcid: 0000-0003-1689-0551
-      institute:
-        - name: Acme Corporation
-  - Max Mustermann:
-      orcid: 0000-0003-1689-0552
+      institute: ICArEHB
 institute:
-  - fosg:
-      name: Formatting Open Science Group
-      address: 23 Science Street, Eureka, Mississippi, USA
-  - fop: Federation of Planets
+  - ICArEHB:
+      name: Interdisciplinary Center for Archaeology and Human Evolution
+      address: 
+  - CSIC: CSIC
 title-block-published: "Last updated"  
 date: now
 date-format: long

@@ -14,7 +14,7 @@ author:
   - Xavier Terradas:
       orcid: https://orcid.org/0000-0002-8000-5607
       institute:
-        - Institución Milá y Fontanals de Investigación en Humanidades, Consejo Superior de Investigaciones Científicas, Barcelona, Spain
+        - Spanish National Research Council - Institute Milá y Fontanals of research on Humanities, Barcelona, Spain
   - João Cascalheira:
       orcid: https://orcid.org/0000-0003-0321-8892
       institute:

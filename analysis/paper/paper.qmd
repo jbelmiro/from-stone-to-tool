@@ -56,7 +56,7 @@ Keywords: `r rmarkdown::metadata$keywords`
 
 We would like to thank the Fundacão para a Ciência e Tecnologia for the funding essential for our research, and ICArEHB for funding and providing access to the archaeological materials.
 
-**Author contributions:** Study conception and design were performed by Joana Belmiro and João Cascalheira. Material preparation, data collection, database collection and treatment and analysis were performed by Joana Belmiro. The first draft of the manuscript was written by Joana Belmiro and all authors commented on previous versions of the manuscript. All authors read and approved the final manuscript.
+**Author contributions:** Study conception and design were performed by Joana Belmiro, Nuno Bicho and João Cascalheira. Material preparation, data collection, database collection and treatment and analysis were performed by Joana Belmiro. The first draft of the manuscript was written by Joana Belmiro and all authors commented on previous versions of the manuscript. All authors read and approved the final manuscript.
 
 ```{r}
 #| label: library

@@ -870,6 +870,8 @@ Blanks and blank fragments represent the most abundant lithic class in all assem
 
 ggpubr::ggarrange(barplot_gravettian, barplot_proto, barplot_solutrean, labels = c("a", "b", "c"), nrow = 3, common.legend = TRUE, legend = "bottom")
 
+#ggsave("general_graphs.png", width = 6, height = 8, units = "in", dpi = 300, bg = "white")
+
 ```
 
 The Gravettian assemblage exhibits the highest proportion of retouched tools (\~21%; [@fig-general-graphs] a), compared to \<10% in other assemblages. Tool diversity is greater among non-local cherts, which contain a high frequency of generalized tools (e.g., notches, retouched pieces) alongside hunting implements such as backed bladelets. The abundance of burins and burin spalls suggests they may have functioned as cores, indicating a technological strategy rather than solely a focus on retouch (Online Resource 1 Tables s1 and s3). In comparison to the Gravettian, other assemblages show smaller numbers of retouched tools. While in the Proto-Solutrean (Online Resource 1 Table s5) no significant difference was identified between local and non-local retouched tools, in the Solutrean assemblage (Online Resource 1 Table s7) both tool diversity and tool specialization are higher in local cherts.
@@ -888,6 +890,8 @@ legend_b <- as_ggplot(get_legend(td_ratio))  # Convert legend to a ggpubr-compat
 td_ratio <- td_ratio + theme(legend.position = "none")
 ggpubr::ggarrange(td_ratio, bc_ratio, legend_b, labels = c("a", "b", ""), ncol = 1, heights = c(3, 3, 1))
 
+#ggsave("ratios.png", width = 6, height = 7, units = "in", dpi = 300, bg = "white")
+
 ```
 
 Blank-to-core ratios were analysed across assemblages (@fig-ratios b, Online Resource 1 Table s9). In all cases, local cherts generally exhibit lower blank-to-core ratios than non-local cherts, though variability in core sample sizes may influence these patterns. For the Gravettian assemblages, the results reveal that non-local cherts show ratios above 7 (with the exception of T10), while local cherts have ratios located below 4. The Solutrean assemblage also shows higher ratios for non-local cherts (\>12), with local cherts showing ratios below 7. The Proto-Solutrean assemblage has most blank-to-core ratios below 10, except for non-local T7. However, non-local cores are poorly represented within the assemblage (@fig-ratios b, Online Resource 1 Table s4).
@@ -905,6 +909,8 @@ The scatterplots and boxplots show different patterns in the several analysed cl
 
 ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
 
+#ggsave("gravettian_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
+
 ```
 
 ```{r}
@@ -916,6 +922,8 @@ ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "
 
 ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
 
+#ggsave("proto_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
+
 ```
 
 ```{r}
@@ -926,6 +934,8 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), nrow 
 #| fig-align: center
 
 ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
+
+#ggsave("solutrean_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
 
 ```
 

@@ -927,7 +927,7 @@ The scatterplots and boxplots show different patterns in the several analysed cl
 
 ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
-#ggsave("gravettian_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
+#ggsave("gravettian_plots.png", width = 6, height = 7, units = "in", dpi = 300, bg = "white")
 
 ```
 
@@ -940,7 +940,7 @@ ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "
 
 ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
-#ggsave("proto_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
+#ggsave("proto_plots.png", width = 6, height = 7, units = "in", dpi = 300, bg = "white")
 
 ```
 
@@ -953,7 +953,7 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol 
 
 ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
-#ggsave("solutrean_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
+#ggsave("solutrean_plots.png", width = 6, height = 7, units = "in", dpi = 300, bg = "white")
 
 ```
 

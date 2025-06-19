@@ -350,7 +350,14 @@ phase_dataset <- terrace_dataset |>
     RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
     RETOUCHEDPIECETYPOLOGY == "Backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed flake" | RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed tool",
     RETOUCHEDPIECETYPOLOGY == "Carenated endscraper" ~ "Endscraper",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |>
+  # --Article review--
+  mutate(elong = MAXWIDTH*2-LENGTH) %>%
+  mutate(CLASS_ELONG = case_when( 
+    CLASS == "Blank" & elong > 0 ~ "Flake",
+    CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
+    TRUE ~ CLASS))
+  # ---
 
 ```
 
@@ -466,57 +473,62 @@ barplot_gravettian <- phase_dataset |>
     dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
-  dplyr::mutate(CLASS = case_when(
-    CLASS == "BlankFrag" ~ "Blank",
-    CLASS == "BurinSpall" ~ "Burin spall",
-    CLASS == "CoreFrag" ~ "Core",
-    CLASS == "CorePreparProd" ~ "Core prep product",
-    CLASS == "RetouchedPiece" | CLASS == "RetouchedPieceFrag" ~ "Retouched",
-    TRUE ~ CLASS)) |> 
+  # --Article review--
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "BlankFrag" ~ "Blank fragment",
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    CLASS_ELONG == "BurinSpall" ~ "Burin spall",
+    CLASS_ELONG == "CoreFrag" ~ "Core",
+    CLASS_ELONG == "CorePreparProd" ~ "Core prep product",
+    CLASS_ELONG == "RetouchedPiece" | CLASS == "RetouchedPieceFrag" ~ "Retouched",
+    TRUE ~ CLASS_ELONG)) |> 
   filter(Level %in% c(6, 7)) |>
   filter(RMTYPE != "INDET") |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  dplyr::group_by(RMTYPE, CLASS) |> 
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Blank fragment", "Burin spall", "Core", "Core prep product", "Retouched", "Shatter"))) |> 
+  dplyr::group_by(RMTYPE, CLASS_ELONG) |> 
   dplyr::summarise(n = n()) |> 
   mutate(percent = n/sum(n)) |>
-  ggplot(aes(x = RMTYPE, y = percent, fill = CLASS)) +
+  ggplot(aes(x = RMTYPE, y = percent, fill = CLASS_ELONG)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label=ifelse(n > 7, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
+  geom_text(aes(label=ifelse(n > 4, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
   theme_minimal() +
   theme(axis.title.x=element_blank()) +
   labs(y = " ") +
-  scale_fill_manual(name = "Class", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+  scale_fill_manual(name = "Class", values = c("#D49B54", "#E66101", "#FDB863", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
 barplot_proto <- phase_dataset |> 
     dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
-  dplyr::mutate(CLASS = case_when(
-    CLASS == "BlankFrag" ~ "Blank",
-    CLASS == "BurinSpall" ~ "Burin spall",
-    CLASS == "CoreFrag" ~ "Core",
-    CLASS == "CorePreparProd" ~ "Core prep product",
-    CLASS == "RetouchedPiece" | CLASS == "RetouchedPieceFrag" ~ "Retouched",
-    TRUE ~ CLASS)) |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "BlankFrag" ~ "Blank fragment",
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    CLASS_ELONG == "BurinSpall" ~ "Burin spall",
+    CLASS_ELONG == "CoreFrag" ~ "Core",
+    CLASS_ELONG == "CorePreparProd" ~ "Core prep product",
+    CLASS_ELONG == "RetouchedPiece" | CLASS == "RetouchedPieceFrag" ~ "Retouched",
+    TRUE ~ CLASS_ELONG)) |>
   filter(Level %in% c("4E", "4E/5")) |>
   filter(RMTYPE != "INDET") |> 
   filter(CLASS != "Chip") |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  dplyr::group_by(RMTYPE, CLASS) |> 
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Blank fragment", "Burin spall", "Core", "Core prep product", "Retouched", "Shatter"))) |> 
+  dplyr::group_by(RMTYPE, CLASS_ELONG) |> 
   dplyr::summarise(n = n()) |> 
   mutate(percent = n/sum(n)) |>
-  ggplot(aes(x = RMTYPE, y = percent, fill = CLASS)) +
+  ggplot(aes(x = RMTYPE, y = percent, fill = CLASS_ELONG)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label=ifelse(n > 7, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
+  geom_text(aes(label=ifelse(n > 4, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
   labs(y = " ") +
   theme_minimal() +
   theme(axis.title.x=element_blank()) +
-  scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+  scale_fill_manual(values = c("#D49B54", "#E66101", "#FDB863", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
 barplot_solutrean <- solutrean_dataset |> 
@@ -524,9 +536,9 @@ barplot_solutrean <- solutrean_dataset |>
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
     TRUE ~ RMTYPE)) |> 
   dplyr::mutate(CLASS = case_when(
-    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
-    CLASS == "ElongBlankFrag" | CLASS == "FlakeFrag" ~ "Blank",
-    CLASS == "Thinning flake" ~ "Blank",
+    CLASS == "ElongBlank" ~ "Elongated blank",
+    CLASS == "ElongBlankFrag" | CLASS == "FlakeFrag" ~ "Blank fragment",
+    #CLASS == "Thinning flake" ~ "Blank",
     CLASS == "CorePrepProd" ~ "Core prep product",
     CLASS == "RetouchedPiece" | CLASS == "Retouched piece" | CLASS == "Retouched piece fragment" ~ "Retouched",
     CLASS == "Core fragment" ~ "Core",
@@ -534,17 +546,18 @@ barplot_solutrean <- solutrean_dataset |>
   filter(RMTYPE != "INDET") |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10","T11", "TL"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "Elongated blank", "Thinning flake", "Blank fragment", "Burin spall", "Core", "Core prep product", "Retouched", "Shatter"))) |> 
   dplyr::group_by(RMTYPE, CLASS) |> 
   dplyr::summarise(n = n()) |> 
   mutate(percent = n/sum(n)) |>
   ggplot(aes(x = RMTYPE, y = percent, fill = CLASS)) +
   geom_bar(stat = "identity", width = 0.5) +
-  geom_text(aes(label=ifelse(n > 7, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
+  geom_text(aes(label=ifelse(n > 4, n, "")), position = position_stack(vjust = .5), size = 3, color = "white") +
   scale_y_continuous(labels = scales::percent_format()) +
   labs(y = " ") +
   theme_minimal() +
   theme(axis.title.x=element_blank()) +
-  scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
+  scale_fill_manual(values = c("#D49B54","#E66101", "#D27D70", "#FDB863", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#798777"))
 
 ```
@@ -559,8 +572,7 @@ barplot_solutrean <- solutrean_dataset |>
 solutrean_stats <- solutrean_dataset |> 
   filter(RMTYPE != "INDET") |>
    mutate(CLASS = case_when(
-    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
-    CLASS == "FlakeFrag" | CLASS == "ElongBlankFrag" ~ "BlankFrag",
+    CLASS == "ElongBlank" ~ "Elongated blank",
     TRUE ~ CLASS)) |> 
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
@@ -568,14 +580,14 @@ solutrean_stats <- solutrean_dataset |>
 
 # Scatterplot for width and length
 solutrean_scatter <- solutrean_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |>
+  filter(CLASS %in% c("Flake", "Elongated blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
-  facet_wrap(~CLASS) +
+  facet_wrap(~CLASS, ncol = 1, scales = "free_y") +
   labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(name = "Chert type", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDC7C9", "#798777"))
@@ -583,21 +595,21 @@ solutrean_scatter <- solutrean_stats |>
 # Boxplot for individual measurements
 # Weight
 solutrean_stats_weight <- solutrean_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |> 
+  filter(CLASS %in% c("Flake", "Elongated blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS = factor(CLASS, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS, scales = "free_y") +
+  facet_wrap(~CLASS, ncol = 1, scales = "free_y") +
   stat_summary(fun=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x= " ", y="Weight (gr)") +
   #coord_cartesian(ylim =  c(0, 50)) +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDC7C9", "#798777")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 
 # Proto-Solutrean statistics
 # DS prep
@@ -606,38 +618,41 @@ proto_stats <- phase_dataset |>
   filter(!RMTYPE == "INDET") |>
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
-    TRUE ~ RMTYPE))
+    TRUE ~ RMTYPE)) |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    TRUE ~ CLASS_ELONG))
 
 # Scatterplots for width and length
 proto_scatter <- proto_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |>
+  filter(CLASS_ELONG %in% c("Flake", "Elongated blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
    mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
-  facet_wrap(~CLASS) +
+  facet_wrap(~CLASS_ELONG, ncol = 1, scales = "free_y") +
   labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(name = "Chert type", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDD2B6", "#798777", "#BDC7C9"))
 
 # Boxplots weight
 proto_stats_weight <- proto_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |> 
+  filter(CLASS_ELONG %in% c("Flake", "Elongated blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6", "T7", "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS, scales = "free_y") +
+  facet_wrap(~CLASS_ELONG, ncol = 1, scales = "free_y") +
   stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x= " ", y="Weight (gr)") +
   #coord_cartesian(ylim =  c(0, 50)) +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "tomato4", "#BDD2B6", "#798777", "#BDC7C9")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 
 
 # Gravettian statistics
@@ -647,18 +662,21 @@ gravettian_stats <- phase_dataset |>
   filter(RMTYPE != "INDET") |>
   dplyr::mutate(RMTYPE = case_when(
     RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
-    TRUE ~ RMTYPE))
+    TRUE ~ RMTYPE)) |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    TRUE ~ CLASS_ELONG))
 
 # Scatterplots for width and length
 gravettian_scatter <- gravettian_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |>
+  filter(CLASS_ELONG %in% c("Flake", "Elongated blank", "Core")) |>
   filter(MAXWIDTH !="0" & LENGTH != "0") |>
    mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(x = LENGTH, y = MAXWIDTH, fill = RMTYPE)) +
   geom_point(alpha = 0.9, size = 3, shape = 21, colour = "black") +
-  facet_wrap(~CLASS) +
+  facet_wrap(~CLASS_ELONG, ncol = 1, scales = "free_y") +
   labs(x="Length (mm)", y="Max. Width (mm)") +
   scale_fill_manual(name = "Chert type", values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9"))
@@ -666,21 +684,21 @@ gravettian_scatter <- gravettian_stats |>
 # Boxplots
 # Weight
 gravettian_stats_weight <- gravettian_stats |>
-  filter(CLASS %in% c("Blank", "Core")) |> 
+  filter(CLASS_ELONG %in% c("Flake", "Elongated blank", "Core")) |> 
   filter(WEIGHT !="0") |>
   filter(!(RMTYPE == "Local" & WEIGHT > 40)) |> # Removed a single outlier at 60 weight while ensuring that the data remains consistent. Only mean changed significantly and was normalised
   mutate(RMTYPE = factor(RMTYPE, levels = c("Local", "T6", "T7", "T8", "T9", "T10", "TL"))) |>
-  mutate(CLASS = factor(CLASS, levels = c("Blank", "Core"))) |>
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Core"))) |>
   ggplot(aes(RMTYPE, WEIGHT, fill = RMTYPE)) +
   geom_boxplot(aes(fill=factor(RMTYPE)), outlier.shape=21) +
-  facet_wrap(~CLASS, scales = "free_y") +
+  facet_wrap(~CLASS_ELONG, ncol = 1, scales = "free_y") +
   stat_summary(fun.y=mean, geom="point", shape=23) +
-  labs(y="Weight (gr)") +
+  labs(x= " ", y="Weight (gr)") +
   #coord_cartesian(ylim =  c(0, 60)) +
   scale_fill_manual(values = c("#D49B54", "#8B6969", "#CDAF95", "#2B4F60",
                               "#8B7D6B", "#BDD2B6", "#798777", "#BDC7C9")) +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(), axis.title.x = element_blank())
+        axis.ticks.x=element_blank())
 
 ```
 
@@ -902,12 +920,12 @@ The scatterplots and boxplots show different patterns in the several analysed cl
 
 ```{r}
 #| label: fig-gravettian-plots
-#| fig-cap: "Gravettian assemblage blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
+#| fig-cap: "Gravettian assemblage flake, elongated blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
 #| fig-width: 6
 #| fig-asp: 1
 #| fig-align: center
 
-ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 #ggsave("gravettian_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
 
@@ -915,12 +933,12 @@ ggpubr::ggarrange(gravettian_scatter, gravettian_stats_weight, labels = c("a", "
 
 ```{r}
 #| label: fig-proto-plots
-#| fig-cap: "Proto-Solutrean assemblage blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
+#| fig-cap: "Proto-Solutrean assemblage flake, elongated blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
 #| fig-width: 6
 #| fig-asp: 1
 #| fig-align: center
 
-ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 #ggsave("proto_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
 
@@ -928,12 +946,12 @@ ggpubr::ggarrange(proto_scatter, proto_stats_weight, labels = c("a", "b"), nrow 
 
 ```{r}
 #| label: fig-solutrean-plots
-#| fig-cap: "Solutrean assemblage blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
+#| fig-cap: "Solutrean assemblage flake, elongated blank and core measurements and weight descriptive statistics in local and non-local chert types. a) Scatterplots of width and length. b) Boxplots of weight; diamond symbol represents mean values within each group"
 #| fig-width: 6
 #| fig-asp: 1
 #| fig-align: center
 
-ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), nrow = 2, common.legend = TRUE, legend = "bottom")
+ggpubr::ggarrange(solutrean_scatter, solutrean_stats_weight, labels = c("a", "b"), ncol = 2, common.legend = TRUE, legend = "bottom")
 
 #ggsave("solutrean_plots.png", width = 6, height = 6, units = "in", dpi = 300, bg = "white")
 

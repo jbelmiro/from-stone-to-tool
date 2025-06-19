@@ -162,7 +162,13 @@ phase_dataset <- terrace_dataset |>
     RETOUCHEDPIECETYPOLOGY == "Right truncation on retouched piece" ~ "Truncation",
     RETOUCHEDPIECETYPOLOGY == "Backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed flake" | RETOUCHEDPIECETYPOLOGY == "Double backed bladelet" | RETOUCHEDPIECETYPOLOGY == "Backed bladelet parcial" ~ "Backed tool",
     RETOUCHEDPIECETYPOLOGY == "Carenated endscraper" ~ "Endscraper",
-    TRUE ~ RETOUCHEDPIECETYPOLOGY))
+    TRUE ~ RETOUCHEDPIECETYPOLOGY)) |> 
+  # --Article review--
+  mutate(elong = MAXWIDTH*2-LENGTH) %>%
+  mutate(CLASS_ELONG = case_when( 
+    CLASS == "Blank" & elong > 0 ~ "Flake",
+    CLASS == "Blank" & elong <= 0 ~ "ElongatedProd",
+    TRUE ~ CLASS))
   
 # Setting up the Shelter dataset
 cols_to_concat_shelter <- c("YEAR", "ID") # Concatenate YEAR and ID variables in one single variable (e.g. 05-500)
@@ -274,14 +280,15 @@ solutrean_dataset <- solutrean_dataset |>
 
 # Tables with class by raw material type (n and %)
 general_table_som <- phase_dataset |> 
-  dplyr::mutate(CLASS = case_when(
-    CLASS == "BlankFrag" ~ "Blank fragment",
-    CLASS == "BurinSpall" ~ "Burin spall",
-    CLASS == "CoreFrag" ~ "Core fragment",
-    CLASS == "CorePreparProd" ~ "Core prep product",
-    CLASS == "RetouchedPiece" ~ "Retouched",
-    CLASS == "RetouchedPieceFrag" ~ "Retouched fragment",
-    TRUE ~ CLASS)) |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "BlankFrag" ~ "Blank fragment",
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    CLASS_ELONG == "BurinSpall" ~ "Burin spall",
+    CLASS_ELONG == "CoreFrag" ~ "Core fragment",
+    CLASS_ELONG == "CorePreparProd" ~ "Core prep product",
+    CLASS_ELONG == "RetouchedPiece" ~ "Retouched",
+    CLASS_ELONG == "RetouchedPieceFrag" ~ "Retouched fragment",
+    TRUE ~ CLASS_ELONG)) |> 
   dplyr::mutate(RMTYPE = case_when(
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
       TRUE ~ RMTYPE)) |> 
@@ -292,7 +299,8 @@ gravettian_general_som <- general_table_som |>
   filter(Level %in% c(6, 7)) |>
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL", "INDET"))) |>
-  tabyl(CLASS, RMTYPE) |> 
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Blank fragment", "Burin spall", "Core", "Core fragment", "Core prep product", "Retouched", "Retouched fragment", "Shatter"))) |> 
+  tabyl(CLASS_ELONG, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
   adorn_pct_formatting(2) |> 
@@ -304,7 +312,8 @@ proto_general_som <- general_table_som |>
   filter(Level %in% c("4E", "4E/5")) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL", "INDET"))) |>
-  tabyl(CLASS, RMTYPE) |> 
+  mutate(CLASS_ELONG = factor(CLASS_ELONG, levels = c("Flake", "Elongated blank", "Blank fragment", "Burin spall", "Core", "Core fragment", "Core prep product", "Retouched", "Retouched fragment", "Shatter"))) |> 
+  tabyl(CLASS_ELONG, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
   adorn_pct_formatting(2) |> 
@@ -317,15 +326,15 @@ solutrean_general_som <- solutrean_dataset |>
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
       TRUE ~ RMTYPE)) |>
   dplyr::mutate(CLASS = case_when(
-    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
+    CLASS == "ElongBlank" ~ "Elongated blank",
     CLASS == "ElongBlankFrag" | CLASS == "FlakeFrag" ~ "Blank fragment",
-    CLASS == "Thinning flake" ~ "Blank",
     CLASS == "CorePrepProd" ~ "Core prep product",
     CLASS == "RetouchedPiece" | CLASS == "Retouched piece" ~ "Retouched",
     CLASS == "Retouched piece fragment" ~ "Retouched fragment",
     TRUE ~ CLASS)) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1","T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "T11", "TL", "INDET"))) |>
+    mutate(CLASS = factor(CLASS, levels = c("Flake", "Elongated blank", "Thinning flake", "Blank fragment", "Burin spall", "Core", "Core fragment", "Core prep product", "Retouched", "Retouched fragment", "Shatter"))) |> 
   tabyl(CLASS, RMTYPE) |> 
   adorn_totals(c("row", "col")) |> 
   adorn_percentages("col") |> 
@@ -675,7 +684,7 @@ kable(solutrean_ratiobc)
 solutrean_stats <- solutrean_dataset |> 
   filter(RMTYPE != "INDET") |> 
   mutate(CLASS = case_when(
-    CLASS == "ElongBlank" | CLASS == "Flake" ~ "Blank",
+    CLASS == "ElongBlank" ~ "Elongated blank",
     TRUE ~ CLASS)) |> 
   dplyr::mutate(RMTYPE = case_when(
       RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "T2-5",
@@ -684,7 +693,16 @@ solutrean_stats <- solutrean_dataset |>
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
 solutrean_stats_blank <- solutrean_stats |>  
-  filter(CLASS == "Blank") |> 
+  filter(CLASS == "Flake") |> 
+  select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
+  drop_na() |> 
+  group_by(RMTYPE, CLASS) |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2-5", "T6","T7", 
+                                        "T8", "T9", "T10", "T11", "TL"))) |>
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
+# For elongated blanks (complete) --Article review--
+solutrean_stats_elong <- solutrean_stats |>  
+  filter(CLASS == "Elongated blank") |> 
   select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
   drop_na() |> 
   group_by(RMTYPE, CLASS) |> 
@@ -713,9 +731,22 @@ proto_stats <- phase_dataset |>
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
 proto_stats_blank <- proto_stats |> 
-  filter(CLASS == "Blank") |> 
-  select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
-  group_by(RMTYPE, CLASS) |> 
+  filter(CLASS_ELONG == "Flake") |> 
+  select(RMTYPE, CLASS_ELONG, MAXWIDTH, LENGTH, WEIGHT) |> 
+  group_by(RMTYPE, CLASS_ELONG) |> 
+  rename(CLASS = CLASS_ELONG) |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2-5", "T6","T7", 
+                                        "T8", "T9", "T10", "TL"))) |>
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
+# For elongated blanks (complete) --Article review--
+proto_stats_elong <- proto_stats |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    TRUE ~ CLASS_ELONG)) |> 
+  filter(CLASS_ELONG == "Elongated blank") |> 
+  select(RMTYPE, CLASS_ELONG, MAXWIDTH, LENGTH, WEIGHT) |> 
+  group_by(RMTYPE, CLASS_ELONG) |> 
+  rename(CLASS = CLASS_ELONG) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
   summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
@@ -740,9 +771,22 @@ gravettian_stats <- phase_dataset |>
 # Tables with individual class. For supplementary information if necessary
 # For flakes (complete)
 gravettian_stats_blank <- gravettian_stats |> 
-  filter(CLASS == "Blank") |> 
-  select(RMTYPE, CLASS, MAXWIDTH, LENGTH, WEIGHT) |> 
-  group_by(RMTYPE, CLASS) |> 
+  filter(CLASS_ELONG == "Flake") |> 
+  select(RMTYPE, CLASS_ELONG, MAXWIDTH, LENGTH, WEIGHT) |> 
+  group_by(RMTYPE, CLASS_ELONG) |> 
+  rename(CLASS = CLASS_ELONG) |> 
+  mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2-5", "T6","T7", 
+                                        "T8", "T9", "T10", "TL"))) |>
+  summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
+# For elongated blanks (complete) --Article review--
+gravettian_stats_elong <- gravettian_stats |> 
+  dplyr::mutate(CLASS_ELONG = case_when(
+    CLASS_ELONG == "ElongatedProd" ~ "Elongated blank",
+    TRUE ~ CLASS_ELONG)) |> 
+  filter(CLASS_ELONG == "Elongated blank") |> 
+  select(RMTYPE, CLASS_ELONG, MAXWIDTH, LENGTH, WEIGHT) |> 
+  group_by(RMTYPE, CLASS_ELONG) |> 
+  rename(CLASS = CLASS_ELONG) |> 
   mutate(RMTYPE = factor(RMTYPE, levels = c("T1", "T2-5", "T6","T7", 
                                         "T8", "T9", "T10", "TL"))) |>
   summarise(across(c(MAXWIDTH, LENGTH, WEIGHT), list(mean = mean, sd = sd)))
@@ -759,39 +803,45 @@ gravettian_stats_cores <- gravettian_stats |>
 
 ```{r}
 #| label: tbl-gravettian
-#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of blanks (a) and cores (b) by chert type of the Gravettian assemblage (levels 6-7) of the Terrace area."
+#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of flakes (a), elongated blanks (b) and cores (c) by chert type of the Gravettian assemblage (levels 6-7) of the Terrace area."
 #| tbl-subcap: 
-#|  - "Mean and SD for Max width, Length and Weight measurements of blanks."
+#|  - "Mean and SD for Max width, Length and Weight measurements of flakes."
+#|  - "Mean and SD for Max width, Length and Weight measurements of elongated blanks."
 #|  - "Mean and SD for Max width, Length and Weight measurements of cores."
-#| layout-nrow: 2
+#| layout-nrow: 3
 
 kable(gravettian_stats_blank)
+kable(gravettian_stats_elong)
 kable(gravettian_stats_cores)
 
 ```
 
 ```{r}
 #| label: tbl-proto
-#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of blanks (a) and cores (b) by chert type of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
+#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of flakes (a), elongated blanks (b) and cores (c) by chert type of the Proto-Solutrean assemblage (levels 4E and top of level 5) of the Terrace area."
 #| tbl-subcap: 
-#|  - "Mean and SD for Max width, Length and Weight measurements of blanks."
+#|  - "Mean and SD for Max width, Length and Weight measurements of flakes."
+#|  - "Mean and SD for Max width, Length and Weight measurements of elongated blanks."
 #|  - "Mean and SD for Max width, Length and Weight measurements of cores."
-#| layout-nrow: 2
+#| layout-nrow: 3
 
 kable(proto_stats_blank)
+kable(proto_stats_elong)
 kable(proto_stats_cores)
 
 ```
 
 ```{r}
 #| label: tbl-solutrean
-#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of blanks (a) and cores (b) by chert type of the Solutrean assemblage (levels A to C) of the Shelter area."
+#| tbl-cap: "Mean and standard deviation (SD) for Max width, Length and Weight measurements of flakes (a), elongated blanks (b) and cores (c) by chert type of the Solutrean assemblage (levels A to C) of the Shelter area."
 #| tbl-subcap: 
-#|  - "Mean and SD for Max width, Length and Weight measurements of blanks."
+#|  - "Mean and SD for Max width, Length and Weight measurements of flakes."
+#|  - "Mean and SD for Max width, Length and Weight measurements of elongated blanks."
 #|  - "Mean and SD for Max width, Length and Weight measurements of cores."
-#| layout-nrow: 2
+#| layout-nrow: 3
 
 kable(solutrean_stats_blank)
+kable(solutrean_stats_elong)
 kable(solutrean_stats_cores)
 
 ```

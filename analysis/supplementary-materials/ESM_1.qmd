@@ -1001,6 +1001,230 @@ p.value_cores <- tibble(
 
 ```
 
+```{r}
+#| label: stats-wilcox-review
+#| include: false
+
+# Terrace wilcox statistics
+## DB prep
+wilcox_t <- phase_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
+    RMTYPE == "T6" | RMTYPE == "T7" | RMTYPE == "T8" | RMTYPE == "T9" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS_ELONG, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, Level)
+
+# Proto-Solutrean flakes statistical test
+## NL cores were not represented enough (n) for statistics
+wt_flake_proto <- wilcox_t |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(CLASS_ELONG == "Flake")
+
+## Flake weight (fw)
+dplyr::group_by(wt_flake_proto, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_fw_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_flake_proto, exact = FALSE)
+## Flake length (fl)
+dplyr::group_by(wt_flake_proto, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_fl_proto <- wilcox.test(LENGTH ~ Prov, data = wt_flake_proto, exact = FALSE)
+## Flake width (fwi)
+dplyr::group_by(wt_flake_proto, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_fwi_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_flake_proto, exact = FALSE)
+
+# Proto-Solutrean elongated blanks statistical test
+wt_elong_proto <- wilcox_t |> 
+  filter(Level %in% c("4E", "4E/5")) |> 
+  filter(CLASS_ELONG == "ElongatedProd")
+
+## Elongated blank weight (ew)
+dplyr::group_by(wt_elong_proto, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_ew_proto <- wilcox.test(WEIGHT ~ Prov, data = wt_elong_proto, exact = FALSE)
+## Elongated blank length (el)
+dplyr::group_by(wt_elong_proto, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_el_proto <- wilcox.test(LENGTH ~ Prov, data = wt_elong_proto, exact = FALSE)
+## Elongated blank width (ewi)
+dplyr::group_by(wt_elong_proto, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_ewi_proto <- wilcox.test(MAXWIDTH ~ Prov, data = wt_elong_proto, exact = FALSE)
+
+# Gravettian flakes statistical test
+wt_flake_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS_ELONG == "Flake")
+
+## Flake weight
+dplyr::group_by(wt_flake_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_fw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_flake_grav, exact = FALSE)
+## Flake length
+dplyr::group_by(wt_flake_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_fl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_flake_grav, exact = FALSE)
+## Flake width
+dplyr::group_by(wt_flake_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_fwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_flake_grav, exact = FALSE)
+
+# Gravettian elongated blanks statistical test
+wt_elong_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS_ELONG == "ElongatedProd")
+
+## Elongated blanks weight
+dplyr::group_by(wt_elong_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_ew_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_elong_grav, exact = FALSE)
+## Elongated blanks length
+dplyr::group_by(wt_elong_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_el_grav <- wilcox.test(LENGTH ~ Prov, data = wt_elong_grav, exact = FALSE)
+## Elongated blanks width
+dplyr::group_by(wt_elong_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_ewi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_elong_grav, exact = FALSE)
+
+## Gravettian cores statistical test
+wt_core_grav <- wilcox_t |> 
+  filter(Level %in% c("6", "7")) |> 
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_grav <- wilcox.test(WEIGHT ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_grav <- wilcox.test(LENGTH ~ Prov, data = wt_core_grav, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_grav, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_grav <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_grav, exact = FALSE)
+
+# Shelter wilcox statistics
+## DB prep
+wilcox_t_shelter <- solutrean_dataset |> 
+  dplyr::mutate(Prov = case_when(
+    RMTYPE == "T1" | RMTYPE == "T2" | RMTYPE == "T3" | RMTYPE == "T4" | RMTYPE == "T5" ~ "Local",
+    RMTYPE == "T6" | RMTYPE == "T7" | RMTYPE == "T8" | RMTYPE == "T9" | RMTYPE == "T11" ~ "Non-local",
+    TRUE ~ RMTYPE)) |> 
+   mutate(CLASS = case_when(
+    CLASS == "ElongBlank" ~ "ElongatedProd",
+    TRUE ~ CLASS)) |>
+  filter(Prov %in% c("Local", "Non-local")) |> 
+  select(ID, CLASS, THICKNESS, MAXWIDTH, LENGTH, WEIGHT, Prov, LEVEL)
+
+# Solutrean flakes statistical test
+wt_flake_s <- wilcox_t_shelter |>
+  filter(CLASS == "Flake")
+
+## Flake weight
+dplyr::group_by(wt_flake_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_fw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_flake_s, exact = FALSE)
+## Flake length
+dplyr::group_by(wt_flake_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_fl_s <- wilcox.test(LENGTH ~ Prov, data = wt_flake_s, exact = FALSE)
+## Flake width
+dplyr::group_by(wt_flake_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_fwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_flake_s, exact = FALSE)
+
+# Solutrean elongated blanks statistical test
+wt_elong_s <- wilcox_t_shelter |>
+  filter(CLASS == "ElongatedProd")
+
+## Elongated blanks weight
+dplyr::group_by(wt_elong_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_ew_s <- wilcox.test(WEIGHT ~ Prov, data = wt_elong_s, exact = FALSE)
+## Elongated blanks length
+dplyr::group_by(wt_elong_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_el_s <- wilcox.test(LENGTH ~ Prov, data = wt_elong_s, exact = FALSE)
+## Elongated blanks width
+dplyr::group_by(wt_elong_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_ewi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_elong_s, exact = FALSE)
+
+wt_core_s <- wilcox_t_shelter |>
+  filter(CLASS == "Core")
+
+## Cores weight
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(WEIGHT, na.rm = TRUE))
+res_cw_s <- wilcox.test(WEIGHT ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores length
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(LENGTH, na.rm = TRUE))
+res_cl_s <- wilcox.test(LENGTH ~ Prov, data = wt_core_s, exact = FALSE)
+## Cores width
+dplyr::group_by(wt_core_s, Prov) |> 
+  summarise(count = n(), median = median(MAXWIDTH, na.rm = TRUE))
+res_cwi_s <- wilcox.test(MAXWIDTH ~ Prov, data = wt_core_s, exact = FALSE)
+
+# Flake stats table
+p.value_flake <- tibble(
+  Technocomplex = c("Gravettian", " "," ", " ", "Proto-Solutrean", " ", " ", " ", "Solutrean", " ", " ", " "),
+  Variable = c("Weight", "Length", "Width", "(n)","Weight", "Length", "Width","(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("3.2", "25.3", "21.4", "65", "2.5", "22.1", "18.8", "123", "1.9", "24", "18.2", "240"),
+  NL_median = c("2", "20.9", "19.3", "60", "2.2", "19.1", "17.7", "36", "1.55", "20.7", "20.1", "65"),
+  P_Value = round(c(res_fw_grav$p.value, res_fl_grav$p.value, res_fwi_grav$p.value, 0, res_fw_proto$p.value, res_fl_proto$p.value, res_fwi_proto$p.value, 0, res_fw_s$p.value, res_fl_s$p.value, res_fwi_s$p.value, 0), 5)) |>   mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 4), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.00000***" ~ "-",
+    TRUE ~ P_value))
+
+# Elongated blanks stats table
+p.value_elong <- tibble(
+  Technocomplex = c("Gravettian", " "," ", " ", "Proto-Solutrean", " ", " ", " ", "Solutrean", " ", " ", " "),
+  Variable = c("Weight", "Length", "Width", "(n)","Weight", "Length", "Width","(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("1.4", "27.4", "10.7", "17", "1.2", "29", "11", "31", "1.25", "28", "11.4", "98"),
+  NL_median = c("0.6", "23.7", "9.01", "9", "0.7", "21.5", "10.4", "13", "0.9", "28", "10.2", "15"),
+  P_Value = round(c(res_ew_grav$p.value, res_el_grav$p.value, res_ewi_grav$p.value, 0, res_ew_proto$p.value, res_el_proto$p.value, res_ewi_proto$p.value, 0, res_ew_s$p.value, res_el_s$p.value, res_ewi_s$p.value, 0), 5)) |>   mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 4), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.00000***" ~ "-",
+    TRUE ~ P_value))
+
+p.value_cores <- tibble(
+  Technocomplex = c("Gravettian", "", "", "", "Solutrean", "", "", ""),
+  Variable = c("Weight", "Length", "Width", "(n)", "Weight", "Length", "Width", "(n)"),
+  L_median = c("20", "29.6", "27.6", "14", "16.5", "28.3", "30.7", "59"),
+  NL_median = c("11.8", "21.9", "29.7", "10", "11.7", "25.6", "26.0", "7"),
+  P_Value = round(c(res_cw_grav$p.value, res_cl_grav$p.value, res_cwi_grav$p.value, 0, res_cw_s$p.value, res_cl_s$p.value, res_cwi_s$p.value, 0), 3)) |> 
+  mutate(Significance = case_when(
+      P_Value <= 0.001 ~ "***",
+      P_Value <= 0.01  ~ "**",
+      P_Value <= 0.05  ~ "*",
+      TRUE             ~ ""),
+    P_value = paste0(format(P_Value, nsmall = 3), Significance)  # Keep decimal places
+  ) |> 
+  select(-P_Value, -Significance) |> 
+  dplyr::mutate(P_value = case_when(
+    P_value == "0.000***" ~ "-",
+    TRUE ~ P_value))
+
+```
+
 A Mann-Whitney U statistical test was conducted to determine whether there are differences in the measurements (weight, length and width) of blanks and cores between local and non-local cherts. To do this, all local cherts (including chalcedony) were grouped in a Local category (L) while all non-local cherts were grouped in a non-local category (NL). Type 10 and TL cherts were excluded from the NL grouping to avoid adding cherts which are the result of probable different procurement strategies and clearly deviate from the other cherts in terms regarding the measurements. The Solutrean assemblage is not represented in the core statistics due to the small sample size of both local and non-local categories.
 
 The results indicate generally significant differences in blank measurements between local and non-local cherts in all technocomplexes; in almost all measurements and groups, local cherts show higher medians [@tbl-pvalue-1]. Length seems to be consistently significant (p \< 0.01 and \< 0.001) between the two groups in all assemblages, with local cherts showing higher median lengths than non-local cherts. In the Gravettian and Proto-Solutrean assemblages, weight is also significantly different between local and non-local blanks (p \< 0.05), with local cherts presenting higher medians. In comparison, width differences show no statistical significance, with exception of the Solutrean assemblage. In the Solutrean, blank width is significant (p \< 0.05) with the non-local category showing higher medians compared local cherts.
